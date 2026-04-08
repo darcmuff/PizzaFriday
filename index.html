@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pizza Dough Calculator</title>
+<meta name="description" content="Interactive pizza dough calculator with baker's percentages, automatic yeast scaling, dough ball sizing, and step-by-step method with real clock times.">
+<meta property="og:title" content="Pizza Dough Calculator">
+<meta property="og:description" content="Baker's percentages, automatic yeast scaling, dough ball calculator, step-by-step method with real clock times.">
+<meta property="og:image" content="https://darcmuff.github.io/FocacciaFriday/og-image-v2.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍕</text></svg>">
+<meta name="theme-color" content="#faf7f2">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="PizzaDough">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500&family=Nunito+Sans:ital,opsz,wght@0,6..12,400;0,6..12,600;0,6..12,700;1,6..12,400&display=swap" rel="stylesheet">
+<style>
+/* ===== DARK ARTISANAL FOOD MAGAZINE ===== */
+:root{
+  --bg:#faf7f0;--bg2:#e6e0d4;--bg3:#dcd4c6;--bg4:#cec4b0;
+  --border:#a89470;--border2:#bcac90;
+  --text:#120a04;--text2:#281c10;--text3:#3e3020;--text4:#080402;
+  --accent:#704008;--accent2:#f2ede4;
+  --green:#246832;--red:#a82e20;
+  --warn-bg:#f8ecc8;--warn-text:#704008;--warn-border:#c8b070;
+  --cold:#184a70;--warm:#704008;
+  --card-shadow:0 1px 4px rgba(20,10,0,0.14),0 4px 14px rgba(20,10,0,0.1);
+  --card-shadow-hover:0 2px 8px rgba(20,10,0,0.18),0 6px 22px rgba(20,10,0,0.13);
+  --card-radius:12px;
+  --font-display:'Cormorant Garamond',Georgia,'Times New Roman',serif;
+  --font-body:'Nunito Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --gold-glow:rgba(112,64,8,0.12);
+  --gold-glow-strong:rgba(112,64,8,0.22);
+}
+body.dark{
+  --bg:#141210;--bg2:#1e1c18;--bg3:#262420;--bg4:#302e28;
+  --border:#3e3a30;--border2:#33302a;
+  --text:#d8d0c0;--text2:#a89878;--text3:#786850;--text4:#ede6d8;
+  --accent:#c8943c;--accent2:#141210;
+  --green:#6ab874;--red:#d4584a;
+  --warn-bg:#2a2418;--warn-text:#d4a040;--warn-border:#4a3e28;
+  --cold:#5aaccf;--warm:#d4a040;
+  --card-shadow:0 1px 2px rgba(0,0,0,0.4),0 4px 16px rgba(0,0,0,0.2);
+  --card-shadow-hover:0 2px 4px rgba(0,0,0,0.5),0 8px 28px rgba(0,0,0,0.3);
+  --gold-glow:rgba(200,148,60,0.15);
+  --gold-glow-strong:rgba(200,148,60,0.25);
+}
+
+/* ===== RESET & BASE ===== */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;font-family:var(--font-body);background:var(--bg);color:var(--text);font-size:18px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;letter-spacing:.01em}
+
+/* ===== HEADER ===== */
+#header{height:60px;background:var(--bg2);border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:center;justify-content:space-between}
+.h-left{display:flex;align-items:center;gap:16px}
+.h-logo{width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid var(--border)}
+.h-title{font-family:var(--font-display);font-size:28px;font-weight:600;color:var(--text4);letter-spacing:.06em}
+.h-sub{font-family:var(--font-body);font-size:10.5px;color:var(--text2);letter-spacing:.32em;text-transform:uppercase;margin-top:0;font-weight:600}
+.h-right{display:flex;align-items:center;gap:8px}
+
+/* ===== HEADER BUTTONS ===== */
+.h-icon-btn{background:var(--bg);border:1px solid var(--border);border-radius:8px;width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);transition:all .25s ease;font-size:18px;padding:0;box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+.h-icon-btn:hover{color:var(--accent);border-color:var(--accent);background:var(--bg4);box-shadow:0 2px 5px rgba(0,0,0,0.14)}
+.h-icon-btn svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ===== TOGGLE PILLS ===== */
+.toggle-group{display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--bg3);box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+.toggle-btn{background:transparent;border:none;border-right:1px solid var(--border);padding:5px 12px;font-family:var(--font-body);font-size:12px;font-weight:700;color:var(--text2);cursor:pointer;transition:all .2s ease;text-align:center;display:flex;align-items:center;justify-content:center;letter-spacing:.06em;text-transform:uppercase;flex:1}
+.toggle-btn:last-child{border-right:none}
+.toggle-btn.active{background:var(--bg);color:var(--accent);font-weight:700}
+
+/* ===== PAGE GRID ===== */
+#page{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto 1fr;gap:8px;padding:10px 32px;height:calc(100vh - 60px);overflow:hidden}
+
+/* ===== CARDS ===== */
+.section{display:flex;flex-direction:column;justify-content:center;padding:10px 18px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--card-radius);box-shadow:var(--card-shadow);transition:all .3s ease;min-height:0;overflow:hidden}
+.section:hover{box-shadow:var(--card-shadow-hover);border-color:var(--border2)}
+
+/* ===== CARD & SECTION TITLES ===== */
+.card-title{font-size:1.1rem;letter-spacing:.06em;color:var(--text2);font-weight:600;margin-bottom:6px;flex-shrink:0}
+.sec-label{font-size:1.1rem;letter-spacing:.06em;color:var(--text2);font-weight:600;margin-bottom:3px}
+
+/* ===== SLIDERS ===== */
+.slider-track{position:relative;height:8px;border-radius:4px;margin:4px 0 3px}
+.slider-hours{background:linear-gradient(to right,#b87070 0%,#8aaa78 28%,#8aaa78 72%,#b87070 100%)}
+.slider-hyd{background:linear-gradient(to right,#b87070 0%,#8aaa78 15%,#8aaa78 75%,#b87070 100%)}
+.slider-temp{background:linear-gradient(to right,#b87070 0%,#8aaa78 22%,#8aaa78 62%,#b87070 100%)}
+.slider-track input[type=range]{-webkit-appearance:none;appearance:none;width:100%;cursor:pointer;display:block;position:absolute;top:0;left:0;height:100%;margin:0;background:transparent;outline:none}
+.slider-track input[type=range]::-webkit-slider-runnable-track{background:transparent;height:100%}
+.slider-track input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:var(--accent);border:none;box-shadow:0 0 0 4px var(--gold-glow),0 2px 8px rgba(0,0,0,0.4);cursor:pointer;transition:all .2s ease;margin-top:-6px}
+.slider-track input[type=range]::-webkit-slider-thumb:hover{box-shadow:0 0 0 8px var(--gold-glow-strong),0 2px 12px rgba(0,0,0,0.5);transform:scale(1.1)}
+.slider-track input[type=range]::-moz-range-track{background:transparent;height:100%;border:none}
+.slider-track input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--accent);border:none;box-shadow:0 0 0 4px var(--gold-glow),0 2px 8px rgba(0,0,0,0.4);cursor:pointer}
+.slider-labels{display:flex;justify-content:space-between;font-size:0.8rem;color:var(--text3);font-weight:600;letter-spacing:.03em}
+.slider-labels .green{color:var(--green);font-weight:700}
+.slider-labels .red{color:var(--red);font-weight:700}
+
+/* ===== METHOD CARD BUTTONS ===== */
+.tl-toggle{font-family:var(--font-body);font-size:12px;color:var(--text2);cursor:pointer;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg);transition:all .25s ease;box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+.tl-toggle:hover{color:var(--accent);border-color:var(--accent);background:var(--bg4);box-shadow:0 2px 5px rgba(0,0,0,0.14)}
+.tl-toggle.active{color:var(--accent);border-color:var(--accent);background:var(--bg4);box-shadow:0 2px 5px rgba(0,0,0,0.14)}
+.tl-toggle.active .btn-icon,.tl-toggle.active .btn-label{color:var(--accent)}
+.btn-icon{display:block;font-size:1.3rem;line-height:1;margin-bottom:2px}
+.btn-label{display:block;font-size:0.7rem;letter-spacing:.08em;text-transform:uppercase}
+.method-btn{flex:1;text-align:center;min-width:0;flex-direction:column;display:flex;align-items:center;justify-content:center;padding:6px 16px}
+
+/* ===== METHOD CARD LAYOUT ===== */
+#method-card{grid-column:2;grid-row:2/3}
+#method-view{flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+#method-view.hide{display:none}
+#timeline-view{display:none;flex:1;overflow-y:auto;overflow-x:hidden;min-height:0;scrollbar-width:thin;scrollbar-color:var(--border) var(--bg2);flex-direction:column;padding-right:5px}
+#timeline-view.show{display:flex}
+
+/* ===== FERMENT OPTIONS ===== */
+.fopt{display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:10px 14px;border-radius:10px;border:1px solid var(--border);margin-bottom:8px;background:var(--bg3);transition:all .25s ease;box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+.fopt:hover{border-color:var(--text3);box-shadow:0 2px 5px rgba(0,0,0,0.14)}
+.fopt.sel{background:var(--bg);border-color:var(--text3);box-shadow:0 2px 5px rgba(0,0,0,0.14)}
+.fradio{width:14px;height:14px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;margin-top:4px;transition:all .2s ease}
+.flabel{font-family:var(--font-display);font-weight:700;font-size:1.2rem;letter-spacing:.02em}
+.fdesc{font-size:0.92rem;color:var(--text3);margin-top:2px;line-height:1.5}
+
+/* ===== DOUGH BALLS SECTION ===== */
+.db-section{gap:0}
+.db-pill-row{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:12px}
+.db-pill{flex:1;padding:9px 12px;font-family:var(--font-body);font-size:13px;font-weight:700;color:var(--text2);background:var(--bg3);border:none;border-right:1px solid var(--border);cursor:pointer;text-align:center;letter-spacing:.04em;text-transform:uppercase;transition:all .2s ease;white-space:nowrap}
+.db-pill:last-child{border-right:none}
+.db-pill.active{background:var(--bg);color:var(--accent)}
+.db-steppers{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;margin-bottom:8px}
+.db-stepper-group{display:flex;flex-direction:column;align-items:center}
+.db-stepper-label{font-size:0.75rem;color:var(--text3);font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+.db-stepper{display:flex;align-items:center;gap:0;width:100%}
+.db-stepper button{width:34px;height:34px;border:1px solid var(--border);background:var(--bg3);font-size:16px;font-weight:700;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s ease;flex-shrink:0}
+.db-stepper button:hover{background:var(--bg4);color:var(--text);border-color:var(--text3)}
+.db-stepper button:first-child{border-radius:8px 0 0 8px}
+.db-stepper button:last-child{border-radius:0 8px 8px 0}
+.db-stepper .db-val{flex:1;text-align:center;font-size:1rem;font-weight:700;color:var(--accent);border-top:1px solid var(--border);border-bottom:1px solid var(--border);height:34px;display:flex;align-items:center;justify-content:center;background:var(--bg);font-family:var(--font-body);letter-spacing:.02em}
+.db-sep{height:1px;background:var(--border);margin:2px 0 8px;opacity:0.5}
+.db-result{font-size:1rem;color:var(--text2);line-height:1.4}
+.db-result strong{color:var(--accent);font-size:1.1rem;font-weight:700}
+.warning{margin-top:8px;font-size:0.95rem;padding:8px 12px;border-radius:8px;background:var(--warn-bg);color:var(--warn-text);border:1px solid var(--warn-border)}
+
+/* ===== INGREDIENTS TABLE ===== */
+table{width:100%;border-collapse:collapse}
+th{padding:3px 0;font-family:var(--font-body);font-size:0.72rem;color:var(--text3);letter-spacing:.18em;text-transform:uppercase;border-bottom:1px solid var(--border);font-weight:700}
+td{padding:4px 0;font-size:0.95rem;color:var(--text);border-bottom:1px solid var(--border)}
+td.wt{font-size:1.25rem;font-weight:700;color:var(--accent);text-align:right;font-variant-numeric:tabular-nums}
+td.pc{font-size:0.88rem;color:var(--text3);text-align:right;padding-left:10px;font-weight:600}
+.total-row td{font-size:1rem;color:var(--text2);padding-top:5px;border-bottom:none}
+.total-row td.wt{font-size:1.15rem;color:var(--text3)}
+
+/* ===== PROGRESS BAR ===== */
+.prog-row{display:flex;justify-content:space-between;font-size:0.92rem;color:var(--text3);margin-bottom:4px;font-weight:600}
+.prog-bg{height:2px;background:var(--border);border-radius:1px;overflow:hidden;margin-bottom:10px}
+.prog-fill{height:100%;background:var(--accent);border-radius:1px;transition:width .5s ease}
+
+/* ===== METHOD BODY ===== */
+.method-body{display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden}
+.step-content{flex:1;min-height:0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) var(--bg2);padding-right:10px}
+#timer-area{flex-shrink:0;margin-top:14px;background:var(--bg2)}
+.m-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:10px}
+.m-icon{flex-shrink:0;display:flex;align-items:center}
+.m-timer-pill{display:inline-flex;align-items:center;justify-content:center;color:var(--accent);cursor:default;background:var(--bg);border:1px solid var(--accent);border-radius:8px;padding:6px 12px;font-family:var(--font-body);font-size:0.88rem;font-weight:700;letter-spacing:.03em;transition:all .2s ease;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,0.12)}
+body.native .m-timer-pill{cursor:pointer}
+body.native .m-timer-pill:hover{border-color:var(--text3);color:var(--text);box-shadow:0 2px 5px rgba(0,0,0,0.14)}
+@keyframes timer-pulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(90,158,106,0.5)}
+  50%{box-shadow:0 0 0 6px rgba(90,158,106,0)}
+}
+.m-timer-pill.active{background:#d4edda;border-color:#5a9e6a;color:#246832;animation:timer-pulse 2s ease-in-out infinite}
+.m-timer-pill.active:hover{background:#c8e6ce;border-color:#4a8e5a;color:#246832}
+body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8dd4a0}
+.m-no-timer{display:inline-flex;align-items:center;justify-content:center;color:var(--border);font-size:0.88rem;padding:6px 12px;visibility:hidden}
+.m-step-lbl{font-size:0.75rem;text-transform:uppercase;letter-spacing:.18em;color:var(--text3);font-weight:700}
+.m-title{font-size:1.55rem;font-weight:700;color:var(--text4);line-height:1.2;letter-spacing:.01em}
+.m-body-text{font-size:1.1rem;color:var(--text);line-height:1.55;white-space:pre-line;overflow:visible;word-wrap:break-word}
+
+/* ===== NAV BUTTONS ===== */
+.nav-row{display:flex;gap:10px;margin-top:12px;flex-shrink:0}
+.nav-prev,.nav-next{padding:13px;border-radius:8px;font-size:0.92rem;cursor:pointer;font-family:var(--font-body);flex:1;text-align:center;transition:all .25s ease;font-weight:700;letter-spacing:.04em}
+.nav-prev{border:1px solid var(--border);background:var(--bg3);color:var(--text2);box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+.nav-prev:hover{border-color:var(--text3);color:var(--text);box-shadow:0 2px 5px rgba(0,0,0,0.14)}
+.nav-next{border:1px solid var(--border);background:var(--bg);color:var(--text2);box-shadow:0 1px 3px rgba(0,0,0,0.1);font-weight:700}
+.nav-next:hover{border-color:var(--text3);color:var(--text);box-shadow:0 2px 5px rgba(0,0,0,0.14)}
+.nav-next:disabled,.nav-prev:disabled{opacity:0.3;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* ===== TIMELINE ===== */
+.tl-item{display:flex;gap:10px;cursor:pointer;transition:all .2s ease;padding:3px 6px;border-radius:6px}
+.tl-item:hover{background:var(--bg3)}
+.tl-line{display:flex;flex-direction:column;align-items:center;width:18px;flex-shrink:0}
+.tl-dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--border);background:var(--border);flex-shrink:0;transition:all .25s ease}
+.tl-dot.active{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 4px var(--gold-glow-strong)}
+.tl-dot.timer-active{background:var(--green);border-color:var(--green);box-shadow:0 0 0 4px rgba(36,104,50,0.25)}
+.tl-stem{width:2px;flex-shrink:0}
+.tl-content{flex:1;padding-bottom:8px}
+.tl-head{display:flex;align-items:center;gap:7px}
+.tl-icon{font-size:18px}
+.tl-title{font-weight:700;font-size:1.15rem;color:var(--text4)}
+.tl-dur{font-size:0.95rem;color:var(--accent);font-weight:700;margin-left:auto;font-family:var(--font-body);letter-spacing:.03em}
+.tl-desc{font-size:0.95rem;color:var(--text2);margin-top:3px;white-space:pre-line;word-wrap:break-word;line-height:1.55}
+
+
+
+/* ===== RESPONSIVE ===== */
+@media (max-width:768px){
+  #header{height:auto;padding:12px 16px;flex-wrap:wrap}
+  .h-right{width:100%;justify-content:flex-end;margin-top:6px}
+  .h-title{font-size:24px}
+  html,body{overflow:auto;height:auto}
+  #page{grid-template-columns:1fr;height:auto;padding:12px 16px;gap:10px}
+  #method-card{grid-column:1;grid-row:auto;order:10;height:80vh;flex:none!important}
+  .section{flex:none;padding:16px 18px}
+  .toggle-btn{padding:5px 10px;font-size:11px}
+  .m-title{font-size:1.3rem}
+  #method-label{display:none}
+}
+
+/* ===== GUIDE MODAL ===== */
+.guide-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;transition:opacity .3s ease;pointer-events:none}
+.guide-overlay.show{opacity:1;pointer-events:auto}
+.guide-box{background:var(--bg2);border:1px solid var(--border);border-radius:16px;max-width:860px;width:100%;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 16px 64px rgba(0,0,0,0.5)}
+.guide-header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px 16px;border-bottom:1px solid var(--border);flex-shrink:0}
+.guide-header h2{font-family:var(--font-display);font-size:1.5rem;color:var(--accent);letter-spacing:.08em;margin:0;font-weight:600}
+.guide-close{background:transparent;border:1px solid var(--border);border-radius:6px;width:34px;height:34px;font-size:18px;cursor:pointer;color:var(--text3);display:flex;align-items:center;justify-content:center;font-family:inherit;transition:all .25s ease}
+.guide-close:hover{color:var(--accent);border-color:var(--accent)}
+.guide-body{overflow-y:auto;padding:24px 28px 28px;scrollbar-width:thin;scrollbar-color:var(--border) var(--bg2)}
+.guide-body h3{font-size:1.25rem;color:var(--accent);letter-spacing:.06em;margin:26px 0 10px;font-weight:700}
+.guide-body h3:first-child{margin-top:0}
+.guide-body details{border-bottom:1px solid var(--border2);padding-bottom:4px;margin-bottom:4px}
+.guide-body details:last-child{border-bottom:none}
+.guide-body details summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px}
+.guide-body details summary::-webkit-details-marker{display:none}
+.guide-body details summary::before{content:'▸';font-size:0.9rem;color:var(--text3);transition:transform .2s ease;flex-shrink:0}
+.guide-body details[open] summary::before{transform:rotate(90deg)}
+.guide-body details summary h3{margin:10px 0;pointer-events:none}
+.guide-body details p:last-child{margin-bottom:14px}
+.guide-body p{font-size:0.98rem;color:var(--text);line-height:1.75;margin-bottom:14px}
+.guide-body .g-em{color:var(--text4);font-weight:700}
+.guide-body .g-green{color:var(--green);font-weight:700}
+.guide-body .g-warm{color:var(--warm);font-weight:700}
+.guide-body .g-cold{color:var(--cold);font-weight:700}
+
+/* ===== SAVED RECIPES MODAL ===== */
+.saved-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;transition:opacity .3s ease;pointer-events:none}
+.saved-overlay.show{opacity:1;pointer-events:auto}
+.saved-box{background:var(--bg2);border:1px solid var(--border);border-radius:16px;max-width:520px;width:100%;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 16px 64px rgba(0,0,0,0.5)}
+.saved-header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px 16px;border-bottom:1px solid var(--border);flex-shrink:0}
+.saved-header h2{font-family:var(--font-display);font-size:1.5rem;color:var(--accent);letter-spacing:.08em;margin:0;font-weight:600}
+.saved-body{overflow-y:auto;padding:20px 28px 28px;scrollbar-width:thin;scrollbar-color:var(--border) var(--bg2)}
+.save-current{width:100%;padding:14px;border:1px dashed var(--border);border-radius:10px;background:transparent;font-family:var(--font-body);font-size:0.92rem;color:var(--accent);cursor:pointer;font-weight:700;margin-bottom:16px;transition:all .25s ease;letter-spacing:.04em;text-transform:uppercase}
+.save-current:hover{border-color:var(--accent);background:var(--gold-glow)}
+.saved-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border:1px solid var(--border);border-radius:10px;margin-bottom:10px;background:var(--bg3);cursor:pointer;transition:all .25s ease}
+.saved-item:hover{border-color:var(--text3);background:var(--bg4)}
+.saved-item-info{flex:1;min-width:0}
+.saved-item-name{font-family:var(--font-display);font-weight:700;font-size:1.1rem;color:var(--text4)}
+.saved-item-desc{font-size:0.82rem;color:var(--text3);margin-top:3px;letter-spacing:.02em}
+.saved-item-del{background:transparent;border:1px solid var(--border);border-radius:6px;width:32px;height:32px;font-size:14px;cursor:pointer;color:var(--text3);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .25s ease}
+.saved-item-del:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.saved-empty{font-size:0.95rem;color:var(--text3);text-align:center;padding:24px 0}
+.save-name-row{display:flex;gap:8px;margin-bottom:16px}
+.save-name-input{flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:8px;background:var(--bg3);font-family:var(--font-body);font-size:1rem;color:var(--text);transition:all .25s ease}
+.save-name-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--gold-glow)}
+.save-name-btn{padding:10px 18px;border:none;border-radius:8px;background:var(--accent);color:var(--accent2);font-family:var(--font-body);font-size:0.92rem;font-weight:700;cursor:pointer;transition:all .25s ease;letter-spacing:.04em;text-transform:uppercase}
+.save-name-btn:hover{box-shadow:0 4px 12px rgba(200,148,60,0.3)}
+</style>
+<script src="capacitor.js"></script>
+<script>
+  window.TimerPlugin = (window.Capacitor && window.Capacitor.registerPlugin)
+    ? window.Capacitor.registerPlugin('Timer')
+    : null;
+  if(window.TimerPlugin) document.body.classList.add('native');
+</script>
+</head>
+<body>
+
+<div id="header">
+  <div class="h-left">
+    <svg class="h-logo" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" style="border-radius:50%;width:50px;height:50px">
+      <rect x="0" y="0" width="300" height="300" rx="16" fill="#D4A848"/>
+      <rect x="20" y="20" width="260" height="260" rx="10" fill="#DCBA60" opacity="0.4"/>
+      <rect x="0" y="0" width="300" height="300" rx="16" fill="none" stroke="#C09030" stroke-width="3"/>
+      <ellipse cx="60" cy="60" rx="18" ry="16" fill="#C09030" opacity="0.6"/><ellipse cx="60" cy="60" rx="10" ry="8" fill="#D8B858" opacity="0.5"/>
+      <ellipse cx="130" cy="50" rx="20" ry="17" fill="#C09030" opacity="0.55"/><ellipse cx="130" cy="50" rx="11" ry="9" fill="#D8B858" opacity="0.45"/>
+      <ellipse cx="210" cy="65" rx="17" ry="18" fill="#C09030" opacity="0.6"/><ellipse cx="210" cy="65" rx="9" ry="10" fill="#D8B858" opacity="0.5"/>
+      <ellipse cx="50" cy="135" rx="19" ry="16" fill="#C09030" opacity="0.55"/><ellipse cx="50" cy="135" rx="10" ry="8" fill="#D8B858" opacity="0.45"/>
+      <ellipse cx="120" cy="125" rx="22" ry="19" fill="#C09030" opacity="0.6"/><ellipse cx="120" cy="125" rx="12" ry="10" fill="#D8B858" opacity="0.5"/>
+      <ellipse cx="205" cy="140" rx="18" ry="20" fill="#C09030" opacity="0.55"/><ellipse cx="205" cy="140" rx="10" ry="11" fill="#D8B858" opacity="0.45"/>
+      <ellipse cx="70" cy="215" rx="20" ry="17" fill="#C09030" opacity="0.6"/><ellipse cx="70" cy="215" rx="11" ry="9" fill="#D8B858" opacity="0.5"/>
+      <ellipse cx="160" cy="205" rx="17" ry="19" fill="#C09030" opacity="0.55"/><ellipse cx="160" cy="205" rx="9" ry="10" fill="#D8B858" opacity="0.45"/>
+      <ellipse cx="240" cy="220" rx="19" ry="16" fill="#C09030" opacity="0.6"/><ellipse cx="240" cy="220" rx="10" ry="8" fill="#D8B858" opacity="0.5"/>
+      <ellipse cx="260" cy="110" rx="16" ry="15" fill="#C09030" opacity="0.5"/><ellipse cx="260" cy="110" rx="8" ry="7" fill="#D8B858" opacity="0.4"/>
+      <ellipse cx="100" cy="270" rx="18" ry="15" fill="#C09030" opacity="0.55"/><ellipse cx="100" cy="270" rx="9" ry="7" fill="#D8B858" opacity="0.45"/>
+      <ellipse cx="200" cy="270" rx="16" ry="17" fill="#C09030" opacity="0.55"/><ellipse cx="200" cy="270" rx="8" ry="9" fill="#D8B858" opacity="0.45"/>
+      <g transform="translate(150,150) rotate(-30)">
+        <path d="M-100 0 Q-40 -4, 100 5" fill="none" stroke="#3A6530" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M-75 -1 Q-84 -11, -78 -18 Q-68 -9, -75 -1Z" fill="#5A9648" opacity="0.85"/>
+        <path d="M-75 -1 Q-84 9, -78 16 Q-68 8, -75 -1Z" fill="#4A8638" opacity="0.8"/>
+        <path d="M-50 -2 Q-59 -13, -53 -20 Q-43 -11, -50 -2Z" fill="#5A9648" opacity="0.85"/>
+        <path d="M-50 -2 Q-59 9, -53 16 Q-43 8, -50 -2Z" fill="#4A8638" opacity="0.8"/>
+        <path d="M-25 -3 Q-34 -15, -28 -22 Q-18 -13, -25 -3Z" fill="#5A9648" opacity="0.85"/>
+        <path d="M-25 -3 Q-34 9, -28 16 Q-18 8, -25 -3Z" fill="#4A8638" opacity="0.8"/>
+        <path d="M5 -3 Q-4 -16, 2 -23 Q12 -14, 5 -3Z" fill="#5A9648" opacity="0.8"/>
+        <path d="M5 -3 Q-4 9, 2 16 Q12 8, 5 -3Z" fill="#4A8638" opacity="0.75"/>
+        <path d="M32 -1 Q23 -13, 29 -20 Q39 -11, 32 -1Z" fill="#5A9648" opacity="0.8"/>
+        <path d="M32 -1 Q23 11, 29 18 Q39 10, 32 -1Z" fill="#4A8638" opacity="0.75"/>
+        <path d="M58 1 Q49 -11, 55 -18 Q65 -9, 58 1Z" fill="#5A9648" opacity="0.75"/>
+        <path d="M58 1 Q49 13, 55 20 Q65 12, 58 1Z" fill="#4A8638" opacity="0.7"/>
+        <path d="M80 3 Q71 -7, 77 -14 Q87 -5, 80 3Z" fill="#5A9648" opacity="0.7"/>
+        <path d="M80 3 Q71 13, 77 19 Q87 12, 80 3Z" fill="#4A8638" opacity="0.65"/>
+        <path d="M95 4 Q88 -3, 93 -9 Q100 -2, 95 4Z" fill="#5A9648" opacity="0.65"/>
+        <path d="M95 4 Q88 11, 93 16 Q100 10, 95 4Z" fill="#4A8638" opacity="0.6"/>
+      </g>
+      <rect x="40" y="30" width="5" height="3" rx="1" fill="#F8F2E4" opacity="0.75" transform="rotate(20,42,31)"/>
+      <rect x="250" y="90" width="4" height="2.5" rx="1" fill="#F8F2E4" opacity="0.7" transform="rotate(-15,252,91)"/>
+      <rect x="30" y="250" width="4.5" height="3" rx="1" fill="#F8F2E4" opacity="0.65" transform="rotate(30,32,251)"/>
+      <rect x="230" y="260" width="5" height="2.5" rx="1" fill="#F8F2E4" opacity="0.7"/>
+      <rect x="120" y="20" width="4" height="2.5" rx="1" fill="#F8F2E4" opacity="0.65" transform="rotate(10,122,21)"/>
+      <rect x="270" y="190" width="4.5" height="3" rx="1" fill="#F8F2E4" opacity="0.7"/>
+    </svg>
+    <div>
+      <div class="h-title">Pizza Dough</div>
+      <div class="h-sub">dough calculator</div>
+    </div>
+  </div>
+  <div class="h-right">
+    <button class="h-icon-btn" onclick="showGuide()" title="How to use" style="font-size:20px;font-weight:700;font-family:inherit">?</button>
+    <button class="h-icon-btn" onclick="shareRecipe()" title="Share recipe"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
+    <button class="h-icon-btn" onclick="showSaved()" title="Saved recipes"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" fill="none"/></svg></button>
+    <button class="h-icon-btn" id="dark-btn" onclick="toggleDark()" title="Dark mode">🌙</button>
+    <div class="toggle-group">
+      <button class="toggle-btn active" id="btn-metric" onclick="setUnits('metric')">Metric</button>
+      <button class="toggle-btn" id="btn-imperial" onclick="setUnits('imperial')">Imperial</button>
+    </div>
+    <div class="toggle-group">
+      <button class="toggle-btn active" id="btn-c" onclick="setTempScale('C')">°C</button>
+      <button class="toggle-btn" id="btn-f" onclick="setTempScale('F')">°F</button>
+    </div>
+  </div>
+</div>
+
+<div id="page">
+  <!-- ROW 1 LEFT: SLIDERS -->
+  <div class="section" id="slider-card" style="padding:10px 18px">
+    <div class="sec-label" id="hours-lbl">Total Time: 8 hours</div>
+    <div class="slider-track slider-hours"><input type="range" min="0" max="100" step="1" value="14" id="hours-slider" oninput="update()"></div>
+    <div class="slider-labels"><span id="start-time-lbl">6h</span><span>48h</span></div>
+    <div style="margin-top:20px">
+      <div class="sec-label" id="hyd-lbl">Hydration: 63%</div>
+      <div class="slider-track slider-hyd"><input type="range" min="55" max="75" step="1" value="63" id="hyd-slider" oninput="update()"></div>
+      <div class="slider-labels"><span>55%</span><span>75%</span></div>
+    </div>
+    <div style="margin-top:20px">
+      <div class="sec-label" id="temp-lbl">Room / Control Temp: 20°C</div>
+      <div class="slider-track slider-temp"><input type="range" min="15" max="28" step="1" value="20" id="temp-slider" oninput="update()"></div>
+      <div class="slider-labels"><span id="temp-cool">15°C</span><span id="temp-warm">28°C</span></div>
+    </div>
+  </div>
+
+  <!-- ROW 1 RIGHT: INGREDIENTS -->
+  <div class="section">
+    <div class="card-title" id="rec-title" style="margin-bottom:4px">Ingredients</div>
+    <table><tbody id="rec-tbody"></tbody></table>
+  </div>
+
+  <!-- ROW 2 LEFT: DOUGH BALLS + FERMENT TYPE -->
+  <div class="section db-section">
+    <div class="sec-label">Parameters</div>
+    <div class="db-pill-row">
+      <button class="db-pill active" id="btn-neap" onclick="setPizzaType('neap')">Neapolitan</button>
+      <button class="db-pill" id="btn-ny" onclick="setPizzaType('ny')">New York</button>
+    </div>
+    <div class="db-steppers">
+      <div class="db-stepper-group">
+        <div class="db-stepper-label">Count</div>
+        <div class="db-stepper">
+          <button onclick="stepVal('ballCount',-1)">−</button>
+          <div class="db-val" id="db-count">4</div>
+          <button onclick="stepVal('ballCount',1)">+</button>
+        </div>
+      </div>
+      <div class="db-stepper-group">
+        <div class="db-stepper-label">Ball Size</div>
+        <div class="db-stepper">
+          <button onclick="stepVal('ballSize',-5)">−</button>
+          <div class="db-val" id="db-size">250g</div>
+          <button onclick="stepVal('ballSize',5)">+</button>
+        </div>
+      </div>
+      <div class="db-stepper-group">
+        <div class="db-stepper-label">Salt</div>
+        <div class="db-stepper">
+          <button onclick="stepVal('saltPc',-0.1)">−</button>
+          <div class="db-val" id="db-salt">2.5%</div>
+          <button onclick="stepVal('saltPc',0.1)">+</button>
+        </div>
+      </div>
+      <div class="db-stepper-group">
+        <div class="db-stepper-label">Oil</div>
+        <div class="db-stepper">
+          <button onclick="stepVal('oilPc',-0.1)">−</button>
+          <div class="db-val" id="db-oil">2.0%</div>
+          <button onclick="stepVal('oilPc',0.1)">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="db-sep"></div>
+    <div class="db-result" id="db-result"></div>
+    <div class="db-sep" style="margin:8px 0"></div>
+    <div class="sec-label">Ferment Type</div>
+    <div class="fopt" id="opt-cold" onclick="selectFerment('cold')">
+      <div class="fradio" id="radio-cold" style="border-color:#2a6898;background:transparent"></div>
+      <div><div class="flabel" id="lbl-cold" style="color:#2a6898">Cold Ferment</div><div class="fdesc">Room temp prep, overnight fridge, room temp final proof.</div></div>
+    </div>
+    <div class="fopt sel" id="opt-room" onclick="selectFerment('room')">
+      <div class="fradio" id="radio-room" style="border-color:#b85c00;background:#b85c00"></div>
+      <div><div class="flabel" id="lbl-room" style="color:#b85c00">Room Temp</div><div class="fdesc">All fermentation at room or controlled temp.</div></div>
+    </div>
+  </div>
+
+  <!-- ROW 2+3 RIGHT: METHOD (spans 2 rows) -->
+  <div id="method-card" class="section" style="min-height:0;display:flex;flex-direction:column;overflow:hidden;justify-content:flex-start">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-shrink:0;gap:12px">
+      <div>
+        <div class="card-title" id="method-label" style="margin-bottom:0">Method</div>
+        <div class="prog-row" id="prog-row" style="margin:0"><span id="step-counter"></span></div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        <button class="tl-toggle method-btn" onclick="resetDefaults()"><span class="btn-icon">↺</span><span class="btn-label">Reset</span></button>
+        <button class="tl-toggle method-btn" id="start-bake-btn" onclick="startBake()"><span class="btn-icon">▶</span><span class="btn-label">Begin</span></button>
+        <button class="tl-toggle method-btn" id="tl-toggle" onclick="toggleTimeline()"><span class="btn-icon">☰</span><span class="btn-label">Timeline</span></button>
+      </div>
+    </div>
+    <div class="prog-bg" id="prog-bg" style="flex-shrink:0;margin-bottom:6px"><div class="prog-fill" id="prog-fill"></div></div>
+    <div id="method-view">
+      <div class="method-body">
+        <div class="step-content">
+          <div class="m-header">
+            <div class="m-icon" id="s-icon"></div>
+            <div><div class="m-step-lbl" id="s-lbl"></div><div class="m-title" id="s-title"></div></div>
+          </div>
+          <div class="m-body-text" id="s-body"></div>
+          <div id="tip-area"></div>
+        </div>
+        <div class="nav-row">
+          <button class="nav-prev" id="prev-btn" onclick="prevStep()">← Previous</button>
+          <button class="nav-next" id="next-btn" onclick="nextStep()">Next Step →</button>
+        </div>
+      </div>
+    </div>
+    <div id="timeline-view"></div>
+  </div>
+</div>
+
+<div class="guide-overlay" id="guide-overlay" onclick="if(event.target===this)hideGuide()">
+  <div class="guide-box">
+    <div class="guide-header">
+      <h2>How to Use</h2>
+      <button class="guide-close" onclick="hideGuide()">✕</button>
+    </div>
+    <div class="guide-body">
+
+      <p>This is a pizza dough calculator. Set your sliders, choose your style, and it works out everything — ingredient quantities, yeast levels, fermentation times, and a step-by-step method with real clock times. Every slider has a <span class="g-green">green zone</span> showing the range where results are most predictable. The ends fade to red — not because they are wrong, but because they need more experience to manage well.</p>
+
+      <details>
+      <summary><h3>Start With the End</h3></summary>
+      <p>When do you want to eat? Work backwards from there. The <span class="g-em">Total Time slider</span> is how many hours from mixing to eating. Set it, and the calculator figures out everything else — the yeast quantity, your fermentation times, and the method steps. Longer fermentation develops deeper flavour and better browning. A cold ferment of 24–72 hours produces the best results — the enzymes in the flour stockpile free sugars and amino acids while the dormant yeast is not consuming them, and that biochemical stockpile is what drives the Maillard reaction in the oven. But a same-day 8-hour dough still makes great pizza.</p>
+      </details>
+
+      <details>
+      <summary><h3>Neapolitan vs New York</h3></summary>
+      <p><span class="g-em">Neapolitan</span> — lower hydration (58–65%), higher salt (2.5–3%), no oil. Baked fast at extreme heat (300°C+). The result is a soft, pliable base with a puffy, charred cornicione. Traditionally uses Tipo 00 flour, though any strong bread flour with 12–14% protein works. This is a simple dough — flour, water, salt, yeast, nothing else.</p>
+      <p><span class="g-em">New York style</span> — moderate hydration (58–65%), standard salt (2–2.5%), with olive oil (1–3%). Baked at lower temperatures (230–260°C) for longer. The oil coats the gluten strands, shortening the network and creating a crispier, more tender crust. Use high-gluten bread flour with 13–15% protein for the best structure and chew. NY dough needs to be strong enough to hold toppings and fold without cracking.</p>
+      </details>
+
+      <details>
+      <summary><h3>Dough Balls</h3></summary>
+      <p>Set the count and size using the steppers. <span class="g-em">250g balls</span> give you a 25–28cm (10–11") pizza — a good default for Neapolitan. <span class="g-em">280g balls</span> stretch to 30–35cm (12–14") for NY style. The calculator uses baker's percentages to work backwards from your ball weight to the exact flour, water, salt, and yeast quantities.</p>
+      </details>
+
+      <details>
+      <summary><h3>What Flour?</h3></summary>
+      <p>Flour strength matters. The <span class="g-em">W-value</span> measures how much punishment a flour can take — how much water it can absorb and how long it can ferment without collapsing. A weak flour (W150–200) is fine for a same-day bake but will fall apart during a 48-hour cold ferment. For long fermentation, use a strong flour (W260–320) or very strong Manitoba-type (W320+) with 13–15% protein. If you do not know your flour's W-value, check the protein content on the label — higher protein generally means stronger flour.</p>
+      </details>
+
+      <details>
+      <summary><h3>Hydration</h3></summary>
+      <p>Hydration is the ratio of water to flour. For pizza, the range is much narrower than for focaccia. <span class="g-em">58–65%</span> is the sweet spot for both styles. Lower hydration (55–60%) gives a stiffer dough that is easier to handle and produces a crispier base. Higher hydration (63–70%) gives a softer, more extensible dough with a lighter crumb, but it is harder to shape and more likely to stick.</p>
+      <p>If you are new to pizza making, start at 60–62%. Work up as your handling improves. Do not confuse pizza hydration with bread hydration — a 65% pizza dough is a completely different animal to a 65% focaccia.</p>
+      </details>
+
+      <details>
+      <summary><h3>Salt</h3></summary>
+      <p>Salt is not optional. It strengthens the gluten network by allowing the protein strands to cross-link more tightly. Without it, the dough is slack, tears easily, and ferments out of control. Traditional Neapolitan uses 2.5–3% — higher than most bread recipes. The salt also creates osmotic stress on the yeast cells, which slows fermentation and gives you more control over timing. The calculator adjusts the yeast automatically when you change the salt percentage.</p>
+      </details>
+
+      <details>
+      <summary><h3>Oil</h3></summary>
+      <p>Neapolitan dough traditionally contains no oil. NY style uses 1–3%. Oil does not hydrate the flour — it coats the gluten strands and physically interrupts their formation, which is why it makes the crust more tender and crispy. Add oil <span class="g-em">after</span> the flour has absorbed the water, not before. If oil hits dry flour first, it creates a hydrophobic barrier that prevents proper hydration.</p>
+      </details>
+
+      <details>
+      <summary><h3>Room Temp or Cold Ferment?</h3></summary>
+      <p><span class="g-warm">Room temp</span> — all fermentation at ambient temperature. Simpler, faster, and good results. The time slider will not go past 24 hours in room temp mode — beyond that, the dough will overproof and collapse.</p>
+      <p><span class="g-cold">Cold ferment</span> — initial rise at room temp, then into the fridge. At fridge temperature (4°C), yeast drops to about 15% activity, but the flour's amylase and protease enzymes only slow by about 50%. So while the yeast sleeps, the enzymes keep breaking down starches into sugars and proteins into amino acids. This is the secret to superior browning, blistering, and complex flavour. The time slider will not go below 14 hours in cold mode.</p>
+      </details>
+
+      <details>
+      <summary><h3>Temperature</h3></summary>
+      <p>Temperature is the master variable. A 2°C change can alter yeast activity by up to 25%. The calculator compensates automatically — just set the slider to your kitchen temperature. The yeast model uses a Q10 biological coefficient: yeast roughly doubles its metabolic rate for every 10°C increase, up to its thermal death point around 55°C. If your kitchen is warm, you need less yeast. If it is cold, you need more. The maths handles this for you.</p>
+      </details>
+
+      <details>
+      <summary><h3>Baking</h3></summary>
+      <p>Hit <span class="g-em">▶ Begin</span> to stamp your start time and turn the calculator into a live schedule. Every step shows its actual wall-clock time. Hit <span class="g-em">☰ Timeline</span> for the full overview.</p>
+      <p>Everything recalculates live — change a slider mid-bake and the remaining steps update automatically. If you close the app, the session is saved. Hit <span class="g-em">↺ Reset</span> to start fresh.</p>
+      </details>
+
+      <details>
+      <summary><h3>Timers</h3></summary>
+      <p>Steps that need timing show a <span class="g-em">⏰ timer pill</span>. Tap it and your phone's native clock app opens with the correct duration. <span class="g-em">Important:</span> native timers only work in the <span class="g-em">Android app</span>. On the website, the pills show as progress indicators but will not launch external timers.</p>
+      </details>
+
+      <details>
+      <summary><h3>The Oven</h3></summary>
+      <p><span class="g-em">As hot as it goes.</span> Real Neapolitan pizza is baked at 450°C+ for 60–90 seconds. Your home oven will not reach that, but get it as hot as possible — 250–300°C with a pizza stone or steel preheated for at least 45 minutes. The stone stores thermal energy and transfers it directly into the base, which is what gives you a crisp bottom and proper oven spring.</p>
+      <p>A pizza steel is better than a stone — steel conducts heat roughly 20 times faster. If you are serious about pizza, it is the single best investment you can make.</p>
+      </details>
+
+    </div>
+  </div>
+</div>
+
+<div class="saved-overlay" id="saved-overlay" onclick="if(event.target===this)hideSaved()">
+  <div class="saved-box">
+    <div class="saved-header">
+      <h2>Saved Recipes</h2>
+      <button class="guide-close" onclick="hideSaved()">✕</button>
+    </div>
+    <div class="saved-body" id="saved-body"></div>
+  </div>
+</div>
+
+<script>
+function showGuide(){document.getElementById('guide-overlay').classList.add('show');}
+function hideGuide(){document.getElementById('guide-overlay').classList.remove('show');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){hideGuide();hideSaved();}});
+
+function showSaved(){renderSavedList();document.getElementById('saved-overlay').classList.add('show');}
+function hideSaved(){document.getElementById('saved-overlay').classList.remove('show');}
+
+function getSavedRecipes(){
+  try{return JSON.parse(localStorage.getItem('pd_saved'))||[];}catch(e){return [];}
+}
+function setSavedRecipes(arr){
+  try{localStorage.setItem('pd_saved',JSON.stringify(arr));}catch(e){}
+}
+
+let savingNew=false;
+function renderSavedList(){
+  const recipes=getSavedRecipes();
+  const el=document.getElementById('saved-body');
+  let html='';
+  if(savingNew){
+    html+=`<div class="save-name-row">
+      <input class="save-name-input" id="save-name-input" placeholder="Name this recipe..." autofocus>
+      <button class="save-name-btn" onclick="confirmSave()">Save</button>
+    </div>`;
+  } else {
+    html+=`<button class="save-current" onclick="startSave()">+ Save Current Recipe</button>`;
+  }
+  if(recipes.length===0){
+    html+=`<div class="saved-empty">No saved recipes yet.</div>`;
+  } else {
+    recipes.forEach((r,i)=>{
+      const fermentLabel=r.fid==='cold'?'Cold':'Room';
+      const typeLabel=r.pizzaType==='ny'?'NY':'Neap';
+      const ballDesc=(r.ballCount||4)+'× '+(r.ballSize||250)+'g';
+      html+=`<div class="saved-item" onclick="loadRecipe(${i})">
+        <div class="saved-item-info">
+          <div class="saved-item-name">${r.name}</div>
+          <div class="saved-item-desc">${r.hours}h · ${r.hyd}% · ${fermentLabel} · ${dt(r.rTemp)} · ${typeLabel} · ${ballDesc}</div>
+        </div>
+        <button class="saved-item-del" onclick="event.stopPropagation();deleteRecipe(${i})" title="Delete">✕</button>
+      </div>`;
+    });
+  }
+  el.innerHTML=html;
+  if(savingNew){
+    const inp=document.getElementById('save-name-input');
+    if(inp){inp.focus();inp.addEventListener('keydown',e=>{if(e.key==='Enter')confirmSave();});}
+  }
+}
+
+function startSave(){savingNew=true;renderSavedList();}
+
+function confirmSave(){
+  const inp=document.getElementById('save-name-input');
+  const name=(inp?inp.value:'').trim();
+  if(!name)return;
+  const recipes=getSavedRecipes();
+  recipes.push({
+    name,
+    hours:S.hours,
+    hyd:S.hyd,
+    fid:S.fid,
+    rTemp:S.rTemp,
+    pizzaType:S.pizzaType,
+    ballCount:S.ballCount,
+    ballSize:S.ballSize,
+    saltPc:S.saltPc,
+    oilPc:S.oilPc
+  });
+  setSavedRecipes(recipes);
+  savingNew=false;
+  renderSavedList();
+}
+
+function loadRecipe(i){
+  const recipes=getSavedRecipes();
+  const r=recipes[i];
+  if(!r)return;
+  S.hours=r.hours;S.hyd=r.hyd;S.fid=r.fid;S.rTemp=r.rTemp;
+  S.pizzaType=r.pizzaType||'neap';S.ballCount=r.ballCount||4;S.ballSize=r.ballSize||250;
+  if(r.saltPc!=null)S.saltPc=r.saltPc;
+  if(r.oilPc!=null)S.oilPc=r.oilPc;
+  document.getElementById('hours-slider').value=hoursToSlider(r.hours);
+  document.getElementById('hyd-slider').value=r.hyd;
+  document.getElementById('temp-slider').value=r.rTemp;
+  setPizzaType(S.pizzaType);
+  selectFerment(r.fid);
+  update();
+  hideSaved();
+}
+
+function deleteRecipe(i){
+  const recipes=getSavedRecipes();
+  recipes.splice(i,1);
+  setSavedRecipes(recipes);
+  renderSavedList();
+}
+
+const PIZZA_DEFAULTS={neap:{ballSize:250,saltPc:2.8,oilPc:0},ny:{ballSize:280,saltPc:2.5,oilPc:2}};
+
+function calcDoughBallFlour(ballSize, hyd, saltPc, oilPc) {
+  const totalPc = 100 + hyd + saltPc + oilPc;
+  return Math.round(ballSize * 100 / totalPc);
+}
+
+function sliderToHours(pos){
+  const raw = 6 * Math.pow(8, pos / 100);
+  return Math.round(Math.min(48, Math.max(6, raw)));
+}
+function hoursToSlider(h){
+  return Math.round(Math.log(h / 6) / Math.log(8) * 100);
+}
+
+function calcYeast(fid, rt, hrs, hyd) {
+  /*
+   * Pizza dough yeast model — calibrated from Q10 biological temperature coefficient.
+   * Yeast rate roughly doubles per 10°C (Q10 ≈ 2.0–2.5).
+   * At 4°C fridge temps, yeast runs at ~15% of room-temp rate.
+   * Salt at 2.5–3% induces osmotic stress, slowing fermentation.
+   * Model uses inverse exponential decay: less yeast for longer ferments.
+   */
+  const PRE_YEAST_MINS = 25;           /* gather(5) + combine(5) + autolyse(15) */
+  const KNEAD_MINS = 15;               /* knead / fold */
+  const BALL_AND_PROOF_MINS = 30;      /* ball up + final bench proof */
+  const ROOM_STATIC_MINS = 70;         /* total non-ferment steps for room path */
+  const COLD_STATIC_MINS = 190;        /* room path steps + final warm-up proof */
+
+  const k = 2.8;
+  const tempMultiplier = Math.pow(2, (rt - 22) / 10);
+  const hydrationMultiplier = 1 + 0.004 * Math.max(0, hyd - 58);
+  const deadTimeHrs = PRE_YEAST_MINS / 60;
+  let effectiveTime;
+  let coldLagMultiplier = 1.0;
+
+  if (fid === 'room') {
+    effectiveTime = Math.max(1.5, hrs - deadTimeHrs);
+  } else {
+    /* Warm bulk before fridge: knead + initial rise ~2h */
+    const warmBeforeHrs = 2;
+    /* Fridge time = total - all static steps */
+    const fridgeMins = Math.max(240, (hrs * 60) - COLD_STATIC_MINS);
+    const fridgeHrs = fridgeMins / 60;
+    /* Final warm-up proof after fridge: 2h */
+    const finalProofHrs = 2;
+    /* Fridge fermentation at ~15% rate (Q10 model: 4°C vs ~22°C) */
+    const fridgeMultiplier = Math.pow(2, (4 - 22) / 10);
+    const fridgeEffectiveHours = fridgeHrs * (fridgeMultiplier / tempMultiplier);
+    effectiveTime = Math.max(1.5, warmBeforeHrs + fridgeEffectiveHours + finalProofHrs);
+    coldLagMultiplier = 0.85;
+  }
+  const rawYeast = (k / (effectiveTime * tempMultiplier * hydrationMultiplier)) * coldLagMultiplier;
+  return Math.round(Math.min(2.0, Math.max(0.03, rawYeast)) * 100) / 100;
+}
+
+const FERMENTS={room:{color:'#b85c00'},cold:{color:'#2a6898'}};
+function minsToLabel(m){if(m<60)return m+'m';const h=Math.floor(m/60),r=m%60;return r?h+'h '+r+'m':h+'h';}
+
+let S={units:'metric',tempScale:'C',hours:8,fid:'room',hyd:63,rTemp:20,step:0,pizzaType:'neap',ballCount:4,ballSize:250,saltPc:2.8,oilPc:0};
+let startTime=Date.now();
+let bakeStarted=false;
+let steps=[];
+let coilFoldCount=0;       /* 0–4: how many coil folds done this session */
+let activeTimerStep=-1;    /* which step index has an active (green) timer pill */
+
+function fmtClock(date){
+  let h=date.getHours(),m=date.getMinutes();
+  const ampm=h>=12?'pm':'am';
+  h=h%12||12;
+  return h+':'+String(m).padStart(2,'0')+ampm;
+}
+function getEatTime(hours){
+  const eat=new Date(startTime+hours*3600000);
+  const now=new Date(startTime);
+  const dayDiff=Math.floor((eat-new Date(now.getFullYear(),now.getMonth(),now.getDate()))/(86400000));
+  let suffix='';
+  if(dayDiff===1) suffix=' tomorrow';
+  else if(dayDiff>1) suffix=' +'+dayDiff+'d';
+  return fmtClock(eat)+suffix;
+}
+function updateTimeLabels(hours){
+  if(bakeStarted){
+    document.getElementById('start-time-lbl').textContent='Start '+fmtClock(new Date(startTime));
+  } else {
+    document.getElementById('start-time-lbl').textContent='6h';
+  }
+}
+
+/* Active time estimates per step (minutes) for steps without timers */
+const ACTIVE_MINS=5;
+
+function calcStepTimes(){
+  if(!bakeStarted||!steps.length) return null;
+  const times=[];
+  let elapsed=0;
+  for(let i=0;i<steps.length;i++){
+    const t=new Date(startTime+elapsed*60000);
+    times.push(t);
+    const s=steps[i];
+    if(s.concurrent) continue;
+    if(s.timer) elapsed+=s.timer;
+    else elapsed+=ACTIVE_MINS;
+  }
+  return times;
+}
+
+function startBake(){
+  if(bakeStarted) return;
+  bakeStarted=true;
+  startTime=Date.now();
+  S.step=0;
+  const btn=document.getElementById('start-bake-btn');
+  btn.innerHTML='<span class="btn-icon">▶</span><span class="btn-label">'+fmtClock(new Date(startTime))+'</span>';
+  btn.classList.add('active');
+  update();
+  renderMethod();
+  if(tlVisible) renderTimeline();
+  try{saveSession();}catch(e){}
+}
+
+function resetBakeState(){
+  bakeStarted=false;
+  startTime=Date.now();
+  try{localStorage.removeItem('pd_session');}catch(e){}
+  const btn=document.getElementById('start-bake-btn');
+  btn.innerHTML='<span class="btn-icon">▶</span><span class="btn-label">Begin</span>';
+  btn.classList.remove('active');
+}
+
+function setPizzaType(type) {
+  S.pizzaType = type;
+  const d = PIZZA_DEFAULTS[type];
+  S.ballSize = d.ballSize;
+  S.saltPc = d.saltPc;
+  S.oilPc = d.oilPc;
+  document.getElementById('btn-neap').classList.toggle('active', type === 'neap');
+  document.getElementById('btn-ny').classList.toggle('active', type === 'ny');
+  renderDoughBalls();
+  update();
+  savePrefs();
+}
+
+function stepVal(field, delta) {
+  if (field === 'ballCount') {
+    S.ballCount = Math.max(1, Math.min(200, S.ballCount + delta));
+  } else if (field === 'ballSize') {
+    S.ballSize = Math.max(100, Math.min(500, Math.round((S.ballSize + delta) / 5) * 5));
+  } else if (field === 'saltPc') {
+    S.saltPc = Math.max(0, Math.min(5, Math.round((S.saltPc + delta) * 10) / 10));
+  } else if (field === 'oilPc') {
+    S.oilPc = Math.max(0, Math.min(10, Math.round((S.oilPc + delta) * 10) / 10));
+  }
+  renderDoughBalls();
+  update();
+}
+
+function renderDoughBalls() {
+  const imp = S.units === 'imperial';
+  document.getElementById('db-count').textContent = S.ballCount;
+  document.getElementById('db-size').textContent = imp ? (S.ballSize / 28.35).toFixed(1) + 'oz' : S.ballSize + 'g';
+  document.getElementById('db-salt').textContent = S.saltPc.toFixed(1) + '%';
+  document.getElementById('db-oil').textContent = S.oilPc.toFixed(1) + '%';
+  const flourPerBall = calcDoughBallFlour(S.ballSize, S.hyd, S.saltPc, S.oilPc);
+  const totalFlour = flourPerBall * S.ballCount;
+  const totalDough = S.ballSize * S.ballCount;
+  document.getElementById('db-result').innerHTML = `Flour: <strong>${dw(totalFlour)}</strong> · Total dough: <strong>${dw(totalDough)}</strong>`;
+}
+
+function selectFerment(id){
+  S.fid=id;
+  if(id==='cold' && S.hours<14){S.hours=14;document.getElementById('hours-slider').value=hoursToSlider(14);}
+  if(id==='room' && S.hours>24){S.hours=24;document.getElementById('hours-slider').value=hoursToSlider(24);}
+  ['room','cold'].forEach(f=>{
+    const col=FERMENTS[f].color, sel=f===id;
+    document.getElementById('opt-'+f).classList.toggle('sel',sel);
+    document.getElementById('radio-'+f).style.background=sel?col:'transparent';
+    document.getElementById('radio-'+f).style.borderColor=col;
+    document.getElementById('lbl-'+f).style.color=sel?col:'#2a1800';
+  });
+  update();
+  savePrefs();
+}
+
+function update(){
+  S.hours=sliderToHours(+document.getElementById('hours-slider').value);
+  S.hyd=+document.getElementById('hyd-slider').value;
+  S.rTemp=+document.getElementById('temp-slider').value;
+  if(S.fid==='room' && S.hours>24){S.hours=24;document.getElementById('hours-slider').value=hoursToSlider(24);}
+  if(S.fid==='cold' && S.hours<14){S.hours=14;document.getElementById('hours-slider').value=hoursToSlider(14);}
+  const {hours,hyd,fid,rTemp,ballCount,ballSize,saltPc,oilPc}=S;
+  const flourPerBall=calcDoughBallFlour(ballSize,hyd,saltPc,oilPc);
+  const flour=flourPerBall*ballCount;
+  const yp=calcYeast(fid,rTemp,hours,hyd);
+  const r=v=>Math.round(v*10)/10;
+  const ing={flour,water:Math.round(flour*hyd/100),salt:r(flour*saltPc/100),yeast:r(flour*yp/100),oil:r(flour*oilPc/100)};
+  const total=Math.round(ing.flour+ing.water+ing.salt+ing.yeast+ing.oil);
+
+  document.getElementById('hours-lbl').textContent=`${hours} hours · Eat at ${getEatTime(hours)}`;
+  updateTimeLabels(hours);
+  document.getElementById('hyd-lbl').textContent=`Hydration: ${hyd}%`;
+  document.getElementById('temp-lbl').textContent=`Room / Control Temp: ${dt(rTemp)}`;
+  if(S.tempScale==='F'){
+    document.getElementById('temp-cool').textContent='59°F';
+    document.getElementById('temp-warm').textContent='82°F';
+  } else {
+    document.getElementById('temp-cool').textContent='15°C';
+    document.getElementById('temp-warm').textContent='28°C';
+  }
+
+  renderDoughBalls();
+  const saltLabel=S.pizzaType==='neap'?'Fine sea salt':'Fine sea salt';
+  const flourLabel=S.pizzaType==='neap'
+    ?'Tipo 00 or strong bread flour <span style="margin-left:6px;">(12–14% protein)</span>'
+    :'High-gluten bread flour <span style="margin-left:6px;">(13–15% protein)</span>';
+  const oilRow=ing.oil>0?[['Extra virgin olive oil',dw(ing.oil),oilPc+'%']]:[];
+  document.getElementById('rec-tbody').innerHTML=[
+    [flourLabel,dw(ing.flour),'100%'],
+    ['Water',dw(ing.water),hyd+'%'],
+    [saltLabel,dw(ing.salt),saltPc+'%'],
+    [`Instant dry yeast <span style="margin-left:6px;">(${dw(Math.round(ing.yeast*3*10)/10)} fresh)</span>`,dw(ing.yeast),yp+'%'],
+    ...oilRow,
+  ].map(([n,w,p])=>`<tr><td>${n}</td><td class="wt">${w}</td><td class="pc">${p}</td></tr>`).join('')
+  +`<tr class="total-row"><td>Total dough</td><td class="wt">~${dw(total)}</td><td></td></tr>`;
+
+  buildSteps(ing,hyd,fid,hours);
+  renderMethod();
+  if (tlVisible) renderTimeline();
+}
+
+function setUnits(u){
+  S.units=u;
+  document.getElementById('btn-metric').classList.toggle('active',u==='metric');
+  document.getElementById('btn-imperial').classList.toggle('active',u==='imperial');
+  renderDoughBalls();
+  update();
+  savePrefs();
+}
+function setTempScale(t){
+  S.tempScale=t;
+  document.getElementById('btn-c').classList.toggle('active',t==='C');
+  document.getElementById('btn-f').classList.toggle('active',t==='F');
+  update();
+  savePrefs();
+}
+function dw(g){ return S.units==='imperial'?(g/28.35).toFixed(1)+'oz':g+'g'; }
+function dt(c){ return S.tempScale==='F'?Math.round(c*9/5+32)+'°F':c+'°C'; }
+
+function buildSteps(ing,hyd,fid,hours){
+  const isNeap=S.pizzaType==='neap';
+  const flourDesc=isNeap?'Tipo 00 or strong bread flour':'high-gluten bread flour';
+
+  /* Reserve ~5% of water for dissolving ingredients */
+  const reserveWater=Math.round(ing.water*0.05);
+  const mainWater=ing.water-reserveWater;
+  const oilLine=ing.oil>0?`\n• ${dw(ing.oil)} extra virgin olive oil — add last, after all other ingredients are incorporated`:'';
+  const oilNote=ing.oil>0?'\n\nAdd the oil only after the salt and yeast solution is fully worked in. Oil coats the proteins and blocks hydration if it gets in too early.':'';
+
+  steps=[
+    {title:'Gather Equipment',icon:'🛠',timer:null,tip:null,
+     body:`• Large mixing bowl\n• Digital scales\n• Small jug or cup (for reserved water)\n• Clean work surface\n• Bench scraper\n• Clingfilm or damp cloth`},
+
+    {title:'Autolyse',icon:'💧',timer:isNeap?45:20,
+     body:isNeap
+      ?`Weigh out ${dw(ing.flour)} ${flourDesc} into your large bowl.\n\nAdd ${dw(mainWater)} water — hold back ${dw(reserveWater)} in a small jug for the next step.\n\nMix with your hands until no dry flour remains. It will look rough and shaggy — that is correct. Do not knead.\n\nCover and leave for 45 minutes.\n\nWhat is happening: the flour is fully hydrating without any mechanical work. The gluten proteins are aligning and the starches are absorbing water on their own terms. This gives you a stronger, more extensible dough with significantly less kneading effort.`
+      :`Weigh out ${dw(ing.flour)} ${flourDesc} into your large bowl.\n\nAdd ${dw(mainWater)} water — hold back ${dw(reserveWater)} in a small jug for the next step.\n\nMix until no dry flour remains. Cover and rest for 20 minutes.\n\nNY-style dough uses high-gluten bread flour that responds better to mechanical work than extended rest. A short autolyse still helps initial hydration without over-relaxing the structure — you want tension in a NY dough, not extensibility.`,
+     tip:isNeap
+      ?'No salt, no yeast yet. Both interfere with hydration at this stage — salt tightens the gluten and slows absorption, yeast starts producing CO₂ before the structure is ready. Let the flour do its thing first.'
+      :'Keep it short. High-gluten flour can over-relax with a long autolyse, making the dough slack and difficult to handle. 20 minutes is enough to hydrate without losing structure.'},
+
+    {title:'Dissolve & Incorporate',icon:'🧂',timer:null,
+     body:isNeap
+      ?`Take your reserved ${dw(reserveWater)} water. Dissolve into it:\n• ${dw(ing.salt)} fine sea salt\n• ${dw(ing.yeast)} instant dry yeast (or ${dw(Math.round(ing.yeast*3*10)/10)} fresh yeast)\n\nStir until fully dissolved — the small volume of water helps everything integrate evenly without fighting the already-hydrated dough.\n\nDrizzle the solution over the autolysed dough. Squeeze and fold it through with your hands until fully absorbed — no streaks, no wet patches. This takes 2–3 minutes.`
+      :`Take your reserved ${dw(reserveWater)} water. Dissolve into it:\n• ${dw(ing.salt)} fine sea salt\n• ${dw(ing.yeast)} instant dry yeast (or ${dw(Math.round(ing.yeast*3*10)/10)} fresh yeast)\n\nStir until fully dissolved.\n\nDrizzle the solution over the autolysed dough and work it in thoroughly — 2–3 minutes of squeezing and folding.\n\nThen add ${dw(ing.oil)} extra virgin olive oil. Work it in slowly — the dough will look greasy and separated at first. Keep going until it is fully absorbed and the dough is smooth. This takes another 2–3 minutes.${oilNote}`,
+     tip:'The reserved water trick gives salt and yeast a liquid vehicle to distribute evenly through an already-formed gluten network, rather than fighting to dissolve into stiff dough.'},
+
+    {title:'Knead',icon:'🤲',timer:isNeap?10:12,
+     body:isNeap
+      ?`Tip the dough onto a clean, unfloured surface. Knead for 8–10 minutes — significantly less than a non-autolyse dough because the gluten is already well developed.\n\nTest: stretch a small piece thin enough to see light through without tearing. That is the windowpane test — your gluten network is ready.\n\nThe dough should be smooth, elastic, and slightly tacky but not sticky.\n\nUsing a stand mixer: dough hook, speed 2, 5–6 minutes. Stop when the dough clears the bowl sides and passes the windowpane test. Do not over-mix — a stand mixer develops gluten faster than hands and the friction heats the dough. If the bowl feels warm, stop.`
+      :`Tip the dough onto a clean, unfloured surface. Knead firmly for 10–12 minutes. NY dough needs more work than Neapolitan — you are building a tight, strong gluten network that can hold toppings, resist tearing when folded, and stay structured through a long cold ferment.\n\nThe dough should feel slightly stiffer and more resistant than a Neapolitan dough. That resistance is correct — it is what gives a NY slice its chew.\n\nWindowpane test: stretch a small piece until translucent without tearing. If it tears, keep going.\n\nUsing a stand mixer: dough hook, speed 2, 7–8 minutes. NY dough responds very well to machine mixing — the consistent mechanical action builds a more uniform gluten structure than hand kneading. Stop when dough clears the bowl and passes the windowpane test.`,
+     tip:isNeap
+      ?'No flour on the bench. The stickiness is friction — friction is what develops gluten. Flour on the surface just makes the dough tighter and less extensible. If it sticks badly, use a scraper, not flour.'
+      :'NY dough is stiffer and less sticky than Neapolitan — the higher protein content and oil make it easier to handle. Still no flour on the bench though. If it sticks, scraper first.'},
+
+    ...(fid==='room'?[{title:'Bulk Ferment',icon:'⏱',
+      timer: Math.round(Math.max(30, (hours*60) - 115)),
+      body:isNeap
+       ?`Lightly oil the bowl, place the dough back in, cover tightly.\n\nBulk ferment: ${Math.max(0.5,((hours*60 - 115)/60)).toFixed(1)} hours at ${dt(S.rTemp)}.\n\nThe dough is ready when it has roughly doubled and a poke with a floured finger springs back slowly — not immediately (under-proofed) and not staying dented (over-proofed).\n\nThe yeast model has calculated your quantity for this exact time and temperature. Trust the maths.`
+       :`Lightly oil the bowl, place the dough back in, cover tightly.\n\nBulk ferment: ${Math.max(0.5,((hours*60 - 115)/60)).toFixed(1)} hours at ${dt(S.rTemp)}.\n\nNY dough is less sensitive to slight over or under-proofing than Neapolitan — the stronger gluten structure has more tolerance. You are still looking for roughly doubled volume and the slow finger-poke spring-back, but you have more wiggle room.\n\nFor best results, cold ferment is recommended for NY style even when not required — 24–48 hours in the fridge develops the complex flavour and chew that defines a proper NY slice.`,
+      tip:isNeap
+       ?'Oven light trick: turn your oven on for 30 seconds, off again, leave the light on. Consistent gentle warmth. Works every time.'
+       :'Room temp NY is fine for a same-day bake but cold ferment is where the real flavour lives. If you have the time, switch to Cold Ferment mode.'}]:[]),
+
+    ...(fid==='cold'?[{title:'Initial Rise',icon:'⏱',timer:120,
+      body:isNeap
+       ?`Lightly oil the bowl, place the dough in, cover tightly.\n\nLeave at room temperature for 2 hours. The dough should be visibly puffy but not yet doubled — active but not exhausted before it goes into the fridge.`
+       :`Lightly oil the bowl, place the dough in, cover tightly.\n\nLeave at room temperature for 2 hours. NY dough benefits from a good initial room-temp rise before the fridge — the yeast needs to establish itself and begin building the flavour compounds that will continue developing slowly during the cold retard.`,
+      tip:isNeap
+       ?'Do not let it fully double before refrigerating. It will keep fermenting slowly in the fridge. Maxed out at room temp means overproofed by morning.'
+       :'NY dough can handle a slightly more active initial rise than Neapolitan before going into the fridge — the stronger gluten holds up better. But still aim for puffy, not doubled.'}]:[]),
+
+    ...(fid==='cold'?[{title:'Cold Retard',icon:'❄️',
+      timer: Math.round(Math.max(240, (hours*60) - 190)),
+      body:isNeap
+       ?`Cover the bowl tightly and refrigerate at ${dt(3)}–${dt(5)}.\n\nCold retard: ${Math.max(4,(hours - 190/60)).toFixed(1)} hours.\n\nYeast activity drops to ~15% of room-temp rate. But amylase and protease enzymes only slow by ~50% — they keep breaking starches into free sugars and proteins into amino acids.\n\nThat biochemical stockpile is what creates superior browning, blistering, and complex flavour when the dough hits the oven. 24 hours is good. 48–72 hours is exceptional.`
+       :`Cover the bowl tightly and refrigerate at ${dt(3)}–${dt(5)}.\n\nCold retard: ${Math.max(4,(hours - 190/60)).toFixed(1)} hours.\n\nCold fermentation is arguably more important for NY style than Neapolitan. The extended enzyme activity develops the subtle tang, the deep flavour, and the specific chew that you cannot replicate with a fast dough. The oil in the dough also slowly permeates the gluten structure during the cold retard, contributing to the tender-yet-crispy texture of a proper NY crust.\n\n24 hours is the minimum. 48–72 hours is the sweet spot for NY.`,
+      tip:isNeap
+       ?'The fridge is doing the flavour work. Enzymes are stockpiling the Maillard precursors — free sugars and amino acids — while the dormant yeast cannot consume them. This is the secret behind why cold-fermented dough tastes so much better.'
+       :'The oil does something interesting during a long cold retard — it slowly integrates deeper into the gluten network, lubricating the strands and contributing to that characteristic NY tenderness under the crisp exterior.'}]:[]),
+
+    ...(fid==='cold'?[{title:'Remove from Fridge',icon:'🌡',timer:120,
+      body:isNeap
+       ?`Take the dough out 2 hours before you plan to use it.\n\nCold dough is tight. The gluten is contracted and will tear if you try to work it immediately. It needs to relax and return to room temperature throughout — not just on the surface.\n\nLeave covered on the counter.`
+       :`Take the dough out 2 hours before you plan to use it.\n\nNY dough comes out of the fridge noticeably stiffer than Neapolitan — the higher gluten content and oil make it tighter when cold. It absolutely needs the full 2 hours at room temperature before you attempt to ball it.\n\nLeave covered on the counter. Do not rush this.`,
+      tip:null}]:[]),
+
+    {title:'Divide & Ball',icon:'⚖️',timer:null,
+     body:isNeap
+      ?`Tip the dough onto a lightly floured surface. Divide into ${S.ballCount} equal pieces of approximately ${dw(S.ballSize)} each. Use scales — eyeballing always drifts.\n\nShape each piece into a tight ball: fold the edges underneath repeatedly, then cup your hands around the dough and drag it toward you on an unfloured patch of surface. The friction pulls the skin taut.\n\nYou want a smooth, tense surface with no seams on top. Place on a floured tray, cover with clingfilm or a damp cloth.`
+      :`Tip the dough onto a lightly floured surface. Divide into ${S.ballCount} equal pieces of approximately ${dw(S.ballSize)} each. Use scales.\n\nNY balls are typically larger than Neapolitan — you need more dough to achieve the larger diameter and the structural thickness that holds a folded slice together.\n\nShape into tight balls using the drag method — fold edges under, then drag toward you on an unfloured surface to build surface tension. NY dough is stiffer and easier to handle than Neapolitan at this stage. Place on a oiled or floured tray, cover tightly.`,
+     tip:isNeap
+      ?'The ball-up is critical. Good surface tension = even stretching later. A loose, ragged ball will have thin spots and holes when you open it.'
+      :'NY balls need to be tight. The larger diameter you are stretching to means any weak spots in the ball will become tears or thin patches in the final pizza.'},
+
+    {title:'Final Warm Proof',icon:'🌡',timer:120,
+     body:isNeap
+      ?`Cover the balled dough and leave at room temperature for 2 hours.\n\nThis is not optional. The dough has just been degassed and shaped — the gluten is tight and will fight you if you try to stretch it now. The proof relaxes the structure and allows a final, gentle rise.\n\nAfter 2 hours the balls should have visibly puffed, feel soft to the touch, and jiggle slightly when you shake the tray. That is what ready looks like.\n\nDo not refrigerate at this stage. The dough needs warmth to open up properly.`
+      :`Cover the balled dough and leave at room temperature for 2 hours.\n\nNY dough needs this proof more than you might think. The strong gluten structure is tight after balling and will spring back aggressively if you try to stretch it too soon — you will never get it to the 35cm+ diameter you need.\n\nAfter 2 hours the balls should feel noticeably softer and more relaxed. They will not jiggle as dramatically as a Neapolitan ball — NY dough has more structure — but they should yield easily to a finger poke and not spring back immediately.`,
+     tip:isNeap
+      ?'If you are in a hurry, 60 minutes minimum. Less than that and the dough will spring back when you try to stretch it, thin out unevenly, and tear at the edges.'
+      :'Do not skip this. NY dough stretched too soon is the single biggest cause of uneven bases and torn edges. The 2 hours is doing real structural work.'},
+  ];
+}
+
+function renderMethod(){
+  if(!steps.length)return;
+  /* Clamp step index in case steps array shrank (e.g. ferment type change) */
+  if(S.step>=steps.length) S.step=steps.length-1;
+  if(S.step<0) S.step=0;
+  const i=S.step, step=steps[i], total=steps.length;
+  if(!step) return;
+  const stepTimes=calcStepTimes();
+  document.getElementById('step-counter').textContent=window.innerWidth<=768?`Step ${i+1}/${total}`:`Step ${i+1} of ${total}`;
+  document.getElementById('prog-fill').style.width=`${((i+1)/total)*100}%`;
+
+  const iconEl=document.getElementById('s-icon');
+
+  if(step.timer){
+    const secs=step.timer*60;
+    const durStr=minsToLabel(step.timer);
+    const rawMsg='Pizza Dough - '+step.title;
+    const isActive=activeTimerStep===i;
+    iconEl.innerHTML=`<span class="m-timer-pill${isActive?' active':''}" onclick="event.stopPropagation();pressTimer(${i},${secs},'${rawMsg.replace(/'/g,"\\'")}')" title="Set ${durStr} timer">⏰ ${durStr}</span>`;
+  } else {
+    iconEl.innerHTML='';
+  }
+
+  const lblHtml=stepTimes?fmtClock(stepTimes[i]):'';
+  document.getElementById('s-lbl').innerHTML=lblHtml;
+
+  document.getElementById('s-title').innerHTML=step.subtitle
+    ? `${step.title} — <span style="font-size:0.85em;font-weight:600;color:#6a5a3a;letter-spacing:0.02em;">${step.subtitle}</span>`
+    : step.title;
+  document.getElementById('s-body').textContent=step.body;
+
+  document.getElementById('tip-area').innerHTML='';
+  document.getElementById('prev-btn').disabled=i===0;
+  const nb=document.getElementById('next-btn');
+  nb.disabled=i===total-1;
+  nb.textContent=i===total-1?'Complete ✓':'Next Step →';
+}
+
+function pressTimer(stepIdx, secs, msg){
+  if(!window.TimerPlugin) return;
+  activeTimerStep=stepIdx;
+  renderMethod();
+  setTimerNative(secs, msg, secs/60);
+}
+
+function doCoilFold(stepIdx){
+  if(coilFoldCount>=4) return;
+  coilFoldCount++;
+  const secs=30*60;
+  const label=`Pizza Dough - Fold ${coilFoldCount} of 4`;
+  if(window.TimerPlugin){
+    activeTimerStep=stepIdx;
+    if(coilFoldCount<4) setTimerNative(secs, label, 30);
+  }
+  renderMethod();
+}
+function prevStep(){if(S.step>0){S.step--;renderMethod();}}
+function nextStep(){if(S.step<steps.length-1){S.step++;renderMethod();}}
+function setStep(i){S.step=i;renderMethod();showMethodView();}
+
+let tlVisible=false;
+function toggleTimeline(){
+  tlVisible=!tlVisible;
+  document.getElementById('tl-toggle').classList.toggle('active',tlVisible);
+  document.getElementById('tl-toggle').innerHTML=tlVisible
+    ?'<span class="btn-icon">◀</span><span class="btn-label">Method</span>'
+    :'<span class="btn-icon">☰</span><span class="btn-label">Timeline</span>';
+  document.getElementById('method-view').classList.toggle('hide',tlVisible);
+  document.getElementById('timeline-view').classList.toggle('show',tlVisible);
+  document.getElementById('prog-row').style.display=tlVisible?'none':'';
+  document.getElementById('prog-bg').style.display=tlVisible?'none':'';
+  document.getElementById('method-label').style.display=tlVisible?'none':'';
+  if(tlVisible) renderTimeline();
+}
+
+function showMethodView(){
+  if(!tlVisible)return;
+  tlVisible=false;
+  document.getElementById('tl-toggle').classList.remove('active');
+  document.getElementById('tl-toggle').innerHTML='<span class="btn-icon">☰</span><span class="btn-label">Timeline</span>';
+  document.getElementById('method-view').classList.remove('hide');
+  document.getElementById('timeline-view').classList.remove('show');
+  document.getElementById('prog-row').style.display='';
+  document.getElementById('prog-bg').style.display='';
+  document.getElementById('method-label').style.display='';
+}
+
+function renderTimeline(){
+  if(!steps.length)return;
+  const el=document.getElementById('timeline-view');
+  const stepTimes=calcStepTimes();
+  const MIN_H=4;
+  const MAX_H=160;
+  /* Only variable steps (bulk ferment / fridge) should scale */
+  const variableMax=Math.max(...steps.map(s=>(s.timer)||0));
+  el.innerHTML=steps.map((s,i)=>{
+    const isCurrent=i===S.step;
+    const isLast=i===steps.length-1;
+    let stemH=MIN_H;
+    if(s.timer) stemH=Math.max(12,Math.round((s.timer/variableMax)*MAX_H));
+    let stemCol='#b8a070';
+    const titleLow=s.title.toLowerCase();
+    if(titleLow.includes('cold retard')) stemCol='#2a6898';
+    else if(titleLow.includes('bulk ferment')) stemCol='#b85c00';
+    else if(titleLow.includes('autolyse')) stemCol='#6a8a40';
+    else if(titleLow.includes('bake')) stemCol='#c03020';
+    else if(s.timer) stemCol='#a89060';
+    const dotCol=s.timer?stemCol:'#a89060';
+    const isTimerActive=i===activeTimerStep;
+    const dotClass=isCurrent?'tl-dot active':isTimerActive?'tl-dot timer-active':'tl-dot';
+    const dotStyle=(isCurrent||isTimerActive)?'':`background:${dotCol};border-color:${dotCol}`;
+    const dur=s.timer?minsToLabel(s.timer):'';
+    const clockStr=stepTimes?fmtClock(stepTimes[i]):'';
+    const durDisplay=stepTimes?(clockStr+(dur?' · '+dur:'')):(dur||'');
+    const desc=s.body;
+    const timerDot=isTimerActive?` <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-left:6px;vertical-align:middle;flex-shrink:0"></span>`:'';
+    return `<div class="tl-item">
+      <div class="tl-line">
+        <div class="${dotClass}" ${dotStyle?`style="${dotStyle}"`:''} ></div>
+        ${!isLast?`<div class="tl-stem" style="height:${stemH}px;background:${stemCol}"></div>`:''}
+      </div>
+      <div class="tl-content" onclick="setStep(${i})">
+        <div class="tl-head">
+          <span class="tl-icon">${s.icon}</span>
+          <span class="tl-title">${s.title}</span>
+          ${durDisplay?`<span class="tl-dur">${durDisplay}${timerDot}</span>`:''}
+        </div>
+        <div class="tl-desc">${desc}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function savePrefs(){
+  try{localStorage.setItem('pd_prefs',JSON.stringify({units:S.units,tempScale:S.tempScale,fid:S.fid,pizzaType:S.pizzaType,ballCount:S.ballCount,ballSize:S.ballSize,saltPc:S.saltPc,oilPc:S.oilPc,dark:document.body.classList.contains('dark')}));}catch(e){}
+}
+function loadPrefs(){
+  try{
+    const p=JSON.parse(localStorage.getItem('pd_prefs'));
+    if(!p)return;
+    if(p.units){S.units=p.units;setUnits(p.units);}
+    if(p.tempScale){S.tempScale=p.tempScale;setTempScale(p.tempScale);}
+    if(p.pizzaType){S.pizzaType=p.pizzaType;S.ballCount=p.ballCount||4;S.ballSize=p.ballSize||250;setPizzaType(p.pizzaType);}
+    if(p.saltPc!=null)S.saltPc=p.saltPc;
+    if(p.oilPc!=null)S.oilPc=p.oilPc;
+    if(p.fid)selectFerment(p.fid);
+    if(p.dark)toggleDark();
+  }catch(e){}
+}
+function toggleDark(){
+  document.body.classList.toggle('dark');
+  document.getElementById('dark-btn').textContent=document.body.classList.contains('dark')?'☀️':'🌙';
+  savePrefs();
+}
+function resetDefaults(){
+  S={units:'metric',tempScale:'C',hours:8,fid:'room',hyd:63,rTemp:20,step:0,pizzaType:'neap',ballCount:4,ballSize:250,saltPc:2.8,oilPc:0};
+  coilFoldCount=0;
+  activeTimerStep=-1;
+  resetBakeState();
+  if(tlVisible) showMethodView();
+  document.getElementById('hours-slider').value=hoursToSlider(8);
+  document.getElementById('hyd-slider').value=63;
+  document.getElementById('temp-slider').value=20;
+  setUnits('metric');
+  setTempScale('C');
+  setPizzaType('neap');
+  selectFerment('room');
+  savePrefs();
+}
+function shareRecipe(){
+  const {hours,hyd,fid,rTemp,pizzaType,ballCount,ballSize,units,tempScale,saltPc,oilPc}=S;
+  const flourPerBall=calcDoughBallFlour(ballSize,hyd,saltPc,oilPc);
+  const flour=flourPerBall*ballCount;
+  const yp=calcYeast(fid,rTemp,hours,hyd);
+  const r=v=>Math.round(v*10)/10;
+  const ing={flour,water:Math.round(flour*hyd/100),salt:r(flour*saltPc/100),yeast:r(flour*yp/100),oil:r(flour*oilPc/100)};
+  const typeLabel=pizzaType==='neap'?'Neapolitan':'New York';
+  const ballDesc=`${ballCount}× ${units==='imperial'?(ballSize/28.35).toFixed(1)+'oz':ballSize+'g'} balls`;
+  const oilLine=ing.oil>0?`\nOlive oil: ${dw(ing.oil)}`:'';
+  const text=`🍕 Pizza Dough Recipe\n\n${typeLabel} · ${fid==='cold'?'Cold':'Room temp'} ferment · ${hours}h · ${hyd}% hydration · ${dt(rTemp)}\n${ballDesc}\n\nFlour: ${dw(ing.flour)}\nWater: ${dw(ing.water)}\nSalt: ${dw(ing.salt)}\nYeast: ${dw(ing.yeast)} (${yp}%)${oilLine}`;
+  if(navigator.share){navigator.share({title:'Pizza Dough Recipe',text}).catch(()=>{});}
+  else{navigator.clipboard.writeText(text).then(()=>{const b=document.querySelector('[onclick="shareRecipe()"]');const orig=b.innerHTML;b.innerHTML='✓';setTimeout(()=>b.innerHTML=orig,1500);}).catch(()=>{});}
+}
+
+setPizzaType('neap');
+selectFerment('room');
+loadPrefs();
+
+
+/* === Session state — survives tab closure === */
+function saveSession(){
+  try{localStorage.setItem('pd_session',JSON.stringify({
+    step:S.step,
+    bakeStarted:bakeStarted,
+    bakeStartTime:startTime
+  }));}catch(e){}
+}
+function loadSession(){
+  try{
+    const ss=JSON.parse(localStorage.getItem('pd_session'));
+    if(!ss||ss.step==null)return;
+    S.step=Math.max(0, ss.step); /* will be clamped to steps.length in renderMethod */
+    if(ss.bakeStarted&&ss.bakeStartTime){
+      bakeStarted=true;
+      startTime=ss.bakeStartTime;
+      const btn=document.getElementById('start-bake-btn');
+      btn.innerHTML='<span class="btn-icon">▶</span><span class="btn-label">'+fmtClock(new Date(startTime))+'</span>';
+      btn.classList.add('active');
+    }
+    renderMethod();
+  }catch(e){}
+}
+loadSession();
+
+/* Save session on step changes */
+const _origSetStep=setStep;
+setStep=function(i){
+  if(i!==S.step){ activeTimerStep=-1; }
+  _origSetStep(i);saveSession();
+};
+const _origPrev=prevStep;
+prevStep=function(){ activeTimerStep=-1; _origPrev();saveSession(); };
+const _origNext=nextStep;
+nextStep=function(){ activeTimerStep=-1; _origNext();saveSession(); };
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+
+function setTimerNative(secs, msg, mins) {
+  if(window.TimerPlugin) {
+    window.TimerPlugin.setTimer({ seconds: secs, message: msg });
+  }
+  /* No fallback on web — no browser API exists for native timers */
+}
+</script>
+</body>
+</html>
