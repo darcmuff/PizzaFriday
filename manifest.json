@@ -1,0 +1,22 @@
+{
+  "name": "PizzaFriday",
+  "short_name": "PizzaFriday",
+  "description": "Pizza dough calculator with baker's percentages, yeast scaling, and step-by-step method.",
+  "start_url": "/PizzaFriday/",
+  "scope": "/PizzaFriday/",
+  "display": "standalone",
+  "background_color": "#faf7f0",
+  "theme_color": "#704008",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
