@@ -3,19 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pizza Dough Calculator</title>
+<title>PizzaFriday</title>
 <meta name="description" content="Interactive pizza dough calculator with baker's percentages, automatic yeast scaling, dough ball sizing, and step-by-step method with real clock times.">
-<meta property="og:title" content="Pizza Dough Calculator">
+<meta property="og:title" content="PizzaFriday">
 <meta property="og:description" content="Baker's percentages, automatic yeast scaling, dough ball calculator, step-by-step method with real clock times.">
 <meta property="og:image" content="https://darcmuff.github.io/FocacciaFriday/og-image-v2.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍕</text></svg>">
 <meta name="theme-color" content="#faf7f2">
-<link rel="manifest" href="manifest.json">
+<link rel="manifest" id="pf-manifest" href="">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="PizzaDough">
-<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-title" content="PizzaFriday">
+<link rel="apple-touch-icon" id="apple-touch-icon" href="">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500&family=Nunito+Sans:ital,opsz,wght@0,6..12,400;0,6..12,600;0,6..12,700;1,6..12,400&display=swap" rel="stylesheet">
@@ -279,50 +279,48 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
 
 <div id="header">
   <div class="h-left">
-    <svg class="h-logo" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" style="border-radius:50%;width:50px;height:50px">
-      <rect x="0" y="0" width="300" height="300" rx="16" fill="#D4A848"/>
-      <rect x="20" y="20" width="260" height="260" rx="10" fill="#DCBA60" opacity="0.4"/>
-      <rect x="0" y="0" width="300" height="300" rx="16" fill="none" stroke="#C09030" stroke-width="3"/>
-      <ellipse cx="60" cy="60" rx="18" ry="16" fill="#C09030" opacity="0.6"/><ellipse cx="60" cy="60" rx="10" ry="8" fill="#D8B858" opacity="0.5"/>
-      <ellipse cx="130" cy="50" rx="20" ry="17" fill="#C09030" opacity="0.55"/><ellipse cx="130" cy="50" rx="11" ry="9" fill="#D8B858" opacity="0.45"/>
-      <ellipse cx="210" cy="65" rx="17" ry="18" fill="#C09030" opacity="0.6"/><ellipse cx="210" cy="65" rx="9" ry="10" fill="#D8B858" opacity="0.5"/>
-      <ellipse cx="50" cy="135" rx="19" ry="16" fill="#C09030" opacity="0.55"/><ellipse cx="50" cy="135" rx="10" ry="8" fill="#D8B858" opacity="0.45"/>
-      <ellipse cx="120" cy="125" rx="22" ry="19" fill="#C09030" opacity="0.6"/><ellipse cx="120" cy="125" rx="12" ry="10" fill="#D8B858" opacity="0.5"/>
-      <ellipse cx="205" cy="140" rx="18" ry="20" fill="#C09030" opacity="0.55"/><ellipse cx="205" cy="140" rx="10" ry="11" fill="#D8B858" opacity="0.45"/>
-      <ellipse cx="70" cy="215" rx="20" ry="17" fill="#C09030" opacity="0.6"/><ellipse cx="70" cy="215" rx="11" ry="9" fill="#D8B858" opacity="0.5"/>
-      <ellipse cx="160" cy="205" rx="17" ry="19" fill="#C09030" opacity="0.55"/><ellipse cx="160" cy="205" rx="9" ry="10" fill="#D8B858" opacity="0.45"/>
-      <ellipse cx="240" cy="220" rx="19" ry="16" fill="#C09030" opacity="0.6"/><ellipse cx="240" cy="220" rx="10" ry="8" fill="#D8B858" opacity="0.5"/>
-      <ellipse cx="260" cy="110" rx="16" ry="15" fill="#C09030" opacity="0.5"/><ellipse cx="260" cy="110" rx="8" ry="7" fill="#D8B858" opacity="0.4"/>
-      <ellipse cx="100" cy="270" rx="18" ry="15" fill="#C09030" opacity="0.55"/><ellipse cx="100" cy="270" rx="9" ry="7" fill="#D8B858" opacity="0.45"/>
-      <ellipse cx="200" cy="270" rx="16" ry="17" fill="#C09030" opacity="0.55"/><ellipse cx="200" cy="270" rx="8" ry="9" fill="#D8B858" opacity="0.45"/>
-      <g transform="translate(150,150) rotate(-30)">
-        <path d="M-100 0 Q-40 -4, 100 5" fill="none" stroke="#3A6530" stroke-width="2.5" stroke-linecap="round"/>
-        <path d="M-75 -1 Q-84 -11, -78 -18 Q-68 -9, -75 -1Z" fill="#5A9648" opacity="0.85"/>
-        <path d="M-75 -1 Q-84 9, -78 16 Q-68 8, -75 -1Z" fill="#4A8638" opacity="0.8"/>
-        <path d="M-50 -2 Q-59 -13, -53 -20 Q-43 -11, -50 -2Z" fill="#5A9648" opacity="0.85"/>
-        <path d="M-50 -2 Q-59 9, -53 16 Q-43 8, -50 -2Z" fill="#4A8638" opacity="0.8"/>
-        <path d="M-25 -3 Q-34 -15, -28 -22 Q-18 -13, -25 -3Z" fill="#5A9648" opacity="0.85"/>
-        <path d="M-25 -3 Q-34 9, -28 16 Q-18 8, -25 -3Z" fill="#4A8638" opacity="0.8"/>
-        <path d="M5 -3 Q-4 -16, 2 -23 Q12 -14, 5 -3Z" fill="#5A9648" opacity="0.8"/>
-        <path d="M5 -3 Q-4 9, 2 16 Q12 8, 5 -3Z" fill="#4A8638" opacity="0.75"/>
-        <path d="M32 -1 Q23 -13, 29 -20 Q39 -11, 32 -1Z" fill="#5A9648" opacity="0.8"/>
-        <path d="M32 -1 Q23 11, 29 18 Q39 10, 32 -1Z" fill="#4A8638" opacity="0.75"/>
-        <path d="M58 1 Q49 -11, 55 -18 Q65 -9, 58 1Z" fill="#5A9648" opacity="0.75"/>
-        <path d="M58 1 Q49 13, 55 20 Q65 12, 58 1Z" fill="#4A8638" opacity="0.7"/>
-        <path d="M80 3 Q71 -7, 77 -14 Q87 -5, 80 3Z" fill="#5A9648" opacity="0.7"/>
-        <path d="M80 3 Q71 13, 77 19 Q87 12, 80 3Z" fill="#4A8638" opacity="0.65"/>
-        <path d="M95 4 Q88 -3, 93 -9 Q100 -2, 95 4Z" fill="#5A9648" opacity="0.65"/>
-        <path d="M95 4 Q88 11, 93 16 Q100 10, 95 4Z" fill="#4A8638" opacity="0.6"/>
-      </g>
-      <rect x="40" y="30" width="5" height="3" rx="1" fill="#F8F2E4" opacity="0.75" transform="rotate(20,42,31)"/>
-      <rect x="250" y="90" width="4" height="2.5" rx="1" fill="#F8F2E4" opacity="0.7" transform="rotate(-15,252,91)"/>
-      <rect x="30" y="250" width="4.5" height="3" rx="1" fill="#F8F2E4" opacity="0.65" transform="rotate(30,32,251)"/>
-      <rect x="230" y="260" width="5" height="2.5" rx="1" fill="#F8F2E4" opacity="0.7"/>
-      <rect x="120" y="20" width="4" height="2.5" rx="1" fill="#F8F2E4" opacity="0.65" transform="rotate(10,122,21)"/>
-      <rect x="270" y="190" width="4.5" height="3" rx="1" fill="#F8F2E4" opacity="0.7"/>
+    <svg class="h-logo" viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg" style="border-radius:50%;width:50px;height:50px">
+      <circle cx="130" cy="130" r="130" fill="#E8C060"/>
+      <circle cx="130" cy="130" r="120" fill="#C8800A"/>
+      <circle cx="130" cy="6" r="6" fill="#2A1A08" opacity="0.7"/>
+      <circle cx="190" cy="22" r="5" fill="#2A1A08" opacity="0.6"/>
+      <circle cx="65" cy="26" r="4" fill="#2A1A08" opacity="0.5"/>
+      <circle cx="238" cy="72" r="5" fill="#2A1A08" opacity="0.6"/>
+      <circle cx="20" cy="80" r="6" fill="#2A1A08" opacity="0.5"/>
+      <circle cx="250" cy="150" r="4" fill="#2A1A08" opacity="0.6"/>
+      <circle cx="12" cy="158" r="5" fill="#2A1A08" opacity="0.55"/>
+      <circle cx="220" cy="216" r="5" fill="#2A1A08" opacity="0.6"/>
+      <circle cx="42" cy="220" r="4" fill="#2A1A08" opacity="0.5"/>
+      <circle cx="160" cy="252" r="6" fill="#2A1A08" opacity="0.65"/>
+      <circle cx="95" cy="250" r="5" fill="#2A1A08" opacity="0.6"/>
+      <circle cx="130" cy="130" r="108" fill="#C02808"/>
+      <circle cx="130" cy="130" r="100" fill="#F0C030"/>
+      <ellipse cx="120" cy="110" rx="35" ry="28" fill="#F8F0D8"/>
+      <ellipse cx="170" cy="160" rx="28" ry="22" fill="#F8F0D8"/>
+      <ellipse cx="88" cy="158" rx="26" ry="20" fill="#F8F0D8"/>
+      <ellipse cx="135" cy="190" rx="24" ry="18" fill="#F8F0D8"/>
+      <ellipse cx="115" cy="62" rx="20" ry="14" fill="#F8F0D8"/>
+      <ellipse cx="160" cy="70" rx="18" ry="13" fill="#F8F0D8"/>
+      <circle cx="145" cy="115" r="4" fill="#2A1A08" opacity="0.35"/>
+      <circle cx="100" cy="170" r="3" fill="#2A1A08" opacity="0.3"/>
+      <circle cx="180" cy="185" r="3.5" fill="#2A1A08" opacity="0.3"/>
+      <circle cx="122" cy="120" r="15" fill="#8B1A10"/>
+      <circle cx="122" cy="120" r="12" fill="#A82010"/>
+      <circle cx="119" cy="117" r="2.5" fill="#C83020" opacity="0.5"/>
+      <circle cx="178" cy="90" r="13" fill="#8B1A10"/>
+      <circle cx="178" cy="90" r="10.5" fill="#A82010"/>
+      <circle cx="78" cy="95" r="13" fill="#8B1A10"/>
+      <circle cx="78" cy="95" r="10.5" fill="#A82010"/>
+      <circle cx="150" cy="200" r="13" fill="#8B1A10"/>
+      <circle cx="150" cy="200" r="10.5" fill="#A82010"/>
+      <circle cx="105" cy="202" r="12" fill="#8B1A10"/>
+      <circle cx="105" cy="202" r="9.5" fill="#A82010"/>
+      <ellipse cx="190" cy="140" rx="10" ry="6" fill="#2A6820" transform="rotate(-30,190,140)"/>
+      <ellipse cx="70" cy="145" rx="9" ry="5" fill="#2A6820" transform="rotate(25,70,145)"/>
+      <ellipse cx="135" cy="58" rx="8" ry="5" fill="#2A6820" transform="rotate(-10,135,58)"/>
     </svg>
     <div>
-      <div class="h-title">Pizza Dough</div>
+      <div class="h-title">PizzaFriday</div>
       <div class="h-sub">dough calculator</div>
     </div>
   </div>
@@ -1212,6 +1210,83 @@ function setTimerNative(secs, msg, mins) {
   }
   /* No fallback on web — no browser API exists for native timers */
 }
+</script>
+<script>
+/* Generate pizza icon via canvas — no PNG files needed */
+function drawPizzaIcon(size){
+  const c=document.createElement('canvas');
+  c.width=c.height=size;
+  const ctx=c.getContext('2d');
+  const cx=size/2, cy=size/2, r=size/2;
+  const s=size/260;
+  function circle(x,y,rad,fill,alpha){
+    ctx.globalAlpha=alpha||1;
+    ctx.fillStyle=fill;
+    ctx.beginPath();
+    ctx.arc(cx+(x-130)*s,cy+(y-130)*s,rad*s,0,Math.PI*2);
+    ctx.fill();
+    ctx.globalAlpha=1;
+  }
+  function ellipse(x,y,rx,ry,fill,angle){
+    ctx.fillStyle=fill;
+    ctx.save();
+    ctx.translate(cx+(x-130)*s,cy+(y-130)*s);
+    if(angle)ctx.rotate(angle*Math.PI/180);
+    ctx.beginPath();
+    ctx.ellipse(0,0,rx*s,ry*s,0,0,Math.PI*2);
+    ctx.fill();
+    ctx.restore();
+  }
+  /* Background */
+  circle(130,130,130,'#E8C060');
+  circle(130,130,120,'#C8800A');
+  /* Char spots */
+  [[130,6,6,0.7],[190,22,5,0.6],[65,26,4,0.5],[238,72,5,0.6],[20,80,6,0.5],[250,150,4,0.6],[12,158,5,0.55],[220,216,5,0.6],[42,220,4,0.5],[160,252,6,0.65],[95,250,5,0.6]].forEach(([x,y,rad,a])=>circle(x,y,rad,'#2A1A08',a));
+  /* Sauce + cheese */
+  circle(130,130,108,'#C02808');
+  circle(130,130,100,'#F0C030');
+  /* Mozzarella */
+  [[120,110,35,28,'#F8F0D8'],[170,160,28,22,'#F8F0D8'],[88,158,26,20,'#F8F0D8'],[135,190,24,18,'#F8F0D8'],[115,62,20,14,'#F8F0D8'],[160,70,18,13,'#F8F0D8']].forEach(([x,y,rx,ry,f])=>ellipse(x,y,rx,ry,f));
+  /* Char on cheese */
+  [[145,115,4,0.35],[100,170,3,0.3],[180,185,3.5,0.3]].forEach(([x,y,r,a])=>circle(x,y,r,'#2A1A08',a));
+  /* Pepperoni dark */
+  [[122,120,15],[178,90,13],[78,95,13],[150,200,13],[105,202,12]].forEach(([x,y,r])=>circle(x,y,r,'#8B1A10'));
+  /* Pepperoni light */
+  [[122,120,12],[178,90,10.5],[78,95,10.5],[150,200,10.5],[105,202,9.5]].forEach(([x,y,r])=>circle(x,y,r,'#A82010'));
+  /* Highlight dots */
+  [[119,117,2.5]].forEach(([x,y,r])=>circle(x,y,r,'#C83020',0.5));
+  /* Basil */
+  ellipse(190,140,10,6,'#2A6820',-30);
+  ellipse(70,145,9,5,'#2A6820',25);
+  ellipse(135,58,8,5,'#2A6820',-10);
+  return c.toDataURL('image/png');
+}
+
+(function(){
+  const icon192=drawPizzaIcon(192);
+  const icon512=drawPizzaIcon(512);
+
+  /* Apple touch icon */
+  document.getElementById('apple-touch-icon').href=icon192;
+
+  /* Dynamic manifest */
+  const manifest={
+    name:'PizzaFriday',
+    short_name:'PizzaFriday',
+    description:'Pizza dough calculator with baker\'s percentages and step-by-step method.',
+    start_url:'/PizzaFriday/',
+    scope:'/PizzaFriday/',
+    display:'standalone',
+    background_color:'#faf7f0',
+    theme_color:'#704008',
+    icons:[
+      {src:icon192,sizes:'192x192',type:'image/png'},
+      {src:icon512,sizes:'512x512',type:'image/png'}
+    ]
+  };
+  const blob=new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'});
+  document.getElementById('pf-manifest').href=URL.createObjectURL(blob);
+})();
 </script>
 </body>
 </html>
