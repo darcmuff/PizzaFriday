@@ -209,19 +209,24 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
 /* ===== RESPONSIVE ===== */
 @media (max-width:768px){
   html,body{overflow:auto;height:auto;font-size:16px}
-  #header{height:auto;padding:10px 14px 8px;flex-wrap:wrap;gap:6px}
-  .h-left{gap:10px}
+  #header{height:auto;padding:10px 14px 8px;flex-wrap:wrap;gap:0}
+  .h-left{gap:10px;width:100%;padding-bottom:8px;border-bottom:1px solid var(--border2)}
   .h-logo{width:38px;height:38px}
   .h-title{font-size:21px}
   .h-sub{font-size:9px}
-  .h-right{width:100%;display:flex;flex-wrap:wrap;gap:6px;margin-top:2px;justify-content:flex-start;align-items:center}
-  .h-icon-btn{width:34px;height:34px;font-size:16px}
-  .toggle-group{flex:1;min-width:110px}
-  .toggle-btn{padding:6px 8px;font-size:11px;letter-spacing:.04em}
+  .h-right{width:100%;display:flex;flex-wrap:nowrap;gap:6px;margin-top:8px;justify-content:space-between;align-items:center}
+  .h-icon-btn{width:34px;height:34px;font-size:16px;flex-shrink:0}
+  .toggle-group{flex:1;min-width:0}
+  #temp-toggle{flex:0 0 auto;width:80px}
+  .toggle-btn{padding:5px 4px;font-size:10px;letter-spacing:.02em}
   #page{grid-template-columns:1fr;grid-template-rows:auto;height:auto;padding:10px 12px 24px;gap:10px;overflow:visible}
   .section{flex:none;padding:14px 16px;overflow:visible;min-height:0}
-  #method-card{grid-column:1;grid-row:auto;order:10;height:auto;min-height:60vh;max-height:none;flex:none!important;display:flex;flex-direction:column}
-  #method-view,#timeline-view{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  #method-card{grid-column:1;grid-row:auto;order:10;height:70vh;max-height:70vh;flex:none!important;display:flex;flex-direction:column;overflow:hidden}
+  #method-view{flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+  #timeline-view{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .method-body{flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+  .step-content{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .nav-row{flex-shrink:0;margin-top:10px;padding-top:10px;border-top:1px solid var(--border2)}
   .fdesc{white-space:normal}
   .flabel{font-size:1rem}
   .db-steppers{grid-template-columns:1fr 1fr;gap:8px 12px}
@@ -336,7 +341,7 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
       <button class="toggle-btn active" id="btn-metric" onclick="setUnits('metric')">Metric</button>
       <button class="toggle-btn" id="btn-imperial" onclick="setUnits('imperial')">Imperial</button>
     </div>
-    <div class="toggle-group">
+    <div class="toggle-group" id="temp-toggle">
       <button class="toggle-btn active" id="btn-c" onclick="setTempScale('C')">°C</button>
       <button class="toggle-btn" id="btn-f" onclick="setTempScale('F')">°F</button>
     </div>
@@ -897,7 +902,7 @@ function buildSteps(ing,hyd,fid,hours){
 
   steps=[
     {title:'Gather Equipment',icon:'🛠',timer:null,tip:null,
-     body:`• Large bowl\n• Digital scales\n• Clean work surface\n• Bench scraper or sharp knife\n• Pizza stone or steel\n• Clingfilm or damp cloth`},
+     body:`• Large bowl\n• Digital scales\n• Bench scraper or sharp knife\n• Spatula\n• Wooden spoon\n• Proofing tray`},
     {title:'Mix Flour & Water',icon:'💧',timer:null,
      body:`Weigh out ${dw(ing.flour)} ${flourDesc} and ${dw(ing.water)} water. Pour the water into the bowl, add the flour, and mix until no dry flour remains. It will look rough and shaggy — that is fine.\n\nDo not add salt, yeast, or oil yet. The autolyse works on flour and water alone.`,
      tip:'Mixing flour and water first lets the proteins hydrate and begin forming gluten on their own — without interference from salt or yeast. You will need significantly less kneading as a result.'},
