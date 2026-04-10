@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pizza Dough Calculator</title>
+<title>PizzaFriday</title>
 <meta name="description" content="Interactive pizza dough calculator with baker's percentages, automatic yeast scaling, dough ball sizing, and step-by-step method with real clock times.">
-<meta property="og:title" content="Pizza Dough Calculator">
+<meta property="og:title" content="PizzaFriday">
 <meta property="og:description" content="Baker's percentages, automatic yeast scaling, dough ball calculator, step-by-step method with real clock times.">
-<meta property="og:image" content="https://darcmuff.github.io/FocacciaFriday/og-image-v2.png">
+<meta property="og:image" content="https://darcmuff.github.io/PizzaFriday/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍕</text></svg>">
 <meta name="theme-color" content="#faf7f2">
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="PizzaDough">
+<meta name="apple-mobile-web-app-title" content="PizzaFriday">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -208,103 +208,33 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
 
 /* ===== RESPONSIVE ===== */
 @media (max-width:768px){
-  /* --- Base layout: allow page to scroll naturally --- */
   html,body{overflow:auto;height:auto;font-size:16px}
-
-  /* --- Header: two-row layout --- */
-  #header{
-    height:auto;
-    padding:10px 14px 8px;
-    flex-wrap:wrap;
-    gap:6px;
-  }
+  #header{height:auto;padding:10px 14px 8px;flex-wrap:wrap;gap:6px}
   .h-left{gap:10px}
   .h-logo{width:38px;height:38px}
   .h-title{font-size:21px}
   .h-sub{font-size:9px}
-
-  /* --- Header right: wrap toggles into two rows --- */
-  .h-right{
-    width:100%;
-    display:flex;
-    flex-wrap:wrap;
-    gap:6px;
-    margin-top:2px;
-    justify-content:flex-start;
-    align-items:center;
-  }
+  .h-right{width:100%;display:flex;flex-wrap:wrap;gap:6px;margin-top:2px;justify-content:flex-start;align-items:center}
   .h-icon-btn{width:34px;height:34px;font-size:16px}
-
-  /* Make toggle groups take available space evenly */
   .toggle-group{flex:1;min-width:110px}
   .toggle-btn{padding:6px 8px;font-size:11px;letter-spacing:.04em}
-
-  /* --- Page: single column, auto height, scrollable --- */
-  #page{
-    grid-template-columns:1fr;
-    grid-template-rows:auto;
-    height:auto;
-    padding:10px 12px 24px;
-    gap:10px;
-    overflow:visible;
-  }
-
-  /* --- All cards: natural height, no overflow clipping --- */
-  .section{
-    flex:none;
-    padding:14px 16px;
-    overflow:visible;
-    min-height:0;
-  }
-
-  /* --- Method card: tall enough to be useful, not arbitrarily 80vh --- */
-  #method-card{
-    grid-column:1;
-    grid-row:auto;
-    order:10;
-    height:auto;
-    min-height:60vh;
-    max-height:none;
-    flex:none!important;
-    display:flex;
-    flex-direction:column;
-  }
-
-  /* Method card inner scrollable area */
-  #method-view,#timeline-view{
-    flex:1;
-    overflow-y:auto;
-    -webkit-overflow-scrolling:touch;
-  }
-
-  /* --- Ferment options: allow text to wrap --- */
+  #page{grid-template-columns:1fr;grid-template-rows:auto;height:auto;padding:10px 12px 24px;gap:10px;overflow:visible}
+  .section{flex:none;padding:14px 16px;overflow:visible;min-height:0}
+  #method-card{grid-column:1;grid-row:auto;order:10;height:auto;min-height:60vh;max-height:none;flex:none!important;display:flex;flex-direction:column}
+  #method-view,#timeline-view{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
   .fdesc{white-space:normal}
   .flabel{font-size:1rem}
-
-  /* --- Dough ball steppers: full width --- */
   .db-steppers{grid-template-columns:1fr 1fr;gap:8px 12px}
   .db-stepper button{width:38px;height:38px;font-size:18px}
-
-  /* --- Slider thumbs: bigger touch target --- */
-  .slider-track input[type=range]::-webkit-slider-thumb{
-    width:24px;height:24px;margin-top:-8px
-  }
+  .slider-track input[type=range]::-webkit-slider-thumb{width:24px;height:24px;margin-top:-8px}
   .slider-track{height:8px;margin:6px 0 4px}
-
-  /* --- Typography --- */
   .m-title{font-size:1.25rem}
   .m-body-text{font-size:1rem}
   .card-title,.sec-label{font-size:1rem}
   #method-label{display:none}
-
-  /* --- Nav buttons: easier tap targets --- */
   .nav-prev,.nav-next{padding:14px 10px;font-size:0.9rem}
-
-  /* --- Timeline items: more breathing room --- */
   .tl-title{font-size:1.05rem}
   .tl-desc{font-size:0.9rem}
-
-  /* --- Guide / Saved modals: full screen on mobile --- */
   .guide-overlay,.saved-overlay{padding:10px;align-items:flex-end}
   .guide-box,.saved-box{max-height:90vh;border-radius:16px 16px 0 0}
 }
@@ -369,50 +299,31 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
 
 <div id="header">
   <div class="h-left">
-    <svg class="h-logo" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" style="border-radius:50%;width:50px;height:50px">
-      <rect x="0" y="0" width="300" height="300" rx="16" fill="#D4A848"/>
-      <rect x="20" y="20" width="260" height="260" rx="10" fill="#DCBA60" opacity="0.4"/>
-      <rect x="0" y="0" width="300" height="300" rx="16" fill="none" stroke="#C09030" stroke-width="3"/>
-      <ellipse cx="60" cy="60" rx="18" ry="16" fill="#C09030" opacity="0.6"/><ellipse cx="60" cy="60" rx="10" ry="8" fill="#D8B858" opacity="0.5"/>
-      <ellipse cx="130" cy="50" rx="20" ry="17" fill="#C09030" opacity="0.55"/><ellipse cx="130" cy="50" rx="11" ry="9" fill="#D8B858" opacity="0.45"/>
-      <ellipse cx="210" cy="65" rx="17" ry="18" fill="#C09030" opacity="0.6"/><ellipse cx="210" cy="65" rx="9" ry="10" fill="#D8B858" opacity="0.5"/>
-      <ellipse cx="50" cy="135" rx="19" ry="16" fill="#C09030" opacity="0.55"/><ellipse cx="50" cy="135" rx="10" ry="8" fill="#D8B858" opacity="0.45"/>
-      <ellipse cx="120" cy="125" rx="22" ry="19" fill="#C09030" opacity="0.6"/><ellipse cx="120" cy="125" rx="12" ry="10" fill="#D8B858" opacity="0.5"/>
-      <ellipse cx="205" cy="140" rx="18" ry="20" fill="#C09030" opacity="0.55"/><ellipse cx="205" cy="140" rx="10" ry="11" fill="#D8B858" opacity="0.45"/>
-      <ellipse cx="70" cy="215" rx="20" ry="17" fill="#C09030" opacity="0.6"/><ellipse cx="70" cy="215" rx="11" ry="9" fill="#D8B858" opacity="0.5"/>
-      <ellipse cx="160" cy="205" rx="17" ry="19" fill="#C09030" opacity="0.55"/><ellipse cx="160" cy="205" rx="9" ry="10" fill="#D8B858" opacity="0.45"/>
-      <ellipse cx="240" cy="220" rx="19" ry="16" fill="#C09030" opacity="0.6"/><ellipse cx="240" cy="220" rx="10" ry="8" fill="#D8B858" opacity="0.5"/>
-      <ellipse cx="260" cy="110" rx="16" ry="15" fill="#C09030" opacity="0.5"/><ellipse cx="260" cy="110" rx="8" ry="7" fill="#D8B858" opacity="0.4"/>
-      <ellipse cx="100" cy="270" rx="18" ry="15" fill="#C09030" opacity="0.55"/><ellipse cx="100" cy="270" rx="9" ry="7" fill="#D8B858" opacity="0.45"/>
-      <ellipse cx="200" cy="270" rx="16" ry="17" fill="#C09030" opacity="0.55"/><ellipse cx="200" cy="270" rx="8" ry="9" fill="#D8B858" opacity="0.45"/>
-      <g transform="translate(150,150) rotate(-30)">
-        <path d="M-100 0 Q-40 -4, 100 5" fill="none" stroke="#3A6530" stroke-width="2.5" stroke-linecap="round"/>
-        <path d="M-75 -1 Q-84 -11, -78 -18 Q-68 -9, -75 -1Z" fill="#5A9648" opacity="0.85"/>
-        <path d="M-75 -1 Q-84 9, -78 16 Q-68 8, -75 -1Z" fill="#4A8638" opacity="0.8"/>
-        <path d="M-50 -2 Q-59 -13, -53 -20 Q-43 -11, -50 -2Z" fill="#5A9648" opacity="0.85"/>
-        <path d="M-50 -2 Q-59 9, -53 16 Q-43 8, -50 -2Z" fill="#4A8638" opacity="0.8"/>
-        <path d="M-25 -3 Q-34 -15, -28 -22 Q-18 -13, -25 -3Z" fill="#5A9648" opacity="0.85"/>
-        <path d="M-25 -3 Q-34 9, -28 16 Q-18 8, -25 -3Z" fill="#4A8638" opacity="0.8"/>
-        <path d="M5 -3 Q-4 -16, 2 -23 Q12 -14, 5 -3Z" fill="#5A9648" opacity="0.8"/>
-        <path d="M5 -3 Q-4 9, 2 16 Q12 8, 5 -3Z" fill="#4A8638" opacity="0.75"/>
-        <path d="M32 -1 Q23 -13, 29 -20 Q39 -11, 32 -1Z" fill="#5A9648" opacity="0.8"/>
-        <path d="M32 -1 Q23 11, 29 18 Q39 10, 32 -1Z" fill="#4A8638" opacity="0.75"/>
-        <path d="M58 1 Q49 -11, 55 -18 Q65 -9, 58 1Z" fill="#5A9648" opacity="0.75"/>
-        <path d="M58 1 Q49 13, 55 20 Q65 12, 58 1Z" fill="#4A8638" opacity="0.7"/>
-        <path d="M80 3 Q71 -7, 77 -14 Q87 -5, 80 3Z" fill="#5A9648" opacity="0.7"/>
-        <path d="M80 3 Q71 13, 77 19 Q87 12, 80 3Z" fill="#4A8638" opacity="0.65"/>
-        <path d="M95 4 Q88 -3, 93 -9 Q100 -2, 95 4Z" fill="#5A9648" opacity="0.65"/>
-        <path d="M95 4 Q88 11, 93 16 Q100 10, 95 4Z" fill="#4A8638" opacity="0.6"/>
-      </g>
-      <rect x="40" y="30" width="5" height="3" rx="1" fill="#F8F2E4" opacity="0.75" transform="rotate(20,42,31)"/>
-      <rect x="250" y="90" width="4" height="2.5" rx="1" fill="#F8F2E4" opacity="0.7" transform="rotate(-15,252,91)"/>
-      <rect x="30" y="250" width="4.5" height="3" rx="1" fill="#F8F2E4" opacity="0.65" transform="rotate(30,32,251)"/>
-      <rect x="230" y="260" width="5" height="2.5" rx="1" fill="#F8F2E4" opacity="0.7"/>
-      <rect x="120" y="20" width="4" height="2.5" rx="1" fill="#F8F2E4" opacity="0.65" transform="rotate(10,122,21)"/>
-      <rect x="270" y="190" width="4.5" height="3" rx="1" fill="#F8F2E4" opacity="0.7"/>
+    <svg class="h-logo" viewBox="0 0 680 680" xmlns="http://www.w3.org/2000/svg" style="border-radius:50%;width:50px;height:50px">
+      <defs>
+        <radialGradient id="lcg" cx="50%" cy="44%" r="55%"><stop offset="0%" stop-color="#e8a040"/><stop offset="100%" stop-color="#b86820"/></radialGradient>
+        <radialGradient id="lsg" cx="50%" cy="44%" r="55%"><stop offset="0%" stop-color="#c83010"/><stop offset="100%" stop-color="#8a1808"/></radialGradient>
+        <radialGradient id="lmg" cx="30%" cy="30%" r="65%"><stop offset="0%" stop-color="#f8f4ec"/><stop offset="100%" stop-color="#d8d0bc"/></radialGradient>
+        <radialGradient id="ltb" cx="35%" cy="32%" r="60%"><stop offset="0%" stop-color="#d03020"/><stop offset="100%" stop-color="#6a0c08"/></radialGradient>
+      </defs>
+      <circle cx="340" cy="340" r="300" fill="url(#lcg)"/>
+      <circle cx="340" cy="58" r="10" fill="#7a3e10" opacity="0.55"/><circle cx="390" cy="62" r="7" fill="#7a3e10" opacity="0.45"/><circle cx="292" cy="62" r="7" fill="#7a3e10" opacity="0.45"/><circle cx="440" cy="75" r="9" fill="#7a3e10" opacity="0.5"/><circle cx="248" cy="75" r="7" fill="#7a3e10" opacity="0.45"/><circle cx="488" cy="100" r="8" fill="#7a3e10" opacity="0.5"/><circle cx="200" cy="100" r="8" fill="#7a3e10" opacity="0.45"/><circle cx="528" cy="134" r="9" fill="#7a3e10" opacity="0.52"/><circle cx="160" cy="134" r="7" fill="#7a3e10" opacity="0.45"/><circle cx="560" cy="176" r="8" fill="#7a3e10" opacity="0.5"/><circle cx="128" cy="178" r="8" fill="#7a3e10" opacity="0.45"/><circle cx="584" cy="224" r="9" fill="#7a3e10" opacity="0.52"/><circle cx="105" cy="226" r="7" fill="#7a3e10" opacity="0.45"/><circle cx="598" cy="276" r="8" fill="#7a3e10" opacity="0.5"/><circle cx="91" cy="278" r="7" fill="#7a3e10" opacity="0.45"/><circle cx="602" cy="330" r="9" fill="#7a3e10" opacity="0.52"/><circle cx="88" cy="332" r="7" fill="#7a3e10" opacity="0.45"/><circle cx="596" cy="384" r="8" fill="#7a3e10" opacity="0.5"/><circle cx="93" cy="386" r="7" fill="#7a3e10" opacity="0.45"/><circle cx="580" cy="436" r="9" fill="#7a3e10" opacity="0.52"/><circle cx="108" cy="438" r="7" fill="#7a3e10" opacity="0.45"/><circle cx="556" cy="484" r="8" fill="#7a3e10" opacity="0.5"/><circle cx="132" cy="486" r="8" fill="#7a3e10" opacity="0.45"/><circle cx="524" cy="526" r="9" fill="#7a3e10" opacity="0.52"/><circle cx="164" cy="528" r="7" fill="#7a3e10" opacity="0.45"/><circle cx="486" cy="562" r="8" fill="#7a3e10" opacity="0.5"/><circle cx="202" cy="564" r="7" fill="#7a3e10" opacity="0.45"/><circle cx="442" cy="590" r="9" fill="#7a3e10" opacity="0.52"/><circle cx="246" cy="592" r="7" fill="#7a3e10" opacity="0.45"/><circle cx="392" cy="608" r="8" fill="#7a3e10" opacity="0.5"/><circle cx="294" cy="608" r="7" fill="#7a3e10" opacity="0.45"/><circle cx="340" cy="614" r="9" fill="#7a3e10" opacity="0.52"/>
+      <circle cx="340" cy="56" r="5" fill="#f0d870" opacity="0.5"/><circle cx="465" cy="82" r="4" fill="#f0d870" opacity="0.45"/><circle cx="218" cy="82" r="4" fill="#f0d870" opacity="0.45"/><circle cx="554" cy="152" r="4" fill="#f0d870" opacity="0.45"/><circle cx="128" cy="154" r="4" fill="#f0d870" opacity="0.45"/><circle cx="596" cy="252" r="4" fill="#f0d870" opacity="0.45"/><circle cx="92" cy="254" r="4" fill="#f0d870" opacity="0.45"/><circle cx="600" cy="358" r="4" fill="#f0d870" opacity="0.45"/><circle cx="88" cy="360" r="4" fill="#f0d870" opacity="0.45"/><circle cx="584" cy="460" r="4" fill="#f0d870" opacity="0.45"/><circle cx="104" cy="462" r="4" fill="#f0d870" opacity="0.45"/><circle cx="540" cy="546" r="4" fill="#f0d870" opacity="0.45"/><circle cx="148" cy="548" r="4" fill="#f0d870" opacity="0.45"/><circle cx="460" cy="598" r="4" fill="#f0d870" opacity="0.45"/><circle cx="226" cy="600" r="4" fill="#f0d870" opacity="0.45"/><circle cx="340" cy="616" r="4" fill="#f0d870" opacity="0.45"/>
+      <circle cx="340" cy="340" r="222" fill="url(#lsg)"/>
+      <ellipse cx="340" cy="198" rx="42" ry="30" fill="url(#lmg)" opacity="0.95"/><circle cx="340" cy="182" r="22" fill="url(#ltb)"/><circle cx="332" cy="175" r="6" fill="#e04030" opacity="0.35"/>
+      <ellipse cx="432" cy="238" rx="42" ry="30" fill="url(#lmg)" opacity="0.95"/><circle cx="432" cy="222" r="22" fill="url(#ltb)"/><circle cx="424" cy="215" r="6" fill="#e04030" opacity="0.35"/>
+      <ellipse cx="472" cy="340" rx="42" ry="30" fill="url(#lmg)" opacity="0.95"/><circle cx="472" cy="324" r="22" fill="url(#ltb)"/><circle cx="464" cy="317" r="6" fill="#e04030" opacity="0.35"/>
+      <ellipse cx="428" cy="442" rx="42" ry="30" fill="url(#lmg)" opacity="0.95"/><circle cx="428" cy="426" r="22" fill="url(#ltb)"/><circle cx="420" cy="419" r="6" fill="#e04030" opacity="0.35"/>
+      <ellipse cx="340" cy="480" rx="42" ry="30" fill="url(#lmg)" opacity="0.95"/><circle cx="340" cy="464" r="22" fill="url(#ltb)"/><circle cx="332" cy="457" r="6" fill="#e04030" opacity="0.35"/>
+      <ellipse cx="250" cy="442" rx="42" ry="30" fill="url(#lmg)" opacity="0.95"/><circle cx="250" cy="426" r="22" fill="url(#ltb)"/><circle cx="242" cy="419" r="6" fill="#e04030" opacity="0.35"/>
+      <ellipse cx="208" cy="340" rx="42" ry="30" fill="url(#lmg)" opacity="0.95"/><circle cx="208" cy="324" r="22" fill="url(#ltb)"/><circle cx="200" cy="317" r="6" fill="#e04030" opacity="0.35"/>
+      <ellipse cx="250" cy="238" rx="42" ry="30" fill="url(#lmg)" opacity="0.95"/><circle cx="250" cy="222" r="22" fill="url(#ltb)"/><circle cx="242" cy="215" r="6" fill="#e04030" opacity="0.35"/>
+      <ellipse cx="340" cy="340" rx="42" ry="30" fill="url(#lmg)" opacity="0.95"/><circle cx="340" cy="324" r="22" fill="url(#ltb)"/><circle cx="332" cy="317" r="6" fill="#e04030" opacity="0.35"/>
+      <ellipse cx="388" cy="205" rx="9" ry="18" fill="#2e8530" opacity="0.92" transform="rotate(30,388,205)"/><ellipse cx="460" cy="278" rx="9" ry="18" fill="#2e8530" opacity="0.92" transform="rotate(75,460,278)"/><ellipse cx="470" cy="395" rx="9" ry="18" fill="#2e8530" opacity="0.92" transform="rotate(115,470,395)"/><ellipse cx="395" cy="468" rx="9" ry="18" fill="#2e8530" opacity="0.92" transform="rotate(155,395,468)"/><ellipse cx="285" cy="468" rx="9" ry="18" fill="#2e8530" opacity="0.92" transform="rotate(-155,285,468)"/><ellipse cx="210" cy="395" rx="9" ry="18" fill="#2e8530" opacity="0.92" transform="rotate(-115,210,395)"/><ellipse cx="210" cy="285" rx="9" ry="18" fill="#2e8530" opacity="0.92" transform="rotate(-75,210,285)"/><ellipse cx="285" cy="212" rx="9" ry="18" fill="#2e8530" opacity="0.92" transform="rotate(-30,285,212)"/>
+      <ellipse cx="370" cy="268" rx="8" ry="15" fill="#2e8530" opacity="0.88" transform="rotate(20,370,268)"/><ellipse cx="414" cy="312" rx="8" ry="15" fill="#2e8530" opacity="0.88" transform="rotate(65,414,312)"/><ellipse cx="408" cy="375" rx="8" ry="15" fill="#2e8530" opacity="0.88" transform="rotate(110,408,375)"/><ellipse cx="362" cy="415" rx="8" ry="15" fill="#2e8530" opacity="0.88" transform="rotate(160,362,415)"/><ellipse cx="302" cy="408" rx="8" ry="15" fill="#2e8530" opacity="0.88" transform="rotate(-160,302,408)"/><ellipse cx="266" cy="368" rx="8" ry="15" fill="#2e8530" opacity="0.88" transform="rotate(-110,266,368)"/><ellipse cx="270" cy="305" rx="8" ry="15" fill="#2e8530" opacity="0.88" transform="rotate(-65,270,305)"/><ellipse cx="312" cy="266" rx="8" ry="15" fill="#2e8530" opacity="0.88" transform="rotate(-20,312,266)"/>
     </svg>
     <div>
-      <div class="h-title">Pizza Dough</div>
+      <div class="h-title">PizzaFriday</div>
       <div class="h-sub">dough calculator</div>
     </div>
   </div>
@@ -458,7 +369,7 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
 
   <!-- ROW 2 LEFT: DOUGH BALLS + FERMENT TYPE -->
   <div class="section db-section">
-    <div class="sec-label">Parameters</div>
+    <div class="sec-label">Dough Balls</div>
     <div class="db-pill-row">
       <button class="db-pill active" id="btn-neap" onclick="setPizzaType('neap')">Neapolitan</button>
       <button class="db-pill" id="btn-ny" onclick="setPizzaType('ny')">New York</button>
@@ -467,33 +378,33 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
       <div class="db-stepper-group">
         <div class="db-stepper-label">Count</div>
         <div class="db-stepper">
-          <button onclick="stepVal('ballCount',-1)">−</button>
+          <button onmousedown="startRepeat('ballCount',-1)" onmouseup="stopRepeat()" onmouseleave="stopRepeat()" ontouchstart="startRepeat('ballCount',-1)" ontouchend="stopRepeat()">−</button>
           <div class="db-val" id="db-count">4</div>
-          <button onclick="stepVal('ballCount',1)">+</button>
+          <button onmousedown="startRepeat('ballCount',1)" onmouseup="stopRepeat()" onmouseleave="stopRepeat()" ontouchstart="startRepeat('ballCount',1)" ontouchend="stopRepeat()">+</button>
         </div>
       </div>
       <div class="db-stepper-group">
         <div class="db-stepper-label">Ball Size</div>
         <div class="db-stepper">
-          <button onclick="stepVal('ballSize',-10)">−</button>
+          <button onmousedown="startRepeat('ballSize',-5)" onmouseup="stopRepeat()" onmouseleave="stopRepeat()" ontouchstart="startRepeat('ballSize',-5)" ontouchend="stopRepeat()">−</button>
           <div class="db-val" id="db-size">250g</div>
-          <button onclick="stepVal('ballSize',10)">+</button>
+          <button onmousedown="startRepeat('ballSize',5)" onmouseup="stopRepeat()" onmouseleave="stopRepeat()" ontouchstart="startRepeat('ballSize',5)" ontouchend="stopRepeat()">+</button>
         </div>
       </div>
       <div class="db-stepper-group">
         <div class="db-stepper-label">Salt</div>
         <div class="db-stepper">
-          <button onclick="stepVal('saltPc',-0.1)">−</button>
+          <button onmousedown="startRepeat('saltPc',-0.1)" onmouseup="stopRepeat()" onmouseleave="stopRepeat()" ontouchstart="startRepeat('saltPc',-0.1)" ontouchend="stopRepeat()">−</button>
           <div class="db-val" id="db-salt">2.5%</div>
-          <button onclick="stepVal('saltPc',0.1)">+</button>
+          <button onmousedown="startRepeat('saltPc',0.1)" onmouseup="stopRepeat()" onmouseleave="stopRepeat()" ontouchstart="startRepeat('saltPc',0.1)" ontouchend="stopRepeat()">+</button>
         </div>
       </div>
       <div class="db-stepper-group">
         <div class="db-stepper-label">Oil</div>
         <div class="db-stepper">
-          <button onclick="stepVal('oilPc',-0.1)">−</button>
+          <button onmousedown="startRepeat('oilPc',-0.1)" onmouseup="stopRepeat()" onmouseleave="stopRepeat()" ontouchstart="startRepeat('oilPc',-0.1)" ontouchend="stopRepeat()">−</button>
           <div class="db-val" id="db-oil">2.0%</div>
-          <button onclick="stepVal('oilPc',0.1)">+</button>
+          <button onmousedown="startRepeat('oilPc',0.1)" onmouseup="stopRepeat()" onmouseleave="stopRepeat()" ontouchstart="startRepeat('oilPc',0.1)" ontouchend="stopRepeat()">+</button>
         </div>
       </div>
     </div>
@@ -603,21 +514,11 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
       <p>Temperature is the master variable. A 2°C change can alter yeast activity by up to 25%. The calculator compensates automatically — just set the slider to your kitchen temperature. The yeast model uses a Q10 biological coefficient: yeast roughly doubles its metabolic rate for every 10°C increase, up to its thermal death point around 55°C. If your kitchen is warm, you need less yeast. If it is cold, you need more. The maths handles this for you.</p>
       </details>
 
-      <details>
-      <summary><h3>Baking</h3></summary>
-      <p>Hit <span class="g-em">▶ Begin</span> to stamp your start time and turn the calculator into a live schedule. Every step shows its actual wall-clock time. Hit <span class="g-em">☰ Timeline</span> for the full overview.</p>
-      <p>Everything recalculates live — change a slider mid-bake and the remaining steps update automatically. If you close the app, the session is saved. Hit <span class="g-em">↺ Reset</span> to start fresh.</p>
-      </details>
+
 
       <details>
       <summary><h3>Timers</h3></summary>
       <p>Steps that need timing show a <span class="g-em">⏰ timer pill</span>. Tap it and your phone's native clock app opens with the correct duration. <span class="g-em">Important:</span> native timers only work in the <span class="g-em">Android app</span>. On the website, the pills show as progress indicators but will not launch external timers.</p>
-      </details>
-
-      <details>
-      <summary><h3>The Oven</h3></summary>
-      <p><span class="g-em">As hot as it goes.</span> Real Neapolitan pizza is baked at 450°C+ for 60–90 seconds. Your home oven will not reach that, but get it as hot as possible — 250–300°C with a pizza stone or steel preheated for at least 45 minutes. The stone stores thermal energy and transfers it directly into the base, which is what gives you a crisp bottom and proper oven spring.</p>
-      <p>A pizza steel is better than a stone — steel conducts heat roughly 20 times faster. If you are serious about pizza, it is the single best investment you can make.</p>
       </details>
 
     </div>
@@ -756,11 +657,11 @@ function calcYeast(fid, rt, hrs, hyd) {
    * Salt at 2.5–3% induces osmotic stress, slowing fermentation.
    * Model uses inverse exponential decay: less yeast for longer ferments.
    */
-  const PRE_YEAST_MINS = 25;           /* gather(5) + combine(5) + autolyse(15) */
+  const PRE_YEAST_MINS = 60;           /* gather(5) + mix flour+water(5) + autolyse(45) + incorporate salt/yeast(5) */
   const KNEAD_MINS = 15;               /* knead / fold */
-  const BALL_AND_PROOF_MINS = 30;      /* ball up + final bench proof */
-  const ROOM_STATIC_MINS = 70;         /* total non-ferment steps for room path */
-  const COLD_STATIC_MINS = 190;        /* room path steps + final warm-up proof */
+  const BALL_AND_PROOF_MINS = 125;     /* divide & ball (5) + 2h final proof (120) */
+  const ROOM_STATIC_MINS = 200;        /* total non-ferment steps for room path */
+  const COLD_STATIC_MINS = 320;        /* room path steps + 2h warm-up after fridge */
 
   const k = 2.8;
   const tempMultiplier = Math.pow(2, (rt - 22) / 10);
@@ -879,9 +780,9 @@ function setPizzaType(type) {
 
 function stepVal(field, delta) {
   if (field === 'ballCount') {
-    S.ballCount = Math.max(1, Math.min(20, S.ballCount + delta));
+    S.ballCount = Math.max(1, Math.min(200, S.ballCount + delta));
   } else if (field === 'ballSize') {
-    S.ballSize = Math.max(100, Math.min(500, S.ballSize + delta));
+    S.ballSize = Math.round(Math.max(100, Math.min(1000, S.ballSize + delta)) / 5) * 5;
   } else if (field === 'saltPc') {
     S.saltPc = Math.max(0, Math.min(5, Math.round((S.saltPc + delta) * 10) / 10));
   } else if (field === 'oilPc') {
@@ -997,45 +898,43 @@ function buildSteps(ing,hyd,fid,hours){
   steps=[
     {title:'Gather Equipment',icon:'🛠',timer:null,tip:null,
      body:`• Large bowl\n• Digital scales\n• Clean work surface\n• Bench scraper or sharp knife\n• Pizza stone or steel\n• Clingfilm or damp cloth`},
-    {title:'Combine Ingredients',icon:'💧',timer:null,
-     body:`Dissolve ${dw(ing.salt)} salt in ${dw(ing.water)} water. Add ${dw(ing.yeast)} instant dry yeast (or ${dw(Math.round(ing.yeast*3*10)/10)} fresh yeast) and stir until dissolved.\n\nPour the water into a bowl with ${dw(ing.flour)} ${flourDesc}. Mix until no dry flour remains — rough and shaggy is fine at this stage.${oilStep}${oilNote}`,
-     tip:isNeap?'Neapolitan tradition dissolves the salt in the water first. This distributes it evenly and controls yeast activity from the start.':'Dissolving salt and yeast separately in the water ensures even distribution throughout the dough.'},
+    {title:'Mix Flour & Water',icon:'💧',timer:null,
+     body:`Weigh out ${dw(ing.flour)} ${flourDesc} and ${dw(ing.water)} water. Pour the water into the bowl, add the flour, and mix until no dry flour remains. It will look rough and shaggy — that is fine.\n\nDo not add salt, yeast, or oil yet. The autolyse works on flour and water alone.`,
+     tip:'Mixing flour and water first lets the proteins hydrate and begin forming gluten on their own — without interference from salt or yeast. You will need significantly less kneading as a result.'},
+    {title:'Autolyse',icon:'⏱',timer:45,
+     body:`Cover the bowl tightly and leave to rest for 45 minutes at room temperature.\n\nDuring this time the flour absorbs the water fully and gluten begins forming passively — no mechanical effort required. When you come back, the dough will be noticeably smoother and more cohesive than when you left it.`,
+     tip:'This is not optional time filler. Autolyse dramatically reduces the kneading needed and produces a more extensible dough. A 45-minute rest does more gluten work than 5 minutes of aggressive kneading.'},
+    {title:'Add Salt & Yeast',icon:'🧂',timer:null,
+     body:`Dissolve ${dw(ing.salt)} salt and ${dw(ing.yeast)} instant dry yeast (or ${dw(Math.round(ing.yeast*3*10)/10)} fresh yeast) in a splash of water taken from your measured amount, then work it into the dough.${oilStep}${oilNote}\n\nFold and squeeze until fully incorporated — no streaks, no dry patches.`,
+     tip:'Salt and yeast fight each other if they sit together dry. Dissolving both in a little water before adding them to the dough gives you even distribution without killing the yeast.'},
     {title:'Knead',icon:'🤲',timer:15,
-     body:`Tip the dough onto a clean, unfloured surface. Knead for 10–15 minutes until smooth, elastic, and no longer sticky. The dough should pass the windowpane test — stretch a small piece thin enough to see light through without it tearing.\n\nIf it tears, keep going. Gluten development is what gives the dough its stretch and structure. Without it, the dough tears when you open it and the crust is flat and dense.`,
-     tip:'No flour on the surface. The stickiness is what creates friction, and friction is what develops the gluten. Flour on the bench just makes a tighter, less extensible dough.'},
+     body:`Tip the dough onto a clean, unfloured surface. Knead for 8–12 minutes — less than you would need without the autolyse. The dough should pass the windowpane test: stretch a small piece thin enough to see light through without it tearing.\n\nIf it tears, keep going. The gluten network is not quite there yet.`,
+     tip:'No flour on the surface. The stickiness is friction — friction builds gluten. Flour on the bench just shortens the gluten network and makes a tighter, less extensible dough.'},
     ...(fid==='room'?[{title:'Bulk Ferment',icon:'⏱',
-      timer: Math.round(Math.max(30, (hours*60) - 70)),
-      body:`Lightly oil the bowl, place the dough back in, and cover tightly with clingfilm or a damp cloth. Leave at room temperature until roughly doubled in size.\n\nBulk ferment: ${Math.max(0.5,(hours - 70/60)).toFixed(1)} hours at ${dt(S.rTemp)}. The yeast model has calculated your yeast quantity for this exact duration and temperature. Trust the maths — do not go by the clock alone. The dough is ready when it has visibly puffed up and a poke with a floured finger springs back slowly.`,
-      tip:'A warm spot speeds things up, a cool spot slows them down. The oven light trick works here too — close the door, leave the light on, gentle consistent warmth.'}]:[]),
+      timer: Math.round(Math.max(30, (hours*60) - 200)),
+      body:`Lightly oil the bowl, place the dough back in, and cover tightly with clingfilm or a damp cloth. Leave at room temperature until roughly doubled in size.\n\nBulk ferment: approximately ${Math.max(0.5,((hours*60 - 200)/60)).toFixed(1)} hours at ${dt(S.rTemp)}. The yeast model has calculated your quantity for this exact duration and temperature. Do not go purely by the clock — the dough is ready when it has visibly puffed and a poke with a floured finger springs back slowly.`,
+      tip:'A warm spot speeds things up, a cool spot slows them down. The oven light trick works — close the door, leave the light on.'}]:[]),
     ...(fid==='cold'?[{title:'Initial Rise',icon:'⏱',timer:120,
       body:'Lightly oil the bowl, place the dough back in, and cover tightly. Leave at room temperature for 2 hours. The dough should be visibly puffy but not yet doubled — you want it active but not exhausted before it goes into the fridge.',
       tip:'Do not let the dough fully double before refrigerating. It will continue to ferment slowly in the fridge. If it is already maxed out, it will overproof overnight.'}]:[]),
     ...(fid==='cold'?[{title:'Cold Retard',icon:'❄️',
-      timer: Math.round(Math.max(240, (hours*60) - 190)),
-      body:`Cover the bowl tightly and refrigerate at ${dt(3)}–${dt(5)}.\n\nCold retard: ${Math.max(4,(hours - 190/60)).toFixed(1)} hours. While the yeast slows to a crawl, the enzymes in the flour keep working — breaking down starches into sugars and proteins into amino acids. These are the chemical precursors for the Maillard reaction. That is where the deep browning, the blistering, and the complex flavour come from. A 24-hour cold ferment produces noticeably better results than 8 hours at room temperature. 48–72 hours is where it gets exceptional.`,
-      tip:'The fridge is doing the hard work. Amylase and protease enzymes keep stockpiling free sugars and amino acids while the dormant yeast is not consuming them. That biochemical stockpile is what makes cold-fermented dough taste so much better.'}]:[]),
+      timer: Math.round(Math.max(240, (hours*60) - 320)),
+      body:`Cover the bowl tightly and refrigerate at ${dt(3)}–${dt(5)}.\n\nCold retard: approximately ${Math.max(4,((hours*60 - 320)/60)).toFixed(1)} hours. While the yeast slows to a crawl, the flour's amylase and protease enzymes keep working — breaking down starches into sugars and proteins into amino acids. These accumulate because the dormant yeast is not consuming them. That biochemical stockpile is what drives the Maillard reaction in the oven: deep browning, heavy blistering, complex flavour.`,
+      tip:'The fridge is doing the hard work. 24 hours produces noticeably better results than 8 hours at room temp. 48–72 hours is where it gets exceptional.'}]:[]),
     ...(fid==='cold'?[{title:'Warm Up',icon:'🌡',timer:120,
       body:'Remove the dough from the fridge 2 hours before you plan to shape. Cold dough is tight and will tear if you try to open it. It needs to relax and come back to room temperature.\n\nLeave it covered on the counter. By the time you shape it, it should be soft, puffy, and room temperature throughout.',
       tip:null}]:[]),
     {title:'Divide & Ball',icon:'⚖️',timer:null,
-     body:`Tip the dough onto a lightly floured surface. Divide into ${S.ballCount} pieces of approximately ${dw(S.ballSize)} each.\n\nShape each piece into a tight ball: fold the edges underneath, then cup your hands around the dough and drag it toward you on the unfloured part of the surface. The friction pulls the surface taut. You want a smooth, tight skin with no seams on top.\n\nPlace on a floured tray, cover, and rest for 30 minutes before opening.`,
-     tip:'The ball-up is more important than people think. A tight ball with good surface tension opens into an even disc. A loose, ragged ball opens into a mess with thin spots and holes.'},
-    {title:'Bench Rest',icon:'⏱',timer:30,
-     body:'Leave the dough balls covered for 30 minutes. This lets the gluten relax after being shaped. If you skip this, the dough will fight you — it will spring back every time you try to stretch it and you will never get it thin enough.\n\nWhile you wait, preheat your oven with the pizza stone or steel inside. As hot as it goes. Give it at least 45 minutes.',
-     tip:null},
+     body:`Tip the dough onto a lightly floured surface. Divide into ${S.ballCount} ${S.ballCount===1?'piece':'pieces'} of approximately ${dw(S.ballSize)} each.\n\nShape each piece into a tight ball: fold the edges underneath, then cup your hands around the dough and drag it toward you on the unfloured surface. The friction pulls the surface taut. You want a smooth, tight skin with no seams on top.\n\nPlace on a lightly floured tray, cover with clingfilm, and leave to final proof.`,
+     tip:'The ball-up matters more than most people think. A tight ball with good surface tension opens into an even disc. A slack, ragged ball tears and has thin spots.'},
+    {title:'Final Proof',icon:'⏱',timer:120,
+     body:`Leave the balled dough covered at room temperature for 2 hours.\n\nThis is not just a bench rest — it is a full final fermentation phase. The dough balls need time to relax the gluten after balling, finish their rise, and develop enough internal gas structure to open properly. At 2 hours they should be noticeably puffed, soft to the touch, and jiggle when you shake the tray.\n\nWhile you wait, preheat your oven with the pizza stone or steel inside. As hot as it goes. At least 45 minutes.`,
+     tip:'Cold dough from the fridge will need the full 2 hours. Room temp dough may be ready slightly sooner. The test: press gently with a floured finger — if the indent springs back slowly and partially, it is ready. If it springs back immediately, give it more time.'},
     {title:'Open & Top',icon:'🍕',timer:null,
      body:isNeap
-      ?'Generously flour the ball and your surface. Press from the centre outward with your fingertips, leaving a 2cm rim untouched — that becomes the cornicione. Lift and drape over your knuckles, letting gravity stretch it. Rotate as you go. You are aiming for a thin, translucent centre and a thick puffy edge.\n\nTop lightly. San Marzano tomatoes, fior di latte or mozzarella, fresh basil, olive oil. Neapolitan pizza is not a platform for everything in the fridge. Less is more.'
-      :'Flour the ball and stretch by hand or with a rolling pin — NY style does not need a puffy cornicione, so you can go thinner and more even. Aim for a uniform disc about 35cm (14") across.\n\nTop with a thin layer of cooked tomato sauce, low-moisture mozzarella, and whatever you like. NY style carries toppings better than Neapolitan, but do not overload it or the base will not crisp.',
-     tip:isNeap?'Never use a rolling pin for Neapolitan pizza. It crushes the gas structure in the cornicione and you end up with a flat, cracker-like edge instead of the puffy, charred rim.':'A rolling pin is fine for NY style. The goal is an even, thin base that crisps up and holds its structure when you fold a slice.'},
-    {title:'Bake',icon:'🔥',timer:isNeap?5:14,
-     body:bakeDesc,
-     tip:isNeap?'If your home oven maxes out at 250°C, the pizza will take 7–10 minutes instead of 3–5. That is fine — you will get a good pizza, just not a charred Neapolitan one. A pizza steel helps because it transfers heat faster than a stone.':null},
-    {title:'Rest & Eat',icon:'🍕',timer:3,
-     body:isNeap
-      ?'Slide onto a board. Let it sit for 1–2 minutes — the cheese is volcanic. Then cut and eat immediately. Neapolitan pizza does not improve with waiting. It is at its best within 60 seconds of leaving the oven.'
-      :'Slide onto a wire rack or board. Let it sit for 2–3 minutes so the cheese stops bubbling and the base firms up. Then slice. A good NY slice should hold its structure when you pick it up and fold it lengthways.',
-     tip:null},
+      ?'Generously flour the ball and your surface. Press from the centre outward with your fingertips, leaving a 2cm rim untouched — that becomes the cornicione. Lift and drape over your knuckles, letting gravity stretch it. Rotate as you go. Aim for a thin, translucent centre with a thick puffy edge.\n\nTop lightly. San Marzano tomatoes, fior di latte or mozzarella, fresh basil, olive oil. Neapolitan pizza is not a platform for everything in the fridge.'
+      :'Flour the ball and stretch by hand or rolling pin — NY style does not need a puffy cornicione, so go thinner and more even. Aim for a uniform disc about 35cm (14") across.\n\nTop with a thin layer of cooked tomato sauce, low-moisture mozzarella, and whatever you like. Do not overload it or the base will not crisp.',
+     tip:isNeap?'Never use a rolling pin for Neapolitan. It crushes the gas structure in the cornicione — you end up with a flat cracker edge instead of a puffy, charred rim.':'A rolling pin is fine for NY style. The goal is an even, thin base that crisps up and holds its structure when folded.'},
   ];
 }
 
@@ -1294,6 +1193,21 @@ function setTimerNative(secs, msg, mins) {
   }
   /* No fallback on web — no browser API exists for native timers */
 }
+
+/* ===== TOUCH-AND-HOLD FAST REPEAT ===== */
+let _repeatTimer=null;
+let _repeatInterval=null;
+function startRepeat(field,delta){
+  stepVal(field,delta);
+  _repeatTimer=setTimeout(()=>{
+    _repeatInterval=setInterval(()=>stepVal(field,delta),60);
+  },500);
+}
+function stopRepeat(){
+  clearTimeout(_repeatTimer);
+  clearInterval(_repeatInterval);
+  _repeatTimer=null;
+  _repeatInterval=null;
+}
 </script>
-</body>
 </html>
