@@ -60,7 +60,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-body);background:va
 .h-left{display:flex;align-items:center;gap:16px}
 .h-logo{width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid var(--border)}
 .h-title{font-family:var(--font-display);font-size:28px;font-weight:600;color:var(--text4);letter-spacing:.06em}
-.h-sub{font-family:var(--font-body);font-size:10.5px;color:var(--text2);letter-spacing:.32em;text-transform:uppercase;margin-top:0;font-weight:600}
+.h-sub{font-family:var(--font-body);font-size:13px;color:var(--text2);letter-spacing:.32em;text-transform:uppercase;margin-top:0;font-weight:600}
 .h-right{display:flex;align-items:center;gap:8px}
 
 /* ===== HEADER BUTTONS ===== */
@@ -229,11 +229,10 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
 
 /* ===== RESPONSIVE ===== */
 @media (max-width:768px){
-  html,body{overflow:auto;height:auto;font-size:16px}
+  html,body{overflow:auto;height:auto}
   #header{height:auto;padding:12px 16px;flex-wrap:wrap}
   .h-right{width:100%;justify-content:flex-end;align-items:center;margin-top:6px}
-  .h-title{font-size:24px}
-  .h-sub{font-size:9px}
+  .h-title{font-size:28px}
   .h-icon-btn{width:34px;height:34px;font-size:16px;flex-shrink:0}
   .settings-pill{display:inline-flex}
   #temp-toggle{flex:0 0 auto;width:80px}
@@ -257,7 +256,7 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
   .card-title,.sec-label{font-size:1rem}
   #method-label{display:none}
   .nav-prev,.nav-next{padding:14px 10px;font-size:0.9rem}
-  .tl-title{font-size:1.05rem}
+  .tl-title{font-size:1.15rem}
   .tl-desc{font-size:0.9rem}
   .guide-overlay,.saved-overlay{padding:10px;align-items:flex-end}
   .guide-box,.saved-box{max-height:90vh;border-radius:16px 16px 0 0}
@@ -310,6 +309,23 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
 .save-name-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--gold-glow)}
 .save-name-btn{padding:10px 18px;border:none;border-radius:8px;background:var(--accent);color:var(--accent2);font-family:var(--font-body);font-size:0.92rem;font-weight:700;cursor:pointer;transition:all .25s ease;letter-spacing:.04em;text-transform:uppercase}
 .save-name-btn:hover{box-shadow:0 4px 12px rgba(200,148,60,0.3)}
+.save-form{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px;}
+.save-form-label{font-size:10px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--text3);margin-bottom:2px;}
+.save-textarea{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;background:var(--bg);font-family:var(--font-body);font-size:0.9rem;color:var(--text);resize:vertical;min-height:64px;transition:all .25s ease;}
+.save-textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--gold-glow);}
+.save-metrics{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:10px 12px;margin-top:4px;}
+.save-metric-row{display:flex;justify-content:space-between;align-items:center;font-size:0.82rem;}
+.save-metric-key{color:var(--text3);}
+.save-metric-val{font-weight:700;color:var(--accent);}
+.save-form-actions{display:flex;gap:8px;}
+
+@keyframes guide-pulse{
+  0%{box-shadow:0 0 0 0 rgba(112,64,8,0.4);transform:scale(1)}
+  70%{box-shadow:0 0 0 16px rgba(112,64,8,0);transform:scale(1.08)}
+  100%{box-shadow:0 0 0 16px rgba(112,64,8,0);transform:scale(1)}
+}
+.guide-btn-pulse{animation:guide-pulse 1.4s ease-out infinite;border-color:var(--accent)!important;color:var(--accent)!important}
+
 </style>
 <script src="capacitor.js"></script>
 <div class="shop-overlay" id="shop-overlay" onclick="if(event.target===this)hideShop()">
@@ -349,7 +365,7 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
       <a class="shop-item" href="https://amzn.to/3OC8pfk" target="_blank" rel="noopener">
         <div class="shop-item-info">
           <div class="shop-item-name">Plastic Bowl Covers</div>
-          <div class="shop-item-desc">Reusable stretch covers for bulk ferment and cold retard. Keeps the surface from drying out and forming a skin — cleaner than clingfilm.</div>
+          <div class="shop-item-desc">Reusable stretch covers for bulk ferment and cold ferment. Keeps the surface from drying out and forming a skin — cleaner than clingfilm.</div>
         </div>
         <div class="shop-item-arrow">→</div>
       </a>
@@ -386,6 +402,12 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
 <script>
   window.TimerPlugin = (window.Capacitor && window.Capacitor.registerPlugin)
     ? window.Capacitor.registerPlugin('Timer')
+    : null;
+  window.BakePlugin = (window.Capacitor && window.Capacitor.registerPlugin)
+    ? window.Capacitor.registerPlugin('Bake')
+    : null;
+  window.BakeNotificationPlugin = (window.Capacitor && window.Capacitor.registerPlugin)
+    ? window.Capacitor.registerPlugin('BakeNotification')
     : null;
   if(window.TimerPlugin) document.body.classList.add('native');
 </script>
@@ -466,7 +488,7 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
   <div class="section" id="slider-card" style="padding:10px 18px">
     <div class="sec-label" id="hours-lbl">Total Time: 8 hours</div>
     <div class="slider-track slider-hours"><input type="range" min="0" max="100" step="1" value="14" id="hours-slider" oninput="update()"></div>
-    <div class="slider-labels"><span id="start-time-lbl">6h</span><span>48h</span></div>
+    <div class="slider-labels"><span id="start-time-lbl">4h</span><span>48h</span></div>
     <div style="margin-top:20px">
       <div class="sec-label" id="hyd-lbl">Hydration: 63%</div>
       <div class="slider-track slider-hyd"><input type="range" min="55" max="75" step="1" value="63" id="hyd-slider" oninput="update()"></div>
@@ -577,12 +599,27 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
 <div class="guide-overlay" id="guide-overlay" onclick="if(event.target===this)hideGuide()">
   <div class="guide-box">
     <div class="guide-header">
-      <h2>How to Use</h2>
+      <h2>How to Use PizzaFriday</h2>
       <button class="guide-close" onclick="hideGuide()">✕</button>
     </div>
     <div class="guide-body">
 
-      <p>This is a pizza dough calculator. Set your sliders, choose your style, and it works out everything — ingredient quantities, yeast levels, fermentation times, and a step-by-step method with real clock times. Every slider has a <span class="g-green">green zone</span> showing the range where results are most predictable. The ends fade to red — not because they are wrong, but because they need more experience to manage well.</p>
+      <details open>
+      <summary><h3>⚡ Quick Start</h3></summary>
+      <ul>
+        <li><strong>When do you want to eat?</strong> — Set the <em>Total Time</em> slider first. Everything else flows from that.</li>
+        <li><strong>How wet?</strong> — The <em>Hydration</em> slider controls your crumb. Start in the green zone if it's your first time.</li>
+        <li><strong>How warm is your kitchen?</strong> — Set the <em>Room Temp</em> slider. The yeast model adjusts automatically.</li>
+        <li><strong>How many balls?</strong> — Set your count and size. 250g = 10–11" Neapolitan. 280g = 12–14" NY style.</li>
+        <li><strong>Pick your style</strong> — Neapolitan or New York. Adjusts salt, oil, and hydration defaults automatically.</li>
+        <li><strong>Room temp or fridge?</strong> — Room temp is simpler. Cold ferment takes longer but builds more flavour.</li>
+        <li><strong>Check your ingredients</strong> — The ingredient card updates live. Make sure you've got everything before you start.</li>
+        <li><strong>Hit ▶ Begin when you're ready</strong> — This stamps your start time and turns the whole thing into a live schedule. Every step gets a real clock time.</li>
+        <li><strong>Follow the steps</strong> — Tap ⏰ on any timed step to set your phone's timer automatically.</li>
+        <li><strong>The notification</strong> — A reminder lives in your notification drawer showing which step you're on. Tap it any time to jump straight back.</li>
+        <li><strong>Need more detail?</strong> — Everything below goes deeper. Tap any section to expand it.</li>
+      </ul>
+      </details>
 
       <details>
       <summary><h3>Start With the End</h3></summary>
@@ -618,13 +655,13 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
 
       <details>
       <summary><h3>Oil</h3></summary>
-      <p>Neapolitan dough traditionally contains no oil. NY style uses 1–3%. Oil does not hydrate the flour — it coats the gluten strands and physically interrupts their formation, which is why it makes the crust more tender and crispy. Add oil <span class="g-em">after</span> the flour has absorbed the water, not before. If oil hits dry flour first, it creates a hydrophobic barrier that prevents proper hydration.</p>
+      <p>Neapolitan dough traditionally contains no oil. NY style uses 1–3%. Oil does not hydrate the flour — it coats the gluten strands and physically interrupts their formation, which is why it makes the crust more tender and crispy.</p>
       </details>
 
       <details>
       <summary><h3>Room Temp or Cold Ferment?</h3></summary>
-      <p><span class="g-warm">Room temp</span> — all fermentation at ambient temperature. Simpler, faster, and good results. The time slider will not go past 24 hours in room temp mode — beyond that, the dough will overproof and collapse.</p>
-      <p><span class="g-cold">Cold ferment</span> — initial rise at room temp, then into the fridge. At fridge temperature (4°C), yeast drops to about 15% activity, but the flour's amylase and protease enzymes only slow by about 50%. So while the yeast sleeps, the enzymes keep breaking down starches into sugars and proteins into amino acids. This is the secret to superior browning, blistering, and complex flavour. The time slider will not go below 14 hours in cold mode.</p>
+      <p><span class="g-warm">Room temp</span> — all fermentation at ambient temperature. Simpler, faster, and good results. The time slider will not go past 30 hours in room temp mode — beyond that, the dough will overproof and collapse.</p>
+      <p><span class="g-cold">Cold ferment</span> — mix, knead, divide into balls, then straight into the fridge. At fridge temperature (4°C), yeast drops to about 15% activity, but the flour's amylase and protease enzymes only slow by about 50%. So while the yeast sleeps, the enzymes keep breaking down starches into sugars and proteins into amino acids. This is the secret to superior browning, blistering, and complex flavour. The time slider will not go below 14 hours in cold mode.</p>
       </details>
 
       <details>
@@ -676,9 +713,44 @@ function renderSavedList(){
   const el=document.getElementById('saved-body');
   let html='';
   if(savingNew){
-    html+=`<div class="save-name-row">
-      <input class="save-name-input" id="save-name-input" placeholder="Name this recipe..." autofocus>
-      <button class="save-name-btn" onclick="confirmSave()">Save</button>
+    const now=new Date();
+    const dateStr=now.toLocaleDateString('en-GB',{day:'2-digit',month:'2-digit',year:'2-digit'});
+    const flourPerBall=calcDoughBallFlour(S.ballSize,S.hyd,S.saltPc,S.oilPc);
+    const flour=flourPerBall*S.ballCount;
+    const water=Math.round(flour*S.hyd/100);
+    const salt=(flour*S.saltPc/100).toFixed(1);
+    const oil=(flour*S.oilPc/100).toFixed(1);
+    const yeastPc=calcYeast(S.fid,S.rTemp,S.hours,S.hyd);
+    const yeast=yeastPc?(flour*yeastPc/100).toFixed(1):'';
+    const fermentLabel=S.fid==='cold'?'Cold':'Room';
+    const typeLabel=S.pizzaType==='ny'?'New York':'Neapolitan';
+    const ballDesc=S.ballCount+'× '+S.ballSize+'g';
+    html+=`<div class="save-form">
+      <div>
+        <div class="save-form-label">Title</div>
+        <input class="save-name-input" id="save-name-input" placeholder="e.g. Friday night Neapolitan, 48h cold..." autofocus style="width:100%;">
+      </div>
+      <div class="save-metrics">
+        <div class="save-metric-row"><span class="save-metric-key">Date</span><span class="save-metric-val">${dateStr}</span></div>
+        <div class="save-metric-row"><span class="save-metric-key">Style</span><span class="save-metric-val">${typeLabel}</span></div>
+        <div class="save-metric-row"><span class="save-metric-key">Hydration</span><span class="save-metric-val">${S.hyd}%</span></div>
+        <div class="save-metric-row"><span class="save-metric-key">Flour</span><span class="save-metric-val">${flour}g</span></div>
+        <div class="save-metric-row"><span class="save-metric-key">Water</span><span class="save-metric-val">${water}g</span></div>
+        <div class="save-metric-row"><span class="save-metric-key">Salt</span><span class="save-metric-val">${salt}g</span></div>
+        ${S.oilPc>0?`<div class="save-metric-row"><span class="save-metric-key">Olive oil</span><span class="save-metric-val">${oil}g</span></div>`:''}
+        ${yeast?`<div class="save-metric-row"><span class="save-metric-key">Yeast</span><span class="save-metric-val">${yeast}g</span></div>`:''}
+        <div class="save-metric-row"><span class="save-metric-key">Ferment</span><span class="save-metric-val">${fermentLabel}</span></div>
+        <div class="save-metric-row"><span class="save-metric-key">Total time</span><span class="save-metric-val">${S.hours}h</span></div>
+        <div class="save-metric-row"><span class="save-metric-key">Balls</span><span class="save-metric-val">${ballDesc}</span></div>
+      </div>
+      <div>
+        <div class="save-form-label">Notes</div>
+        <textarea class="save-textarea" id="save-notes-input" placeholder="Toppings, tweaks, how it turned out..."></textarea>
+      </div>
+      <div class="save-form-actions">
+        <button class="save-name-btn" onclick="confirmSave()" style="flex:1;">Save Recipe</button>
+        <button class="save-name-btn" onclick="savingNew=false;renderSavedList()" style="background:var(--bg3);color:var(--text2);border:1px solid var(--border);">Cancel</button>
+      </div>
     </div>`;
   } else {
     html+=`<button class="save-current" onclick="startSave()">+ Save Current Recipe</button>`;
@@ -692,29 +764,50 @@ function renderSavedList(){
       const ballDesc=(r.ballCount||4)+'× '+(r.ballSize||250)+'g';
       html+=`<div class="saved-item" onclick="loadRecipe(${i})">
         <div class="saved-item-info">
-          <div class="saved-item-name">${r.name}</div>
-          <div class="saved-item-desc">${r.hours}h · ${r.hyd}% · ${fermentLabel} · ${dt(r.rTemp)} · ${typeLabel} · ${ballDesc}</div>
+          <div class="saved-item-name"></div>
+          <div class="saved-item-desc">${r.date?r.date+' · ':''}${r.hours}h · ${r.hyd}% · ${fermentLabel} · ${typeLabel} · ${ballDesc}</div>
+          ${r.notes?`<div class="saved-item-desc saved-item-notes" style="margin-top:2px;font-style:italic;"></div>`:''}
         </div>
         <button class="saved-item-del" onclick="event.stopPropagation();deleteRecipe(${i})" title="Delete">✕</button>
       </div>`;
     });
   }
   el.innerHTML=html;
+  el.querySelectorAll('.saved-item-name').forEach((nameEl,i)=>{
+    if(recipes[i]) nameEl.textContent=recipes[i].name;
+  });
+  el.querySelectorAll('.saved-item-notes').forEach((noteEl,i)=>{
+    if(recipes[i]&&recipes[i].notes){
+      const n=recipes[i].notes;
+      noteEl.textContent=n.length>80?n.substring(0,80)+'…':n;
+    }
+  });
   if(savingNew){
     const inp=document.getElementById('save-name-input');
     if(inp){inp.focus();inp.addEventListener('keydown',e=>{if(e.key==='Enter')confirmSave();});}
   }
 }
 
-function startSave(){savingNew=true;renderSavedList();}
+function startSave(){savingNew=true;renderSavedList();setTimeout(()=>{const inp=document.getElementById('save-name-input');if(inp)inp.focus();},50);}
 
 function confirmSave(){
   const inp=document.getElementById('save-name-input');
+  const notesInp=document.getElementById('save-notes-input');
   const name=(inp?inp.value:'').trim();
   if(!name)return;
+  const notes=(notesInp?notesInp.value:'').trim();
   const recipes=getSavedRecipes();
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('en-GB',{day:'2-digit',month:'2-digit',year:'2-digit'});
+  const flourPerBall=calcDoughBallFlour(S.ballSize,S.hyd,S.saltPc,S.oilPc);
+  const flour=flourPerBall*S.ballCount;
+  const water=Math.round(flour*S.hyd/100);
+  const salt=parseFloat((flour*S.saltPc/100).toFixed(1));
+  const oil=parseFloat((flour*S.oilPc/100).toFixed(1));
   recipes.push({
     name,
+    notes,
+    date:dateStr,
     hours:S.hours,
     hyd:S.hyd,
     fid:S.fid,
@@ -723,7 +816,8 @@ function confirmSave(){
     ballCount:S.ballCount,
     ballSize:S.ballSize,
     saltPc:S.saltPc,
-    oilPc:S.oilPc
+    oilPc:S.oilPc,
+    snapshot:{flour,water,salt,oil}
   });
   setSavedRecipes(recipes);
   savingNew=false;
@@ -762,11 +856,11 @@ function calcDoughBallFlour(ballSize, hyd, saltPc, oilPc) {
 }
 
 function sliderToHours(pos){
-  const raw = 6 * Math.pow(8, pos / 100);
-  return Math.round(Math.min(48, Math.max(6, raw)));
+  const raw = 4 * Math.pow(12, pos / 100);
+  return Math.round(Math.min(48, Math.max(4, raw)));
 }
 function hoursToSlider(h){
-  return Math.round(Math.log(h / 6) / Math.log(8) * 100);
+  return Math.round(Math.log(h / 4) / Math.log(12) * 100);
 }
 
 function calcYeast(fid, rt, hrs, hyd) {
@@ -777,11 +871,11 @@ function calcYeast(fid, rt, hrs, hyd) {
    * Salt at 2.5–3% induces osmotic stress, slowing fermentation.
    * Model uses inverse exponential decay: less yeast for longer ferments.
    */
-  const PRE_YEAST_MINS = 60;           /* gather(5) + mix flour+water(5) + autolyse(45) + incorporate salt/yeast(5) */
+  const PRE_YEAST_MINS = 105;          /* gather(5) + mix(10) + knead×4 with rests(90) */
   const KNEAD_MINS = 15;               /* knead / fold */
   const BALL_AND_PROOF_MINS = 125;     /* divide & ball (5) + 2h final proof (120) */
-  const ROOM_STATIC_MINS = 200;        /* total non-ferment steps for room path */
-  const COLD_STATIC_MINS = 320;        /* room path steps + 2h warm-up after fridge */
+  const ROOM_STATIC_MINS = 230;        /* PRE_YEAST_MINS(105) + BALL_AND_PROOF_MINS(125) */
+  const COLD_STATIC_MINS = 260;        /* gather(5) + mix(10) + knead(90) + divide(5) + final proof(150) */
 
   const k = 2.8;
   const tempMultiplier = Math.pow(2, (rt - 22) / 10);
@@ -839,7 +933,7 @@ function updateTimeLabels(hours){
   if(bakeStarted){
     document.getElementById('start-time-lbl').textContent='Start '+fmtClock(new Date(startTime));
   } else {
-    document.getElementById('start-time-lbl').textContent='6h';
+    document.getElementById('start-time-lbl').textContent='4h';
   }
 }
 
@@ -862,16 +956,75 @@ function calcStepTimes(){
   return times;
 }
 
+/* ===== WAKE LOCK + NOTIFICATION BRIDGE ===== */
+function getCurrentScheduledStep(){
+  if(!bakeStarted||!startTime) return -1;
+  const times=calcStepTimes();
+  if(!times||!times.length) return -1;
+  const now=Date.now();
+  let current=0;
+  for(let i=1;i<times.length;i++){
+    if(now>=times[i].getTime()) current=i;
+    else break;
+  }
+  return current;
+}
+function goToCurrentStep(){
+  if(!bakeStarted) return;
+  const target=(typeof activeTimerStep!=='undefined'&&activeTimerStep>=0) ? activeTimerStep : getCurrentScheduledStep();
+  if(target>=0){ S.step=target; renderMethod(); }
+}
+let _wakeLock=null;
+async function acquireWakeLock(){
+  if(!('wakeLock' in navigator)) return;
+  try{
+    _wakeLock=await navigator.wakeLock.request('screen');
+    _wakeLock.addEventListener('release',()=>{_wakeLock=null;});
+  }catch(e){}
+}
+function releaseWakeLock(){
+  if(_wakeLock){try{_wakeLock.release();}catch(e){}_wakeLock=null;}
+}
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible'&&bakeStarted) acquireWakeLock();
+});
+window.onNotificationTap=function(){
+  if(bakeStarted) goToCurrentStep();
+};
+function notifyBakeService(){
+  if(!bakeStarted) return;
+  const scheduled=(typeof activeTimerStep!=='undefined'&&activeTimerStep>=0) ? activeTimerStep : getCurrentScheduledStep();
+  const ni=scheduled>=0 ? scheduled : S.step;
+  const nstep=steps[ni];
+  if(!nstep) return;
+  const stepTimes=calcStepTimes();
+  const timeStr=bakeStarted&&startTime&&stepTimes[ni]?fmtClock(new Date(stepTimes[ni])):'';
+  const label=nstep.coilFold?'Knead ×4':(nstep.title||'Bake in progress');
+  if(window.BakePlugin) window.BakePlugin.updateStep({step:'Step '+(ni+1)+': '+label, time:timeStr}).catch(function(){});
+  if(window.BakeNotificationPlugin){
+    const total=steps.length;
+    window.BakeNotificationPlugin.update({
+      step:'Step '+(ni+1)+' of '+total,
+      label:label
+    }).catch(function(){});
+  }
+}
+
 function startBake(){
   if(bakeStarted) return;
   bakeStarted=true;
   startTime=Date.now();
   S.step=0;
+  coilFoldCount=0;
+  activeTimerStep=-1;
   const btn=document.getElementById('start-bake-btn');
   btn.innerHTML='<span class="btn-icon">▶</span><span class="btn-label">'+fmtClock(new Date(startTime))+'</span>';
   btn.classList.add('active');
+  acquireWakeLock();
   update();
   renderMethod();
+  notifyBakeService();
+  if(window.BakeNotificationPlugin) window.BakeNotificationPlugin.show().catch(function(){});
   if(tlVisible) renderTimeline();
   try{saveSession();}catch(e){}
 }
@@ -879,6 +1032,9 @@ function startBake(){
 function resetBakeState(){
   bakeStarted=false;
   startTime=Date.now();
+  releaseWakeLock();
+  if(window.BakePlugin) window.BakePlugin.stop().catch(function(){});
+  if(window.BakeNotificationPlugin) window.BakeNotificationPlugin.dismiss().catch(function(){});
   try{localStorage.removeItem('pd_session');}catch(e){}
   const btn=document.getElementById('start-bake-btn');
   btn.innerHTML='<span class="btn-icon">▶</span><span class="btn-label">Begin</span>';
@@ -927,7 +1083,7 @@ function renderDoughBalls() {
 function selectFerment(id){
   S.fid=id;
   if(id==='cold' && S.hours<14){S.hours=14;document.getElementById('hours-slider').value=hoursToSlider(14);}
-  if(id==='room' && S.hours>24){S.hours=24;document.getElementById('hours-slider').value=hoursToSlider(24);}
+  if(id==='room' && S.hours>30){S.hours=30;document.getElementById('hours-slider').value=hoursToSlider(30);}
   ['room','cold'].forEach(f=>{
     const col=FERMENTS[f].color, sel=f===id;
     document.getElementById('opt-'+f).classList.toggle('sel',sel);
@@ -943,7 +1099,7 @@ function update(){
   S.hours=sliderToHours(+document.getElementById('hours-slider').value);
   S.hyd=+document.getElementById('hyd-slider').value;
   S.rTemp=+document.getElementById('temp-slider').value;
-  if(S.fid==='room' && S.hours>24){S.hours=24;document.getElementById('hours-slider').value=hoursToSlider(24);}
+  if(S.fid==='room' && S.hours>30){S.hours=30;document.getElementById('hours-slider').value=hoursToSlider(30);}
   if(S.fid==='cold' && S.hours<14){S.hours=14;document.getElementById('hours-slider').value=hoursToSlider(14);}
   const {hours,hyd,fid,rTemp,ballCount,ballSize,saltPc,oilPc}=S;
   const flourPerBall=calcDoughBallFlour(ballSize,hyd,saltPc,oilPc);
@@ -1021,49 +1177,37 @@ function dt(c){ return S.tempScale==='F'?Math.round(c*9/5+32)+'°F':c+'°C'; }
 function buildSteps(ing,hyd,fid,hours){
   const isNeap=S.pizzaType==='neap';
   const flourDesc=isNeap?'Tipo 00 or strong bread flour':'high-gluten bread flour';
-  const oilStep=ing.oil>0?`\n• ${dw(ing.oil)} extra virgin olive oil`:'';
-  const oilNote=ing.oil>0?'\n\nAdd the oil last — after the flour has absorbed the water. Oil coats the proteins and blocks gluten formation if it gets in too early.':'';
-  const bakeTemp=isNeap?300:250;
-  const bakeTime=isNeap?'3–5 minutes':'10–14 minutes';
-  const bakeDesc=isNeap
-    ?`Bake at ${dt(bakeTemp)} or as hot as your oven will go. A pizza stone or steel is essential — preheat it for at least 45 minutes.\n\nAt these temperatures, the pizza cooks in 3–5 minutes. The base should be charred in spots, the cornicione puffed and leopard-spotted. Watch it — the difference between perfect and burnt is about 30 seconds.`
-    :`Bake at ${dt(bakeTemp)} on a preheated pizza stone or steel. Preheat the stone for at least 45 minutes — it needs to be properly saturated with heat.\n\nBake for 10–14 minutes until the base is crisp and golden and the cheese is bubbling with brown spots. Every oven is different — you are looking for colour, not just time.`;
+  const oilStep=ing.oil>0?`, ${dw(ing.oil)} extra virgin olive oil`:'';
 
   steps=[
     {title:'Gather Equipment',icon:'🛠',timer:null,tip:null,
      body:`• Large bowl\n• Digital scales\n• Bench scraper or sharp knife\n• Spatula\n• Wooden spoon\n• Proofing tray`},
-    {title:'Mix Flour & Water',icon:'💧',timer:null,
-     body:`Weigh out ${dw(ing.flour)} ${flourDesc} and ${dw(ing.water)} water. Pour the water into the bowl, add the flour, and mix until no dry flour remains. It will look rough and shaggy — that is fine.\n\nDo not add salt, yeast, or oil yet. The autolyse works on flour and water alone.`,
-     tip:'Mixing flour and water first lets the proteins hydrate and begin forming gluten on their own — without interference from salt or yeast. You will need significantly less kneading as a result.'},
-    {title:'Autolyse',icon:'⏱',timer:45,
-     body:`Cover the bowl tightly and leave to rest for 45 minutes at room temperature.\n\nDuring this time the flour absorbs the water fully and gluten begins forming passively — no mechanical effort required. When you come back, the dough will be noticeably smoother and more cohesive than when you left it.`,
-     tip:'This is not optional time filler. Autolyse dramatically reduces the kneading needed and produces a more extensible dough. A 45-minute rest does more gluten work than 5 minutes of aggressive kneading.'},
-    {title:'Add Salt & Yeast',icon:'🧂',timer:null,
-     body:`Dissolve ${dw(ing.salt)} salt and ${dw(ing.yeast)} instant dry yeast (or ${dw(Math.round(ing.yeast*3*10)/10)} fresh yeast) in a splash of water taken from your measured amount, then work it into the dough.${oilStep}${oilNote}\n\nFold and squeeze until fully incorporated — no streaks, no dry patches.`,
-     tip:'Salt and yeast fight each other if they sit together dry. Dissolving both in a little water before adding them to the dough gives you even distribution without killing the yeast.'},
-    {title:'Knead',icon:'🤲',timer:15,
-     body:`Tip the dough onto a clean, unfloured surface. Knead for 8–12 minutes — less than you would need without the autolyse. The dough should pass the windowpane test: stretch a small piece thin enough to see light through without it tearing.\n\nIf it tears, keep going. The gluten network is not quite there yet.`,
-     tip:'No flour on the surface. The stickiness is friction — friction builds gluten. Flour on the bench just shortens the gluten network and makes a tighter, less extensible dough.'},
+    {title:'Mix All Ingredients',icon:'💧',timer:null,
+     body:`Weigh out ${dw(ing.flour)} ${flourDesc} and ${dw(ing.water)} warm water (${dt(25)}) into your bowl.\n\nAdd directly: ${dw(ing.salt)} fine sea salt, ${dw(ing.yeast)} instant dry yeast (or ${dw(Math.round(ing.yeast*3*10)/10)} fresh yeast)${oilStep}. Mix until no dry flour remains.`,
+     tip:'Add salt and yeast on opposite sides of the bowl before mixing — they are fine once in water, but avoid letting them sit in direct contact dry.'},
+    {title:'Knead & Rest x4',subtitle:'25 min apart · 1.5 hours',icon:'🤲',coilFold:true,timer:null,
+     body:`Knead for 5 minutes — push, fold, slap, and punch. Cover the dough and rest 25 minutes. Repeat four times total.\n\nKneading is hard work — this method develops the gluten structure without killing you. By round 4 the dough should feel smooth and elastic. Search YouTube for kneading techniques and how to perform a windowpane test.`,
+     tip:'No flour on the surface. Stickiness is friction — friction builds gluten. Wet hands if it is sticking badly, not flour.'},
     ...(fid==='room'?[{title:'Bulk Ferment',icon:'⏱',
-      timer: Math.round(Math.max(30, (hours*60) - 200)),
-      body:`Lightly oil the bowl, place the dough back in, and cover tightly with clingfilm or a damp cloth. Leave at room temperature until roughly doubled in size.\n\nBulk ferment: approximately ${Math.max(0.5,((hours*60 - 200)/60)).toFixed(1)} hours at ${dt(S.rTemp)}. The yeast model has calculated your quantity for this exact duration and temperature. Do not go purely by the clock — the dough is ready when it has visibly puffed and a poke with a floured finger springs back slowly.`,
+      timer: Math.round(Math.max(30, (hours*60) - 230)),
+      body:`Lightly oil a bowl, place the dough in, and cover with clingfilm or a damp cloth. Leave at your desired room temperature until roughly doubled in size.\n\nApproximately ${(()=>{const m=Math.max(30,(hours*60-230));const h=Math.floor(m/60);const min=m%60;return h>0&&min>0?h+'h '+min+'m':h>0?h+'h':min+'m';})() } at ${dt(S.rTemp)}.`,
       tip:'A warm spot speeds things up, a cool spot slows them down. The oven light trick works — close the door, leave the light on.'}]:[]),
-    ...(fid==='cold'?[{title:'Initial Rise',icon:'⏱',timer:120,
-      body:'Lightly oil the bowl, place the dough back in, and cover tightly. Leave at room temperature for 2 hours. The dough should be visibly puffy but not yet doubled — you want it active but not exhausted before it goes into the fridge.',
-      tip:'Do not let the dough fully double before refrigerating. It will continue to ferment slowly in the fridge. If it is already maxed out, it will overproof overnight.'}]:[]),
-    ...(fid==='cold'?[{title:'Cold Retard',icon:'❄️',
-      timer: Math.round(Math.max(240, (hours*60) - 320)),
-      body:`Cover the bowl tightly and refrigerate at ${dt(3)}–${dt(5)}.\n\nCold retard: approximately ${Math.max(4,((hours*60 - 320)/60)).toFixed(1)} hours. While the yeast slows to a crawl, the flour's amylase and protease enzymes keep working — breaking down starches into sugars and proteins into amino acids. These accumulate because the dormant yeast is not consuming them. That biochemical stockpile is what drives the Maillard reaction in the oven: deep browning, heavy blistering, complex flavour.`,
+    ...(fid==='room'?[{title:'Divide & Ball',icon:'⚖️',timer:null,
+     body:`Tip the dough onto a lightly floured surface and divide into ${S.ballCount} ${S.ballCount===1?'piece':'pieces'} of approximately ${dw(S.ballSize)} each. Shape each piece into a tight ball: fold the edges underneath, then cup your hands around the dough and drag it toward you on an unfloured surface. The friction pulls the surface taut. You want a smooth, tight skin with no seams on top. Watch a YouTube video if unsure. Place on a lightly floured tray, cover with clingfilm, and leave to final proof.`,
+     tip:'The ball-up matters more than most people think. A tight ball with good surface tension opens into an even disc. A slack, ragged ball tears and has thin spots.'}]:[]),
+    ...(fid==='room'?[{title:'Final Proof',icon:'⏱',timer:120,
+     body:`Leave the balled dough covered at room temperature for 2 hours. They should be noticeably puffed, soft to the touch, and jiggle when you shake the tray.\n\nWhile you wait, preheat your oven with the pizza stone or steel inside. As hot as it goes. At least 45 minutes.`,
+     tip:'The test: press gently with a floured finger — if the indent springs back slowly and partially, it is ready. If it springs back immediately, give it more time.'}]:[]),
+    ...(fid==='cold'?[{title:'Divide & Ball',icon:'⚖️',timer:null,
+     body:`Tip the dough onto a lightly floured surface and divide into ${S.ballCount} ${S.ballCount===1?'piece':'pieces'} of approximately ${dw(S.ballSize)} each. Shape each piece into a tight ball: fold the edges underneath, then cup your hands around the dough and drag it toward you on an unfloured surface. The friction pulls the surface taut. You want a smooth, tight skin with no seams on top. Watch a YouTube video if unsure. Place in a lightly oiled container, cover tightly, and put in the fridge.`,
+     tip:'The ball-up matters more than most people think. A tight ball with good surface tension opens into an even disc. A slack, ragged ball tears and has thin spots.'}]:[]),
+    ...(fid==='cold'?[{title:'Cold Ferment',icon:'❄️',
+      timer: Math.round(Math.max(240, (hours*60) - 260)),
+      body:`Refrigerate at ${dt(3)}–${dt(5)}.\n\nApproximately ${(()=>{const m=Math.max(240,(hours*60-260));const h=Math.floor(m/60);const min=m%60;return h>0&&min>0?h+'h '+min+'m':h>0?h+'h':min+'m';})() }. The yeast slows to a crawl while enzymes keep working — breaking down starches into sugars and proteins into amino acids. That stockpile drives the Maillard reaction in the oven: deep browning, heavy blistering, complex flavour.`,
       tip:'The fridge is doing the hard work. 24 hours produces noticeably better results than 8 hours at room temp. 48–72 hours is where it gets exceptional.'}]:[]),
-    ...(fid==='cold'?[{title:'Warm Up',icon:'🌡',timer:120,
-      body:'Remove the dough from the fridge 2 hours before you plan to shape. Cold dough is tight and will tear if you try to open it. It needs to relax and come back to room temperature.\n\nLeave it covered on the counter. By the time you shape it, it should be soft, puffy, and room temperature throughout.',
-      tip:null}]:[]),
-    {title:'Divide & Ball',icon:'⚖️',timer:null,
-     body:`Tip the dough onto a lightly floured surface. Divide into ${S.ballCount} ${S.ballCount===1?'piece':'pieces'} of approximately ${dw(S.ballSize)} each.\n\nShape each piece into a tight ball: fold the edges underneath, then cup your hands around the dough and drag it toward you on the unfloured surface. The friction pulls the surface taut. You want a smooth, tight skin with no seams on top.\n\nPlace on a lightly floured tray, cover with clingfilm, and leave to final proof.`,
-     tip:'The ball-up matters more than most people think. A tight ball with good surface tension opens into an even disc. A slack, ragged ball tears and has thin spots.'},
-    {title:'Final Proof',icon:'⏱',timer:120,
-     body:`Leave the balled dough covered at room temperature for 2 hours.\n\nThis is not just a bench rest — it is a full final fermentation phase. The dough balls need time to relax the gluten after balling, finish their rise, and develop enough internal gas structure to open properly. At 2 hours they should be noticeably puffed, soft to the touch, and jiggle when you shake the tray.\n\nWhile you wait, preheat your oven with the pizza stone or steel inside. As hot as it goes. At least 45 minutes.`,
-     tip:'Cold dough from the fridge will need the full 2 hours. Room temp dough may be ready slightly sooner. The test: press gently with a floured finger — if the indent springs back slowly and partially, it is ready. If it springs back immediately, give it more time.'},
+    ...(fid==='cold'?[{title:'Final Proof',icon:'⏱',timer:150,
+      body:`Remove the dough balls from the fridge and leave covered at room temperature for 2.5 hours. Cold dough is tight — it needs time to relax and warm through before it will open properly.\n\nWhile you wait, preheat your oven with the pizza stone or steel inside. As hot as it goes. At least 45 minutes.`,
+      tip:'The test: press gently with a floured finger — if the indent springs back slowly and partially, it is ready. If it springs back immediately, give it more time.'}]:[]),
     {title:'Open & Top',icon:'🍕',timer:null,
      body:isNeap
       ?'Generously flour the ball and your surface. Press from the centre outward with your fingertips, leaving a 2cm rim untouched — that becomes the cornicione. Lift and drape over your knuckles, letting gravity stretch it. Rotate as you go. Aim for a thin, translucent centre with a thick puffy edge.\n\nTop lightly. San Marzano tomatoes, fior di latte or mozzarella, fresh basil, olive oil. Neapolitan pizza is not a platform for everything in the fridge.'
@@ -1076,6 +1220,7 @@ function renderMethod(){
   if(!steps.length)return;
   const i=S.step, step=steps[i], total=steps.length;
   const stepTimes=calcStepTimes();
+  notifyBakeService();
   document.getElementById('step-counter').textContent=window.innerWidth<=768?`Step ${i+1}/${total}`:`Step ${i+1} of ${total}`;
   document.getElementById('prog-fill').style.width=`${((i+1)/total)*100}%`;
 
@@ -1088,14 +1233,14 @@ function renderMethod(){
     const isActive=activeTimerStep===i;
     let pillLabel, pillTitle;
     if(done===0){
-      pillLabel='⏰ Fold 1 of 4';
-      pillTitle='Tap to start fold 1 and set 30m timer';
+      pillLabel='⏰ Knead 1 of 4';
+      pillTitle='Tap to start knead 1 and set 25m rest timer';
     } else if(done<4){
-      pillLabel=`⏰ Fold ${done+1} of 4`;
-      pillTitle=`Tap to do fold ${done+1} and set 30m timer`;
+      pillLabel=`⏰ Knead ${done+1} of 4`;
+      pillTitle=`Tap to do knead ${done+1} and set 25m rest timer`;
     } else {
-      pillLabel='⏰ Fold 4 of 4';
-      pillTitle='All 4 folds done — hit Next Step';
+      pillLabel='⏰ Knead 4 of 4';
+      pillTitle='All 4 kneads done — hit Next Step';
     }
     const activeClass=(isActive||allDone)?' active':'';
     const clickHandler=allDone?'':(`doCoilFold(${i})`);
@@ -1135,11 +1280,11 @@ function pressTimer(stepIdx, secs, msg){
 function doCoilFold(stepIdx){
   if(coilFoldCount>=4) return;
   coilFoldCount++;
-  const secs=30*60;
-  const label=`Pizza Dough - Fold ${coilFoldCount} of 4`;
+  const secs=25*60;
+  const label=`Pizza Dough - Knead ${coilFoldCount} of 4`;
   if(window.TimerPlugin){
     activeTimerStep=stepIdx;
-    if(coilFoldCount<4) setTimerNative(secs, label, 30);
+    if(coilFoldCount<4) setTimerNative(secs, label, 25);
   }
   renderMethod();
 }
@@ -1205,7 +1350,7 @@ function renderTimeline(){
     const clockStr=stepTimes?fmtClock(stepTimes[i]):'';
     const durDisplay=stepTimes?(clockStr+(dur?' · '+dur:'')):(dur||'');
     const desc=s.body;
-    const displayTitle=s.coilFold?'Coil Folds ×4':s.title;
+    const displayTitle=s.coilFold?'Knead ×4':s.title;
     const coilLabel=s.coilFold&&coilFoldCount>0?` <span style="font-size:0.78rem;font-weight:700;color:var(--green);margin-left:4px">×${coilFoldCount}</span>`:'';
     const timerDot=isTimerActive?` <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-left:6px;vertical-align:middle;flex-shrink:0"></span>`:'';
     return `<div class="tl-item">
@@ -1347,5 +1492,19 @@ function stopRepeat(evt){
   _repeatTimer=null;
   _repeatInterval=null;
 }
+
+/* First-visit guide pulse */
+if(!localStorage.getItem('pd_guide_seen')){
+  setTimeout(()=>{
+    const btn=document.querySelector('[onclick="showGuide()"]');
+    if(!btn)return;
+    btn.classList.add('guide-btn-pulse');
+    btn.addEventListener('click',()=>{
+      btn.classList.remove('guide-btn-pulse');
+      localStorage.setItem('pd_guide_seen','1');
+    },{once:true});
+  }, 1200);
+}
+
 </script>
 </html>
