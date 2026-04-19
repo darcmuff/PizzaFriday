@@ -145,6 +145,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-body);background:va
 .fradio{width:14px;height:14px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;transition:all .2s ease}
 .flabel{font-family:var(--font-display);font-weight:700;font-size:1.1rem;letter-spacing:.02em;white-space:nowrap}
 .fdesc{font-size:0.82rem;color:var(--text3);margin-left:8px;line-height:1.3;white-space:nowrap}
+.fdesc-short{display:none}.fdesc-full{display:inline}
 
 /* ===== DOUGH BALLS SECTION ===== */
 .db-section{gap:0}
@@ -170,7 +171,8 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-body);background:va
 table{width:100%;border-collapse:collapse}
 th{padding:3px 0;font-family:var(--font-body);font-size:0.72rem;color:var(--text3);letter-spacing:.18em;text-transform:uppercase;border-bottom:1px solid var(--border);font-weight:700}
 td{padding:4px 0;font-size:0.95rem;color:var(--text);border-bottom:1px solid var(--border)}
-td.wt{font-size:1.25rem;font-weight:700;color:var(--accent);text-align:right;font-variant-numeric:tabular-nums}
+td:first-child{width:100%}
+td.wt{font-size:1.25rem;font-weight:700;color:var(--accent);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 td.pc{font-size:0.88rem;color:var(--text3);text-align:right;padding-left:10px;font-weight:600}
 .total-row td{font-size:1rem;color:var(--text2);padding-top:5px;border-bottom:none}
 .total-row td.wt{font-size:1.15rem;color:var(--text3)}
@@ -239,6 +241,9 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
   .toggle-btn{padding:5px 4px;font-size:10px;letter-spacing:.02em}
   #page{grid-template-columns:1fr;grid-template-rows:auto;height:auto;padding:10px 12px 24px;gap:10px;overflow:visible}
   .section{flex:none;padding:14px 16px;overflow:visible;min-height:0}
+  #slider-card{order:1}
+  .db-section{order:2}
+  #ingredients-card{order:3}
   #method-card{grid-column:1;grid-row:auto;order:10;height:70vh;max-height:70vh;flex:none!important;display:flex;flex-direction:column;overflow:hidden}
   #method-view{flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden}
   #timeline-view{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
@@ -246,6 +251,7 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
   .step-content{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
   .nav-row{flex-shrink:0;margin-top:10px;padding-top:10px;border-top:1px solid var(--border2)}
   .fdesc{white-space:normal}
+  .fdesc-short{display:inline}.fdesc-full{display:none}
   .flabel{font-size:1rem}
   .db-steppers{grid-template-columns:1fr 1fr;gap:8px 12px}
   .db-stepper button{width:38px;height:38px;font-size:18px}
@@ -502,7 +508,7 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
   </div>
 
   <!-- ROW 1 RIGHT: INGREDIENTS -->
-  <div class="section">
+  <div class="section" id="ingredients-card">
     <div class="card-title" id="rec-title" style="margin-bottom:4px">Ingredients</div>
     <table><tbody id="rec-tbody"></tbody></table>
   </div>
@@ -554,11 +560,11 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
     <div class="sec-label">Ferment Type</div>
     <div class="fopt" id="opt-cold" onclick="selectFerment('cold')">
       <div class="fradio" id="radio-cold" style="border-color:#2a6898;background:transparent"></div>
-      <div style="display:flex;align-items:baseline"><div class="flabel" id="lbl-cold" style="color:#2a6898">Cold Ferment</div><div class="fdesc">Overnight fridge. Better flavour.</div></div>
+      <div style="display:flex;align-items:baseline"><div class="flabel" id="lbl-cold" style="color:#2a6898">Cold Ferment</div><div class="fdesc"><span class="fdesc-full">Overnight fridge. Better flavour.</span><span class="fdesc-short">Overnight fridge.</span></div></div>
     </div>
     <div class="fopt sel" id="opt-room" onclick="selectFerment('room')">
       <div class="fradio" id="radio-room" style="border-color:#b85c00;background:#b85c00"></div>
-      <div style="display:flex;align-items:baseline"><div class="flabel" id="lbl-room" style="color:#b85c00">Room Temp</div><div class="fdesc">Same-day bake. Simple.</div></div>
+      <div style="display:flex;align-items:baseline"><div class="flabel" id="lbl-room" style="color:#b85c00">Room Temp</div><div class="fdesc"><span class="fdesc-full">Same-day bake. Simple.</span><span class="fdesc-short">Room temp.</span></div></div>
     </div>
   </div>
 
@@ -1132,7 +1138,7 @@ function update(){
     [flourLabel,dw(ing.flour),'100%',''],
     ['Water',dw(ing.water),hyd+'%',''],
     [saltLabel,dw(ing.salt),saltPc+'%',''],
-    [`Instant dry yeast <span style="margin-left:6px;">(${dw(Math.round(ing.yeast*3*10)/10)} fresh)</span>`,dw(ing.yeast),yp+'%',''],
+    [`Instant dry yeast <span style="margin-left:4px;font-size:0.78rem;color:var(--text3);">(${dw(Math.round(ing.yeast*3*10)/10)} fresh)</span>`,dw(ing.yeast),yp+'%',''],
     ['Extra virgin olive oil',oilMuted?'—':dw(ing.oil),oilPc+'%',oilStyle],
   ].map(([n,w,p,s])=>`<tr${s?' style="'+s+'"':''}><td>${n}</td><td class="wt">${w}</td><td class="pc">${p}</td></tr>`).join('')
   +`<tr class="total-row"><td>Total dough</td><td class="wt">~${dw(total)}</td><td></td></tr>`;
