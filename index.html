@@ -203,6 +203,13 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
 .m-title{font-size:1.55rem;font-weight:700;color:var(--text4);line-height:1.2;letter-spacing:.01em}
 .m-body-text{font-size:1.1rem;color:var(--text);line-height:1.55;white-space:pre-line;overflow:visible;word-wrap:break-word}
 
+/* ===== STEP VIDEO EMBED ===== */
+.video-wrap{margin-top:16px}
+.video-container{border-radius:10px;overflow:hidden;position:relative;padding-bottom:56.25%;height:0;background:#000;border:1px solid var(--border)}
+.video-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0}
+.video-label{display:flex;align-items:center;gap:6px;margin-bottom:6px;font-size:0.75rem;text-transform:uppercase;letter-spacing:.14em;color:var(--text3);font-weight:700}
+.video-label svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
 /* ===== NAV BUTTONS ===== */
 .nav-row{display:flex;gap:10px;margin-top:12px;flex-shrink:0}
 .nav-prev,.nav-next{padding:13px;border-radius:8px;font-size:0.92rem;cursor:pointer;font-family:var(--font-body);flex:1;text-align:center;transition:all .25s ease;font-weight:700;letter-spacing:.04em}
@@ -758,6 +765,7 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
           </div>
           <div class="m-body-text" id="s-body"></div>
           <div id="tip-area"></div>
+          <div id="video-area"></div>
         </div>
         <div class="nav-row">
           <button class="nav-prev" id="prev-btn" onclick="prevStep()">← Previous</button>
@@ -1376,35 +1384,35 @@ function buildSteps(ing,hyd,fid,hours){
   const oilStep=ing.oil>0?`, ${dw(ing.oil)} extra virgin olive oil`:'';
 
   steps=[
-    {title:'Gather Equipment',icon:'🛠',timer:null,tip:null,
+    {title:'Gather Equipment',icon:'🛠',timer:null,tip:null,video:null,
      body:`• Large bowl\n• Digital scales\n• Bench scraper or sharp knife\n• Spatula\n• Wooden spoon\n• Proofing tray`},
-    {title:'Mix All Ingredients',icon:'💧',timer:null,
+    {title:'Mix All Ingredients',icon:'💧',timer:null,video:null,
      body:`Weigh out ${dw(ing.flour)} ${flourDesc} and ${dw(ing.water)} warm water (${dt(25)}) into your bowl.\n\nAdd directly: ${dw(ing.salt)} fine sea salt, ${dw(ing.yeast)} instant dry yeast (or ${dw(Math.round(ing.yeast*3*10)/10)} fresh yeast)${oilStep}. Mix until no dry flour remains.`,
      tip:'Add salt and yeast on opposite sides of the bowl before mixing — they are fine once in water, but avoid letting them sit in direct contact dry.'},
-    {title:'Knead & Rest x4',subtitle:'25 min apart · 1.5 hours',icon:'🤲',coilFold:true,timer:null,
-     body:`Knead for 5 minutes — push, fold, slap, and punch. Cover the dough and rest 25 minutes. Repeat four times total. Kneading is hard work — this method develops the gluten structure without killing you. By round 4 the dough should feel smooth and elastic. Search YouTube for kneading techniques and how to perform a windowpane test.`,
+    {title:'Knead & Rest x4',subtitle:'25 min apart · 1.5 hours',icon:'🤲',coilFold:true,timer:null,video:'Y_BBqa05IxY',
+     body:`Knead for 5 minutes — push, fold, slap, and punch. Cover the dough and rest 25 minutes. Repeat four times total. Kneading is hard work — this method develops the gluten structure without killing you. By round 4 the dough should feel smooth and elastic. Use the windowpane test to check — stretch a small piece thin enough to see light through it without tearing.`,
      tip:'No flour on the surface. Stickiness is friction — friction builds gluten. Wet hands if it is sticking badly, not flour.'},
-    ...(fid==='room'?[{title:'Bulk Ferment',icon:'⏱',
+    ...(fid==='room'?[{title:'Bulk Ferment',icon:'⏱',video:null,
       timer: Math.round(Math.max(30, (hours*60) - 230)),
       body:`Lightly oil a bowl, place the dough in, and cover with clingfilm or a damp cloth. Leave at your desired room temperature until roughly doubled in size.\n\nApproximately ${(()=>{const m=Math.max(30,(hours*60-230));const h=Math.floor(m/60);const min=m%60;return h>0&&min>0?h+'h '+min+'m':h>0?h+'h':min+'m';})() } at ${dt(S.rTemp)}.`,
       tip:'A warm spot speeds things up, a cool spot slows them down. The oven light trick works — close the door, leave the light on.'}]:[]),
-    ...(fid==='room'?[{title:'Divide & Ball',icon:'⚖️',timer:null,
-     body:`Tip the dough onto a lightly floured surface and divide into ${S.ballCount} ${S.ballCount===1?'piece':'pieces'} of approximately ${dw(S.ballSize)} each. Shape each piece into a tight ball: fold the edges underneath, then cup your hands around the dough and drag it toward you on an unfloured surface. The friction pulls the surface taut. You want a smooth, tight skin with no seams on top. Watch a YouTube video if unsure. Place on a lightly floured tray, cover with clingfilm, and leave to final proof.`,
+    ...(fid==='room'?[{title:'Divide & Ball',icon:'⚖️',timer:null,video:'AmCRtCHPfyI',
+     body:`Tip the dough onto a lightly floured surface and divide into ${S.ballCount} ${S.ballCount===1?'piece':'pieces'} of approximately ${dw(S.ballSize)} each. Shape each piece into a tight ball: fold the edges underneath, then cup your hands around the dough and drag it toward you on an unfloured surface. The friction pulls the surface taut. You want a smooth, tight skin with no seams on top. Place on a lightly floured tray, cover with clingfilm, and leave to final proof.`,
      tip:'The ball-up matters more than most people think. A tight ball with good surface tension opens into an even disc. A slack, ragged ball tears and has thin spots.'}]:[]),
-    ...(fid==='room'?[{title:'Final Proof',icon:'⏱',timer:120,
+    ...(fid==='room'?[{title:'Final Proof',icon:'⏱',timer:120,video:null,
      body:`Leave the balled dough covered at room temperature for 2 hours. They should be noticeably puffed, soft to the touch, and jiggle when you shake the tray.\n\nWhile you wait, preheat your oven with the pizza stone or steel inside. As hot as it goes. At least 45 minutes.`,
      tip:'The test: press gently with a floured finger — if the indent springs back slowly and partially, it is ready. If it springs back immediately, give it more time.'}]:[]),
-    ...(fid==='cold'?[{title:'Divide & Ball',icon:'⚖️',timer:null,
-     body:`Tip the dough onto a lightly floured surface and divide into ${S.ballCount} ${S.ballCount===1?'piece':'pieces'} of approximately ${dw(S.ballSize)} each. Shape each piece into a tight ball: fold the edges underneath, then cup your hands around the dough and drag it toward you on an unfloured surface. The friction pulls the surface taut. You want a smooth, tight skin with no seams on top. Watch a YouTube video if unsure. Place in a lightly oiled container, cover tightly, and put in the fridge.`,
+    ...(fid==='cold'?[{title:'Divide & Ball',icon:'⚖️',timer:null,video:'AmCRtCHPfyI',
+     body:`Tip the dough onto a lightly floured surface and divide into ${S.ballCount} ${S.ballCount===1?'piece':'pieces'} of approximately ${dw(S.ballSize)} each. Shape each piece into a tight ball: fold the edges underneath, then cup your hands around the dough and drag it toward you on an unfloured surface. The friction pulls the surface taut. You want a smooth, tight skin with no seams on top. Place in a lightly oiled container, cover tightly, and put in the fridge.`,
      tip:'The ball-up matters more than most people think. A tight ball with good surface tension opens into an even disc. A slack, ragged ball tears and has thin spots.'}]:[]),
-    ...(fid==='cold'?[{title:'Cold Ferment',icon:'❄️',
+    ...(fid==='cold'?[{title:'Cold Ferment',icon:'❄️',video:null,
       timer: Math.round(Math.max(240, (hours*60) - 260)),
       body:`Refrigerate at ${dt(3)}–${dt(5)}.\n\nApproximately ${(()=>{const m=Math.max(240,(hours*60-260));const h=Math.floor(m/60);const min=m%60;return h>0&&min>0?h+'h '+min+'m':h>0?h+'h':min+'m';})() }. The yeast slows to a crawl while enzymes keep working — breaking down starches into sugars and proteins into amino acids. That stockpile drives the Maillard reaction in the oven: deep browning, heavy blistering, complex flavour.`,
       tip:'The fridge is doing the hard work. 24 hours produces noticeably better results than 8 hours at room temp. 48–72 hours is where it gets exceptional.'}]:[]),
-    ...(fid==='cold'?[{title:'Final Proof',icon:'⏱',timer:150,
+    ...(fid==='cold'?[{title:'Final Proof',icon:'⏱',timer:150,video:null,
       body:`Remove the dough balls from the fridge and leave covered at room temperature for 2.5 hours. Cold dough is tight — it needs time to relax and warm through before it will open properly.\n\nWhile you wait, preheat your oven with the pizza stone or steel inside. As hot as it goes. At least 45 minutes.`,
       tip:'The test: press gently with a floured finger — if the indent springs back slowly and partially, it is ready. If it springs back immediately, give it more time.'}]:[]),
-    {title:'Open & Top',icon:'🍕',timer:null,
+    {title:'Open & Top',icon:'🍕',timer:null,video:isNeap?'4xa_iItp8GA':'1qiEJ96GKuI',
      body:isNeap
       ?'Generously flour the ball and your surface. Press from the centre outward with your fingertips, leaving a 2cm rim untouched — that becomes the cornicione. Lift and drape over your knuckles, letting gravity stretch it. Rotate as you go. Aim for a thin, translucent centre with a thick puffy edge.\n\nTop lightly. San Marzano tomatoes, fior di latte or mozzarella, fresh basil, olive oil. Neapolitan pizza is not a platform for everything in the fridge.'
       :'Flour the ball and stretch by hand or rolling pin — NY style does not need a puffy cornicione, so go thinner and more even. Aim for a uniform disc about 35cm (14") across.\n\nTop with a thin layer of cooked tomato sauce, low-moisture mozzarella, and whatever you like. Do not overload it or the base will not crisp.',
@@ -1460,6 +1468,12 @@ function renderMethod(){
   document.getElementById('s-body').textContent=step.body;
 
   document.getElementById('tip-area').innerHTML='';
+  const videoArea=document.getElementById('video-area');
+  if(step.video){
+    videoArea.innerHTML=`<div class="video-wrap"><div class="video-label"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21"/></svg>Watch technique</div><div class="video-container"><iframe src="https://www.youtube.com/embed/${step.video}?rel=0&modestbranding=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy"></iframe></div></div>`;
+  } else {
+    videoArea.innerHTML='';
+  }
   document.getElementById('prev-btn').disabled=i===0;
   const nb=document.getElementById('next-btn');
   nb.disabled=i===total-1;
