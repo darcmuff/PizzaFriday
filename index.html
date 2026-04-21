@@ -138,6 +138,70 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-body);background:va
 #timeline-view{display:none;flex:1;overflow-y:auto;overflow-x:hidden;min-height:0;scrollbar-width:thin;scrollbar-color:var(--border) var(--bg2);flex-direction:column;padding-right:5px}
 #timeline-view.show{display:flex}
 
+/* ===== DESKTOP FOCUS MODE (right-half fullscreen) ===== */
+#focus-exit{display:none}
+@media(min-width:769px){
+  #method-card.focus-mode{
+    position:fixed!important;
+    top:0;right:0;bottom:0;
+    left:50%;
+    width:50%;
+    height:100vh!important;
+    z-index:950;
+    margin:0;
+    border-radius:0;
+    border:none;
+    border-left:1px solid var(--border);
+    padding:18px 28px!important;
+    background:var(--bg2);
+    box-shadow:-4px 0 24px rgba(0,0,0,0.12);
+    animation:focus-slide-right .3s cubic-bezier(.4,0,.2,1);
+  }
+  @keyframes focus-slide-right{
+    from{transform:translateX(40px);opacity:0.5}
+    to{transform:translateX(0);opacity:1}
+  }
+  #method-card.focus-mode #focus-exit{
+    display:inline-flex;
+    align-items:center;justify-content:center;
+    width:36px;height:36px;
+    border-radius:8px;
+    border:1px solid var(--border);
+    background:var(--bg3);
+    color:var(--text2);
+    font-size:18px;
+    cursor:pointer;
+    font-family:var(--font-body);
+    flex-shrink:0;
+    transition:all .15s ease;
+  }
+  #method-card.focus-mode #focus-exit:hover{background:var(--bg4);color:var(--text);border-color:var(--text3)}
+  #method-card.focus-mode #start-bake-btn{display:none}
+  /* Desktop resume FAB — positioned bottom-right of the right column */
+  #resume-fab{
+    display:none;
+    position:fixed;
+    right:32px;bottom:24px;
+    z-index:800;
+    padding:10px 22px;
+    border-radius:10px;
+    border:2px solid var(--border);
+    background:var(--bg);
+    color:var(--accent);
+    font-family:var(--font-body);
+    font-size:0.82rem;
+    font-weight:700;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    box-shadow:0 4px 14px rgba(40,28,16,0.18);
+    cursor:pointer;
+    transition:background .2s ease, border-color .2s ease, transform .15s ease;
+  }
+  #resume-fab:hover{border-color:var(--accent);background:var(--bg4)}
+  body.bake-live-exited #resume-fab{display:inline-flex;align-items:center;gap:8px}
+  #resume-fab .fab-icon{font-size:0.72rem;line-height:1;color:var(--accent)}
+}
+
 /* ===== FERMENT OPTIONS ===== */
 .fopt{display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 14px;border-radius:10px;border:1px solid var(--border);margin-bottom:6px;background:var(--bg3);transition:all .25s ease;box-shadow:0 1px 3px rgba(0,0,0,0.1)}
 .fopt:hover{border-color:var(--text3);box-shadow:0 2px 5px rgba(0,0,0,0.14)}
@@ -1201,8 +1265,8 @@ function notifyBakeService(){
 
 function startBake(){
   if(bakeStarted){
-    /* Already live — on mobile, tapping Begin re-enters focus mode */
-    if(isMobile()) enterFocusMode();
+    /* Already live — tapping Begin re-enters focus mode */
+    enterFocusMode();
     return;
   }
   bakeStarted=true;
@@ -1220,9 +1284,11 @@ function startBake(){
   if(window.BakeNotificationPlugin) window.BakeNotificationPlugin.show().catch(function(){});
   if(tlVisible) renderTimeline();
   try{saveSession();}catch(e){}
-  /* Mobile only: animated "Focaccia! Cominatcha!" toast, then snap into fullscreen */
+  /* Mobile: animated toast then focus mode. Desktop: straight into focus mode. */
   if(isMobile()){
     showBakeToast(enterFocusMode);
+  } else {
+    enterFocusMode();
   }
 }
 
@@ -1493,11 +1559,10 @@ function isMobile(){return window.matchMedia('(max-width:768px)').matches}
 /* Enter fullscreen step guide. Called directly by Resume FAB,
    or via delayed call after the toast from startBake. */
 function enterFocusMode(){
-  if(!isMobile()) return;
   const card=document.getElementById('method-card');
   if(card.classList.contains('focus-mode')) return;
   card.classList.add('focus-mode');
-  document.body.classList.add('focus-locked');
+  if(isMobile()) document.body.classList.add('focus-locked');
   document.body.classList.remove('bake-live-exited');
   /* Scroll to top inside the card so step content starts at the top */
   const sc=card.querySelector('.step-content');
