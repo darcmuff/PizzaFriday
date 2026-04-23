@@ -1452,32 +1452,16 @@ function isMobile(){return window.matchMedia('(max-width:768px)').matches}
 /* Enter fullscreen step guide. Called directly by Resume FAB,
    or via delayed call after the toast from startBake. */
 function enterFocusMode(){
-  const card=document.getElementById('method-card');
-  if(card.classList.contains('focus-mode')) return;
-  card.classList.add('focus-mode');
-  if(isMobile()){
+  document.getElementById('method-card').classList.add('focus-mode');
+  if(window.innerWidth<=768){
     document.body.classList.add('focus-locked');
-  } else {
-    /* Desktop: hide ingredients card so method spans full right column */
-    const ic=document.getElementById('ingredients-card');
-    if(ic) ic.style.display='none';
   }
   document.body.classList.remove('bake-live-exited');
-  const sc=card.querySelector('.step-content');
-  if(sc) sc.scrollTop=0;
 }
 
-/* Leave fullscreen, return to the normal page. Bake stays live;
-   Resume FAB appears so the user can jump back in. */
 function exitFocusMode(){
-  const card=document.getElementById('method-card');
-  if(!card.classList.contains('focus-mode')) return;
-  card.classList.remove('focus-mode');
+  document.getElementById('method-card').classList.remove('focus-mode');
   document.body.classList.remove('focus-locked');
-  /* Desktop: restore ingredients card */
-  const ic=document.getElementById('ingredients-card');
-  if(ic) ic.style.display='';
-  /* If a bake is still live, show the Resume FAB */
   if(bakeStarted) document.body.classList.add('bake-live-exited');
 }
 
