@@ -386,67 +386,6 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
     color:var(--accent);
   }
 
-  /* ===== BAKE TOAST: big free-floating "Let's go!" text ===== */
-  #bake-toast{
-    position:fixed;
-    left:50%;top:40%;
-    transform:translate(-50%,-50%);
-    z-index:2000;
-    padding:0;
-    background:transparent;
-    color:var(--accent);
-    font-family:var(--font-display,'Cormorant Garamond',serif);
-    text-align:center;
-    opacity:0;
-    pointer-events:none;
-    visibility:hidden;
-    white-space:nowrap;
-  }
-  #bake-toast.show{
-    opacity:1;
-    visibility:visible;
-    animation:toast-container .3s cubic-bezier(.34,1.56,.64,1) forwards;
-  }
-  #bake-toast.exit{
-    animation:toast-whoosh .4s cubic-bezier(.55,0,.9,.6) forwards;
-  }
-  @keyframes toast-container{
-    0%{transform:translate(-50%,-50%) scale(0.3) rotate(-8deg);opacity:0}
-    60%{transform:translate(-50%,-50%) scale(1.08) rotate(2deg);opacity:1}
-    100%{transform:translate(-50%,-50%) scale(1) rotate(0);opacity:1}
-  }
-  @keyframes toast-whoosh{
-    0%{transform:translate(-50%,-50%) scale(1) rotate(0);opacity:1}
-    40%{transform:translate(-50%,-50%) scale(1.15) rotate(-3deg);opacity:1}
-    100%{transform:translate(-50%,calc(-50% - 80vh)) scale(0.5) rotate(6deg);opacity:0}
-  }
-
-  #bake-toast .toast-line1{
-    display:block;
-    font-size:5rem;
-    font-weight:700;
-    font-style:italic;
-    letter-spacing:.01em;
-    line-height:1;
-    text-shadow:0 4px 18px rgba(112,64,8,0.25), 0 2px 4px rgba(40,28,16,0.15);
-    opacity:0;
-    transform:translateY(-20px) scale(0.8);
-  }
-  #bake-toast.show .toast-line1{
-    animation:line1-drop .45s cubic-bezier(.34,1.56,.64,1) .15s forwards;
-  }
-  @keyframes line1-drop{
-    0%{opacity:0;transform:translateY(-30px) scale(0.6) rotate(-5deg)}
-    60%{opacity:1;transform:translateY(4px) scale(1.1) rotate(1deg)}
-    100%{opacity:1;transform:translateY(0) scale(1) rotate(0)}
-  }
-
-  body.dark #bake-toast{
-    color:var(--accent);
-  }
-  body.dark #bake-toast .toast-line1{
-    text-shadow:0 4px 18px rgba(200,148,60,0.35), 0 2px 4px rgba(0,0,0,0.4);
-  }
 
   .fdesc{white-space:normal}
   .fdesc-short{display:inline}.fdesc-full{display:none}
@@ -468,7 +407,7 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
 
 /* Desktop: hide mobile-only focus elements */
 @media (min-width:769px){
-  #focus-exit,#resume-fab,#bake-toast{display:none!important}
+  #focus-exit,#resume-fab{display:none!important}
 }
 
 /* ===== GUIDE MODAL ===== */
@@ -809,10 +748,6 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
   </div>
 </div>
 
-<!-- Mobile: animated bake toast shown when Begin is tapped -->
-<div id="bake-toast">
-  <span class="toast-line1">Let's go!</span>
-</div>
 
 <!-- Mobile: floating Resume button shown when bake is live but focus mode is exited -->
 <button id="resume-fab" onclick="enterFocusMode()"><span class="fab-icon">▶</span><span>Resume</span></button>
@@ -1252,15 +1187,12 @@ function startBake(){
   if(window.BakeNotificationPlugin) window.BakeNotificationPlugin.show().catch(function(){});
   if(tlVisible) renderTimeline();
   try{saveSession();}catch(e){}
-  /* Mobile: animated toast then focus mode. Desktop: straight into focus mode. */
-  if(isMobile()){
-    showBakeToast(enterFocusMode);
-  } else {
-    enterFocusMode();
-  }
+  enterFocusMode();
 }
 
 function resetBakeState(){
+  exitFocusMode();
+  document.body.classList.remove('bake-live-exited');
   bakeStarted=false;
   startTime=Date.now();
   releaseWakeLock();
@@ -1270,13 +1202,6 @@ function resetBakeState(){
   const btn=document.getElementById('start-bake-btn');
   btn.innerHTML='<span class="btn-icon">▶</span><span class="btn-label">Begin</span>';
   btn.classList.remove('active');
-  /* Mobile: exit fullscreen + clear the Resume FAB */
-  const card=document.getElementById('method-card');
-  if(card && card.classList.contains('focus-mode')){
-    card.classList.remove('focus-mode');
-    document.body.classList.remove('focus-locked');
-  }
-  document.body.classList.remove('bake-live-exited');
 }
 
 function setPizzaType(type) {
@@ -1554,29 +1479,6 @@ function exitFocusMode(){
   if(ic) ic.style.display='';
   /* If a bake is still live, show the Resume FAB */
   if(bakeStarted) document.body.classList.add('bake-live-exited');
-}
-
-/* Show the animated "Let's go!" toast, then whoosh up and fire callback */
-function showBakeToast(callback){
-  const toast=document.getElementById('bake-toast');
-  if(!toast){ if(callback) callback(); return; }
-  /* Reset any lingering state */
-  toast.classList.remove('show','exit');
-  /* Force reflow so re-applying .show restarts animations */
-  void toast.offsetWidth;
-  toast.classList.add('show');
-  /* Sequence timing:
-     0ms   — container pops in
-     150ms — "Let's go!" drops with bounce
-     800ms — start whoosh exit
-     1200ms — fully gone, fire callback (focus mode reveal) */
-  setTimeout(()=>{
-    toast.classList.add('exit');
-  }, 800);
-  setTimeout(()=>{
-    toast.classList.remove('show','exit');
-    if(callback) callback();
-  }, 1200);
 }
 
 function doCoilFold(stepIdx){
