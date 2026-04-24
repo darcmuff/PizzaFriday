@@ -241,7 +241,11 @@ body.native .m-timer-pill:hover{border-color:var(--text3);color:var(--text);box-
 }
 .m-timer-pill.active{background:#d4edda;border-color:#5a9e6a;color:#246832;animation:timer-pulse 2s ease-in-out infinite}
 .m-timer-pill.active:hover{background:#c8e6ce;border-color:#4a8e5a;color:#246832}
+@keyframes timer-nudge{0%,100%{background:var(--bg);border-color:var(--accent)}50%{background:#d4edda;border-color:#5a9e6a}}
+.m-timer-pill.nudge{animation:timer-nudge 1.5s ease-in-out infinite}
 body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8dd4a0}
+@keyframes timer-nudge-dark{0%,100%{background:var(--bg);border-color:var(--accent)}50%{background:#1a3d22;border-color:#4a8e5a}}
+body.dark .m-timer-pill.nudge{animation:timer-nudge-dark 1.5s ease-in-out infinite}
 .m-no-timer{display:inline-flex;align-items:center;justify-content:center;color:var(--border);font-size:0.88rem;padding:6px 12px;visibility:hidden}
 .m-step-lbl{font-size:0.75rem;text-transform:uppercase;letter-spacing:.18em;color:var(--text3);font-weight:700}
 .m-title{font-size:1.55rem;font-weight:700;color:var(--text4);line-height:1.2;letter-spacing:.01em}
@@ -1158,6 +1162,7 @@ let bakeStarted=false;
 let steps=[];
 let coilFoldCount=0;       /* 0–4: how many coil folds done this session */
 let activeTimerStep=-1;    /* which step index has an active (green) timer pill */
+let nudgeDismissed=false;  /* true after user taps the first timed step's timer pill */
 
 function fmtClock(date){
   let h=date.getHours(),m=date.getMinutes();
@@ -1262,6 +1267,7 @@ function startBake(){
     return;
   }
   bakeStarted=true;
+  nudgeDismissed=false;
   startTime=Date.now();
   S.step=0;
   coilFoldCount=0;
@@ -1462,8 +1468,8 @@ function buildSteps(ing,hyd,fid,hours){
   steps=[
     {title:'Gather Equipment',icon:'🛠',timer:null,tip:null,video:null,
      body:`• Large bowl\n• Digital scales\n• Bench scraper or sharp knife\n• Spatula\n• Wooden spoon\n• Proofing tray`},
-    {title:'Mix All Ingredients',icon:'💧',timer:null,video:null,
-     body:`Weigh out ${dw(ing.flour)} ${flourDesc} and ${dw(ing.water)} warm water (${dt(25)}) into your bowl.\n\nAdd directly: ${dw(ing.salt)} fine sea salt, ${dw(ing.yeast)} instant dry yeast (or ${dw(Math.round(ing.yeast*3*10)/10)} fresh yeast)${oilStep}. Mix until no dry flour remains.`,
+    {title:'Mix All Ingredients',icon:'💧',timer:30,video:null,
+     body:`Weigh out ${dw(ing.flour)} ${flourDesc} and ${dw(ing.water)} warm water (${dt(25)}) into your bowl. Add directly: ${dw(ing.salt)} fine sea salt, ${dw(ing.yeast)} instant dry yeast (or ${dw(Math.round(ing.yeast*3*10)/10)} fresh yeast)${oilStep}. Mix until no dry flour remains.\n\nCover and rest for 30 minutes. This lets the flour fully hydrate before you start kneading.`,
      tip:'Add salt and yeast on opposite sides of the bowl before mixing — they are fine once in water, but avoid letting them sit in direct contact dry.'},
     {title:'Knead & Rest x4',subtitle:'25 min apart · 1.5 hours',icon:'🤲',coilFold:true,timer:null,video:'BJiucv88flM',
      body:`Knead for 5 minutes — push, fold, slap, and punch. Cover the dough and rest 25 minutes. Repeat four times total. Kneading is hard work — this method develops the gluten structure without killing you. By round 4 the dough should feel smooth and elastic. Use the windowpane test to check — stretch a small piece thin enough to see light through it without tearing.`,
@@ -1547,11 +1553,24 @@ function renderMethod(){
   document.getElementById('s-body').innerHTML=step.body.replace(/\n/g,'<br>');
 
   document.getElementById('tip-area').innerHTML='';
+  var oldHint=document.getElementById('timer-nudge-hint');
+  if(oldHint)oldHint.remove();
   const videoArea=document.getElementById('video-area');
   if(step.video){
     videoArea.innerHTML=`<div class="video-wrap"><div class="video-label"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21"/></svg>Watch technique</div><div class="video-container"><iframe src="https://www.youtube.com/embed/${step.video}?rel=0&modestbranding=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy"></iframe></div></div>`;
   } else {
     videoArea.innerHTML='';
+  }
+  /* Nudge: flash the timer pill on the first timed step only, only in focus mode, persists until pressed */
+  var firstTimedIdx=steps.findIndex(function(s){return s.timer&&!s.coilFold;});
+  if(bakeStarted&&!nudgeDismissed&&i===firstTimedIdx&&activeTimerStep!==i){
+    var np=document.querySelector('#s-icon .m-timer-pill');
+    if(np)np.classList.add('nudge');
+    var hintP=document.createElement('p');
+    hintP.id='timer-nudge-hint';
+    hintP.style.cssText='margin-top:12px;font-size:0.85rem;color:var(--accent);font-style:italic;';
+    hintP.textContent='☝ Tap the flashing timer above to start your countdown.';
+    document.getElementById('s-body').after(hintP);
   }
   document.getElementById('prev-btn').disabled=i===0;
   const nb=document.getElementById('next-btn');
@@ -1562,6 +1581,11 @@ function renderMethod(){
 function pressTimer(stepIdx, secs, msg){
   if(!window.TimerPlugin) return;
   activeTimerStep=stepIdx;
+  nudgeDismissed=true;
+  var np=document.querySelector('.m-timer-pill.nudge');
+  if(np)np.classList.remove('nudge');
+  var oh=document.getElementById('timer-nudge-hint');
+  if(oh)oh.remove();
   renderMethod();
   setTimerNative(secs, msg, secs/60);
 }
