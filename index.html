@@ -121,10 +121,10 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-body);background:va
 .slider-temp{background:linear-gradient(to right,#b87070 0%,#8aaa78 22%,#8aaa78 62%,#b87070 100%)}
 .slider-track input[type=range]{-webkit-appearance:none;appearance:none;width:100%;cursor:pointer;display:block;position:absolute;top:0;left:0;height:100%;margin:0;background:transparent;outline:none}
 .slider-track input[type=range]::-webkit-slider-runnable-track{background:transparent;height:100%}
-.slider-track input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:var(--accent);border:none;box-shadow:0 0 0 4px var(--gold-glow),0 2px 8px rgba(0,0,0,0.4);cursor:pointer;transition:all .2s ease;margin-top:-6px}
-.slider-track input[type=range]::-webkit-slider-thumb:hover{box-shadow:0 0 0 8px var(--gold-glow-strong),0 2px 12px rgba(0,0,0,0.5);transform:scale(1.1)}
+.slider-track input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:28px;height:16px;border-radius:8px;background:var(--bg);border:2px solid var(--accent);box-shadow:0 2px 6px rgba(0,0,0,0.25);cursor:pointer;transition:all .2s ease;margin-top:-4px}
+.slider-track input[type=range]::-webkit-slider-thumb:hover{box-shadow:0 0 0 4px var(--gold-glow),0 2px 8px rgba(0,0,0,0.3);transform:scale(1.05)}
 .slider-track input[type=range]::-moz-range-track{background:transparent;height:100%;border:none}
-.slider-track input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--accent);border:none;box-shadow:0 0 0 4px var(--gold-glow),0 2px 8px rgba(0,0,0,0.4);cursor:pointer}
+.slider-track input[type=range]::-moz-range-thumb{width:28px;height:16px;border-radius:8px;background:var(--bg);border:2px solid var(--accent);box-shadow:0 2px 6px rgba(0,0,0,0.25);cursor:pointer}
 .slider-labels{display:flex;justify-content:space-between;font-size:0.8rem;color:var(--text3);font-weight:600;letter-spacing:.03em}
 .slider-labels .green{color:var(--green);font-weight:700}
 .slider-labels .red{color:var(--red);font-weight:700}
@@ -404,7 +404,7 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
   .flabel{font-size:1rem}
   .db-steppers{grid-template-columns:1fr 1fr;gap:8px 12px}
   .db-stepper button{width:38px;height:38px;font-size:18px}
-  .slider-track input[type=range]::-webkit-slider-thumb{width:24px;height:24px;margin-top:-8px}
+  .slider-track input[type=range]::-webkit-slider-thumb{width:32px;height:18px;margin-top:-5px}
   .slider-track{height:8px;margin:6px 0 4px}
   .m-title{font-size:1.25rem}
   .m-body-text{font-size:1rem}
