@@ -22,33 +22,33 @@
 <style>
 /* ===== DARK ARTISANAL FOOD MAGAZINE ===== */
 :root{
-  --bg:#faf7f0;--bg2:#e6e0d4;--bg3:#dcd4c6;--bg4:#cec4b0;
-  --border:#a89470;--border2:#bcac90;
-  --text:#120a04;--text2:#281c10;--text3:#3e3020;--text4:#080402;
-  --accent:#704008;--accent2:#f2ede4;
+  --bg:#ffffff;--bg2:#f4f4ec;--bg3:#eaeade;--bg4:#dcdcc8;
+  --border:#b0b098;--border2:#c4c4b0;
+  --text:#222218;--text2:#3a3a28;--text3:#6a6a48;--text4:#1a1a10;
+  --accent:#4a4a28;--accent2:#f4f4e8;
   --green:#246832;--red:#a82e20;
-  --warn-bg:#f8ecc8;--warn-text:#704008;--warn-border:#c8b070;
-  --cold:#184a70;--warm:#704008;
-  --card-shadow:0 1px 4px rgba(20,10,0,0.14),0 4px 14px rgba(20,10,0,0.1);
-  --card-shadow-hover:0 2px 8px rgba(20,10,0,0.18),0 6px 22px rgba(20,10,0,0.13);
+  --warn-bg:#f4f4e0;--warn-text:#4a4a28;--warn-border:#c4c4a0;
+  --cold:#184a70;--warm:#4a4a28;
+  --card-shadow:0 1px 4px rgba(20,20,10,0.12),0 4px 14px rgba(20,20,10,0.08);
+  --card-shadow-hover:0 2px 8px rgba(20,20,10,0.16),0 6px 22px rgba(20,20,10,0.11);
   --card-radius:12px;
   --font-display:'Cormorant Garamond',Georgia,'Times New Roman',serif;
   --font-body:'Nunito Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  --gold-glow:rgba(112,64,8,0.12);
-  --gold-glow-strong:rgba(112,64,8,0.22);
+  --gold-glow:rgba(74,74,40,0.12);
+  --gold-glow-strong:rgba(74,74,40,0.22);
 }
 body.dark{
-  --bg:#141210;--bg2:#1e1c18;--bg3:#262420;--bg4:#302e28;
-  --border:#3e3a30;--border2:#33302a;
-  --text:#d8d0c0;--text2:#a89878;--text3:#786850;--text4:#ede6d8;
-  --accent:#c8943c;--accent2:#141210;
+  --bg:#0c1420;--bg2:#141e2e;--bg3:#1a2638;--bg4:#223040;
+  --border:#2e3e54;--border2:#384860;
+  --text:#c8d0dc;--text2:#8898b0;--text3:#5a6a84;--text4:#dce4f0;
+  --accent:#7a9cc4;--accent2:#0c1420;
   --green:#6ab874;--red:#d4584a;
-  --warn-bg:#2a2418;--warn-text:#d4a040;--warn-border:#4a3e28;
-  --cold:#5aaccf;--warm:#d4a040;
-  --card-shadow:0 1px 2px rgba(0,0,0,0.4),0 4px 16px rgba(0,0,0,0.2);
-  --card-shadow-hover:0 2px 4px rgba(0,0,0,0.5),0 8px 28px rgba(0,0,0,0.3);
-  --gold-glow:rgba(200,148,60,0.15);
-  --gold-glow-strong:rgba(200,148,60,0.25);
+  --warn-bg:#1a2030;--warn-text:#7a9cc4;--warn-border:#2e3e54;
+  --cold:#5aaccf;--warm:#7a9cc4;
+  --card-shadow:0 1px 2px rgba(0,0,0,0.5),0 4px 16px rgba(0,0,0,0.3);
+  --card-shadow-hover:0 2px 4px rgba(0,0,0,0.6),0 8px 28px rgba(0,0,0,0.4);
+  --gold-glow:rgba(122,156,196,0.15);
+  --gold-glow-strong:rgba(122,156,196,0.25);
 }
 
 /* ===== RESET & BASE ===== */
@@ -99,7 +99,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-body);background:va
 #page{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto 1fr;gap:8px;padding:10px 32px;height:calc(100vh - 60px);overflow:hidden}
 
 /* ===== CARDS ===== */
-.section{display:flex;flex-direction:column;justify-content:center;padding:10px 18px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--card-radius);box-shadow:var(--card-shadow);transition:all .3s ease;min-height:0;overflow:hidden}
+.section{display:flex;flex-direction:column;justify-content:center;padding:10px 18px;background:var(--bg2);border:1px solid var(--border);border-left:4px solid #1a8a3a;border-right:4px solid #cc2e24;border-radius:var(--card-radius);box-shadow:var(--card-shadow);transition:all .3s ease;min-height:0;overflow:hidden}
 .section:hover{box-shadow:var(--card-shadow-hover);border-color:var(--border2)}
 .db-section{justify-content:flex-start;overflow:visible}
 
@@ -1720,7 +1720,9 @@ function loadPrefs(){
 }
 function toggleDark(){
   document.body.classList.toggle('dark');
-  document.getElementById('dark-btn').textContent=document.body.classList.contains('dark')?'☀️':'🌙';
+  document.getElementById('dark-btn').innerHTML=document.body.classList.contains('dark')
+    ?'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>'
+    :'<svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
   savePrefs();
 }
 function resetDefaults(){
@@ -1749,8 +1751,11 @@ function shareRecipe(){
   const ballDesc=`${ballCount}× ${units==='imperial'?(ballSize/28.35).toFixed(1)+'oz':ballSize+'g'} balls`;
   const oilLine=ing.oil>0?`\nOlive oil: ${dw(ing.oil)}`:'';
   const text=`🍕 Pizza Dough Recipe\n\n${typeLabel} · ${fid==='cold'?'Cold':'Room temp'} ferment · ${hours}h · ${hyd}% hydration · ${dt(rTemp)}\n${ballDesc}\n\nFlour: ${dw(ing.flour)}\nWater: ${dw(ing.water)}\nSalt: ${dw(ing.salt)}\nYeast: ${dw(ing.yeast)} (${yp}%)${oilLine}`;
+  const btn=document.getElementById('share-btn');
+  const showTick=()=>{if(btn){const orig=btn.innerHTML;btn.innerHTML='✓';setTimeout(()=>btn.innerHTML=orig,1500);}};
   if(navigator.share){navigator.share({title:'Pizza Dough Recipe',text}).catch(()=>{});}
-  else{navigator.clipboard.writeText(text).then(()=>{const b=document.querySelector('[onclick="shareRecipe()"]');const orig=b.innerHTML;b.innerHTML='✓';setTimeout(()=>b.innerHTML=orig,1500);}).catch(()=>{});}
+  else if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(showTick).catch(()=>{});}
+  else{const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;left:-9999px';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showTick();}
 }
 
 setPizzaType('neap');
