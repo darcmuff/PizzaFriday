@@ -245,6 +245,8 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
 .m-no-timer{display:inline-flex;align-items:center;justify-content:center;color:var(--border);font-size:0.88rem;padding:6px 12px;visibility:hidden}
 .m-step-lbl{font-size:0.75rem;text-transform:uppercase;letter-spacing:.18em;color:var(--text3);font-weight:700}
 .m-title{font-size:1.55rem;font-weight:700;color:var(--text4);line-height:1.2;letter-spacing:.01em}
+.shop-pill{display:inline-block;font-size:0.7rem;font-weight:700;color:var(--accent);background:var(--bg);border:1px solid var(--accent);border-radius:8px;padding:3px 10px;margin-left:8px;cursor:pointer;letter-spacing:.03em;vertical-align:middle;transition:all .2s ease;position:relative;top:-1px;box-shadow:0 1px 3px rgba(0,0,0,0.12)}
+.shop-pill:hover{background:var(--accent);color:var(--bg)}
 .m-body-text{font-size:1.1rem;color:var(--text);line-height:1.55;white-space:pre-line;overflow:visible;word-wrap:break-word}
 
 /* ===== STEP VIDEO EMBED ===== */
@@ -542,18 +544,58 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
         <div class="shop-item-arrow">→</div>
       </a>
 
-      <a class="shop-item" href="https://amzn.to/48vkxFJ" target="_blank" rel="noopener">
+      <a class="shop-item" href="https://amzn.to/3QJKqLX" target="_blank" rel="noopener">
         <div class="shop-item-info">
-          <div class="shop-item-name">Baking Steel (6mm)</div>
-          <div class="shop-item-desc">Conducts heat far better than a stone. Preheat for 45 minutes at max temperature and you'll get the kind of oven spring and base char that a domestic oven can actually deliver.</div>
+          <div class="shop-item-name">Pizza Steel</div>
+          <div class="shop-item-desc">Superior thermal properties for quicker cooking, gorgeous charred crusts, and the kind of puffy, blistered Neapolitan base a domestic oven can actually deliver. Works on the grill too.</div>
         </div>
         <div class="shop-item-arrow">→</div>
       </a>
 
-      <a class="shop-item" href="https://amzn.to/3Q6hj5c" target="_blank" rel="noopener">
+      <a class="shop-item" href="https://amzn.to/4n7A3xT" target="_blank" rel="noopener">
         <div class="shop-item-info">
-          <div class="shop-item-name">Pizza Peel (Wooden)</div>
-          <div class="shop-item-desc">Wide enough for a 14" pizza, light enough to launch cleanly. Flour it well and work fast — don't let the dough sit on it.</div>
+          <div class="shop-item-name">Perforated Pizza Peel</div>
+          <div class="shop-item-desc">Anodized aluminium, perforated to shed excess flour on launch. Beveled edge slides under dough easily. Removable handle for storage. For launching only — use a turning peel to retrieve.</div>
+        </div>
+        <div class="shop-item-arrow">→</div>
+      </a>
+
+      <a class="shop-item" href="https://amzn.to/4cONNZD" target="_blank" rel="noopener">
+        <div class="shop-item-info">
+          <div class="shop-item-name">Danish Dough Whisk</div>
+          <div class="shop-item-desc">Stainless steel double-loop design that cuts through sticky dough without clogging. Faster and easier than a spoon for the initial mix, and dishwasher safe.</div>
+        </div>
+        <div class="shop-item-arrow">→</div>
+      </a>
+
+      <a class="shop-item" href="https://amzn.to/3QkGrWa" target="_blank" rel="noopener">
+        <div class="shop-item-info">
+          <div class="shop-item-name">Pizza Cutter Wheel</div>
+          <div class="shop-item-desc">4-inch stainless steel blade, no wobble, cuts clean through thick crusts without dragging toppings. Non-slip grip with finger guard. Dishwasher safe.</div>
+        </div>
+        <div class="shop-item-arrow">→</div>
+      </a>
+
+      <a class="shop-item" href="https://amzn.to/4e18ALE" target="_blank" rel="noopener">
+        <div class="shop-item-info">
+          <div class="shop-item-name">Pizza Rocker Blade (35cm)</div>
+          <div class="shop-item-desc">Stainless steel mezzaluna-style cutter with wooden handles. One rock, clean slices. Covers a full pizza in two passes.</div>
+        </div>
+        <div class="shop-item-arrow">→</div>
+      </a>
+
+      <a class="shop-item" href="https://amzn.to/4e7lesu" target="_blank" rel="noopener">
+        <div class="shop-item-info">
+          <div class="shop-item-name">Proofing Boxes (2-Pack)</div>
+          <div class="shop-item-desc">35.6 × 27.9cm stackable trays with lids, fits 4–6 dough balls each. Proper proofing containers stop the balls drying out and make fridge storage easy.</div>
+        </div>
+        <div class="shop-item-arrow">→</div>
+      </a>
+
+      <a class="shop-item" href="https://amzn.to/48jo3my" target="_blank" rel="noopener">
+        <div class="shop-item-info">
+          <div class="shop-item-name">Oil Spray Bottle</div>
+          <div class="shop-item-desc">Glass, BPA-free, dual spray-and-pour design. Each spray is about 0.2g — precise control for oiling dough balls, trays, and pans without overdoing it.</div>
         </div>
         <div class="shop-item-arrow">→</div>
       </a>
@@ -1029,14 +1071,17 @@ function loadRecipe(i){
   const r=recipes[i];
   if(!r)return;
   S.hours=r.hours;S.hyd=r.hyd;S.fid=r.fid;S.rTemp=r.rTemp;
-  S.pizzaType=r.pizzaType||'neap';S.ballCount=r.ballCount||4;S.ballSize=r.ballSize||250;
-  if(r.saltPc!=null)S.saltPc=r.saltPc;
-  if(r.oilPc!=null)S.oilPc=r.oilPc;
+  S.pizzaType=r.pizzaType||'neap';S.ballCount=r.ballCount||4;
   document.getElementById('hours-slider').value=hoursToSlider(r.hours);
   document.getElementById('hyd-slider').value=r.hyd;
   document.getElementById('temp-slider').value=r.rTemp;
   setPizzaType(S.pizzaType);
+  /* Restore saved values AFTER setPizzaType (which resets to style defaults) */
+  S.ballSize=r.ballSize||250;
+  if(r.saltPc!=null)S.saltPc=r.saltPc;
+  if(r.oilPc!=null)S.oilPc=r.oilPc;
   selectFerment(r.fid);
+  renderDoughBalls();
   update();
   hideSaved();
 }
@@ -1496,7 +1541,10 @@ function renderMethod(){
   document.getElementById('s-title').innerHTML=step.subtitle
     ? `${step.title} — <span style="font-size:0.85em;font-weight:600;color:#6a5a3a;letter-spacing:0.02em;">${step.subtitle}</span>`
     : step.title;
-  document.getElementById('s-body').textContent=step.body;
+  if(step.title==='Gather Equipment'){
+    document.getElementById('s-title').innerHTML+=` <span class="shop-pill" onclick="event.stopPropagation();showShop()" title="Equipment I use">🛒 what I use</span>`;
+  }
+  document.getElementById('s-body').innerHTML=step.body.replace(/\n/g,'<br>');
 
   document.getElementById('tip-area').innerHTML='';
   const videoArea=document.getElementById('video-area');
@@ -1684,6 +1732,7 @@ function shareRecipe(){
 setPizzaType('neap');
 selectFerment('room');
 loadPrefs();
+update(); /* ensure temp labels match saved scale on first load */
 
 
 /* === Session state — survives tab closure === */
