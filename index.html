@@ -106,6 +106,13 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-body);background:va
 /* ===== CARD & SECTION TITLES ===== */
 .card-title{font-size:1.1rem;letter-spacing:.06em;color:var(--text2);font-weight:600;margin-bottom:6px;flex-shrink:0}
 .sec-label{font-size:1.1rem;letter-spacing:.06em;color:var(--text2);font-weight:600;margin-bottom:3px}
+.guide-link{font-size:0.72rem;color:var(--accent);cursor:pointer;font-weight:600;letter-spacing:.04em;text-transform:lowercase;opacity:0.7;transition:opacity .2s ease;margin-left:6px;text-decoration:none}
+.guide-link:hover{opacity:1;text-decoration:underline}
+.style-tip{position:absolute;left:50%;transform:translateX(-50%);top:calc(100% + 8px);background:var(--bg2);color:var(--text);font-size:0.78rem;line-height:1.35;padding:8px 12px;border-radius:8px;border:1px solid var(--border);box-shadow:0 4px 14px rgba(0,0,0,0.18);white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .3s ease;transform:translateX(-50%) translateY(4px);z-index:50}
+.style-tip.show{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.style-tip::before{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:6px solid var(--border)}
+.style-tip::after{content:'';position:absolute;top:-5px;left:50%;transform:translateX(-50%);border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:5px solid var(--bg2)}
+.db-pill-row{position:relative}
 
 /* ===== SLIDERS ===== */
 .slider-track{position:relative;height:8px;border-radius:4px;margin:4px 0 3px}
@@ -198,6 +205,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-body);background:va
 .db-stepper button:first-child{border-radius:8px 0 0 8px}
 .db-stepper button:last-child{border-radius:0 8px 8px 0}
 .db-stepper .db-val{flex:1;text-align:center;font-size:1rem;font-weight:700;color:var(--accent);border-top:1px solid var(--border);border-bottom:1px solid var(--border);height:34px;display:flex;align-items:center;justify-content:center;background:var(--bg);font-family:var(--font-body);letter-spacing:.02em}
+#db-size{font-size:0.85rem;letter-spacing:0}
 .db-sep{height:1px;background:var(--border);margin:2px 0 8px;opacity:0.5}
 .db-result{font-size:1rem;color:var(--text2);line-height:1.4}
 .db-result strong{color:var(--accent);font-size:1.1rem;font-weight:700}
@@ -437,6 +445,10 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
 .guide-body .g-em{color:var(--text4);font-weight:700}
 .guide-body .g-green{color:var(--green);font-weight:700}
 .guide-body .g-warm{color:var(--warm);font-weight:700}
+.guide-table{width:100%;border-collapse:collapse;margin:8px 0 14px;font-size:0.92rem}
+.guide-table th{text-align:left;padding:7px 10px;border-bottom:2px solid var(--border);color:var(--accent);font-weight:700;font-size:0.82rem;letter-spacing:.04em;text-transform:uppercase}
+.guide-table td{padding:6px 10px;border-bottom:1px solid var(--border2);color:var(--text)}
+.guide-table tr:last-child td{border-bottom:none}
 .guide-body .g-cold{color:var(--cold);font-weight:700}
 
 /* ===== SAVED RECIPES MODAL ===== */
@@ -639,16 +651,16 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
   <!-- ROW 1 LEFT: SLIDERS -->
   <div class="section" id="slider-card" style="padding:10px 18px">
     <div class="sec-label" id="hours-lbl">Total Time: 8 hours</div>
-    <div class="slider-track slider-hours"><input type="range" min="0" max="100" step="1" value="14" id="hours-slider" oninput="update()"></div>
+    <div class="slider-track slider-hours"><input type="range" min="0" max="100" step="1" value="14" id="hours-slider" aria-label="Total fermentation time" oninput="update()"></div>
     <div class="slider-labels"><span id="start-time-lbl">4h</span><span>48h</span></div>
     <div style="margin-top:20px">
       <div class="sec-label" id="hyd-lbl">Hydration: 63%</div>
-      <div class="slider-track slider-hyd"><input type="range" min="55" max="75" step="1" value="63" id="hyd-slider" oninput="update()"></div>
+      <div class="slider-track slider-hyd"><input type="range" min="55" max="75" step="1" value="63" id="hyd-slider" aria-label="Hydration percentage" oninput="update()"></div>
       <div class="slider-labels"><span>55%</span><span>75%</span></div>
     </div>
     <div style="margin-top:20px">
       <div class="sec-label" id="temp-lbl">Room / Control Temp: 20°C</div>
-      <div class="slider-track slider-temp"><input type="range" min="15" max="28" step="1" value="20" id="temp-slider" oninput="update()"></div>
+      <div class="slider-track slider-temp"><input type="range" min="15" max="28" step="1" value="20" id="temp-slider" aria-label="Room temperature" oninput="update()"></div>
       <div class="slider-labels"><span id="temp-cool">15°C</span><span id="temp-warm">28°C</span></div>
     </div>
   </div>
@@ -665,38 +677,40 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
     <div class="db-pill-row">
       <button class="db-pill active" id="btn-neap" onclick="setPizzaType('neap')">Neapolitan</button>
       <button class="db-pill" id="btn-ny" onclick="setPizzaType('ny')">New York</button>
+      <div class="style-tip" id="tip-neap" style="left:25%">Thin, soft base · puffy charred crust</div>
+      <div class="style-tip" id="tip-ny" style="left:75%">Wider, foldable slice · crispy base</div>
     </div>
     <div class="db-steppers">
       <div class="db-stepper-group">
         <div class="db-stepper-label">Count</div>
         <div class="db-stepper">
-          <button onmousedown="startRepeat('ballCount',-1)" onmouseup="stopRepeat()" onmouseleave="stopRepeat()" ontouchstart="startRepeat('ballCount',-1,event)" ontouchend="stopRepeat(event)">−</button>
-          <div class="db-val" id="db-count">4</div>
-          <button onmousedown="startRepeat('ballCount',1)" onmouseup="stopRepeat()" onmouseleave="stopRepeat()" ontouchstart="startRepeat('ballCount',1,event)" ontouchend="stopRepeat(event)">+</button>
+          <button aria-label="Decrease count" onmousedown="startRepeat('ballCount',-1)" onmouseup="stopRepeat()" onmouseleave="stopRepeat()" ontouchstart="startRepeat('ballCount',-1,event)" ontouchend="stopRepeat(event)">−</button>
+          <div class="db-val" id="db-count" aria-live="polite" aria-label="Dough ball count">4</div>
+          <button aria-label="Increase count" onmousedown="startRepeat('ballCount',1)" onmouseup="stopRepeat()" onmouseleave="stopRepeat()" ontouchstart="startRepeat('ballCount',1,event)" ontouchend="stopRepeat(event)">+</button>
         </div>
       </div>
       <div class="db-stepper-group">
         <div class="db-stepper-label">Ball Size</div>
         <div class="db-stepper">
-          <button onmousedown="startRepeat('ballSize',-5)" onmouseup="stopRepeat()" onmouseleave="stopRepeat()" ontouchstart="startRepeat('ballSize',-5,event)" ontouchend="stopRepeat(event)">−</button>
-          <div class="db-val" id="db-size">250g</div>
-          <button onmousedown="startRepeat('ballSize',5)" onmouseup="stopRepeat()" onmouseleave="stopRepeat()" ontouchstart="startRepeat('ballSize',5,event)" ontouchend="stopRepeat(event)">+</button>
+          <button aria-label="Decrease ball size" onmousedown="startRepeat('ballSize',-5)" onmouseup="stopRepeat()" onmouseleave="stopRepeat()" ontouchstart="startRepeat('ballSize',-5,event)" ontouchend="stopRepeat(event)">−</button>
+          <div class="db-val" id="db-size" aria-live="polite" aria-label="Dough ball size">250g</div>
+          <button aria-label="Increase ball size" onmousedown="startRepeat('ballSize',5)" onmouseup="stopRepeat()" onmouseleave="stopRepeat()" ontouchstart="startRepeat('ballSize',5,event)" ontouchend="stopRepeat(event)">+</button>
         </div>
       </div>
       <div class="db-stepper-group">
         <div class="db-stepper-label">Salt</div>
         <div class="db-stepper">
-          <button onmousedown="startRepeat('saltPc',-0.1)" onmouseup="stopRepeat()" onmouseleave="stopRepeat()" ontouchstart="startRepeat('saltPc',-0.1,event)" ontouchend="stopRepeat(event)">−</button>
-          <div class="db-val" id="db-salt">2.5%</div>
-          <button onmousedown="startRepeat('saltPc',0.1)" onmouseup="stopRepeat()" onmouseleave="stopRepeat()" ontouchstart="startRepeat('saltPc',0.1,event)" ontouchend="stopRepeat(event)">+</button>
+          <button aria-label="Decrease salt" onmousedown="startRepeat('saltPc',-0.1)" onmouseup="stopRepeat()" onmouseleave="stopRepeat()" ontouchstart="startRepeat('saltPc',-0.1,event)" ontouchend="stopRepeat(event)">−</button>
+          <div class="db-val" id="db-salt" aria-live="polite" aria-label="Salt percentage">2.5%</div>
+          <button aria-label="Increase salt" onmousedown="startRepeat('saltPc',0.1)" onmouseup="stopRepeat()" onmouseleave="stopRepeat()" ontouchstart="startRepeat('saltPc',0.1,event)" ontouchend="stopRepeat(event)">+</button>
         </div>
       </div>
       <div class="db-stepper-group">
         <div class="db-stepper-label">Oil</div>
         <div class="db-stepper">
-          <button onmousedown="startRepeat('oilPc',-0.1)" onmouseup="stopRepeat()" onmouseleave="stopRepeat()" ontouchstart="startRepeat('oilPc',-0.1,event)" ontouchend="stopRepeat(event)">−</button>
-          <div class="db-val" id="db-oil">2.0%</div>
-          <button onmousedown="startRepeat('oilPc',0.1)" onmouseup="stopRepeat()" onmouseleave="stopRepeat()" ontouchstart="startRepeat('oilPc',0.1,event)" ontouchend="stopRepeat(event)">+</button>
+          <button aria-label="Decrease oil" onmousedown="startRepeat('oilPc',-0.1)" onmouseup="stopRepeat()" onmouseleave="stopRepeat()" ontouchstart="startRepeat('oilPc',-0.1,event)" ontouchend="stopRepeat(event)">−</button>
+          <div class="db-val" id="db-oil" aria-live="polite" aria-label="Oil percentage">2.0%</div>
+          <button aria-label="Increase oil" onmousedown="startRepeat('oilPc',0.1)" onmouseup="stopRepeat()" onmouseleave="stopRepeat()" ontouchstart="startRepeat('oilPc',0.1,event)" ontouchend="stopRepeat(event)">+</button>
         </div>
       </div>
     </div>
@@ -792,9 +806,9 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
       <p><span class="g-em">New York style</span> — moderate hydration (58–65%), standard salt (2–2.5%), with olive oil (1–3%). Baked at lower temperatures (230–260°C) for longer. The oil coats the gluten strands, shortening the network and creating a crispier, more tender crust. Use high-gluten bread flour with 13–15% protein for the best structure and chew. NY dough needs to be strong enough to hold toppings and fold without cracking.</p>
       </details>
 
-      <details>
+      <details id="guide-doughballs">
       <summary><h3>Dough Balls</h3></summary>
-      <p>Set the count and size using the steppers. <span class="g-em">250g balls</span> give you a 25–28cm (10–11") pizza — a good default for Neapolitan. <span class="g-em">280g balls</span> stretch to 30–35cm (12–14") for NY style. The calculator uses baker's percentages to work backwards from your ball weight to the exact flour, water, salt, and yeast quantities.</p>
+      <p>Set the count and size using the steppers. The calculator uses baker's percentages to work backwards from your ball weight to the exact flour, water, salt, and yeast quantities.</p>
       </details>
 
       <details>
@@ -836,6 +850,31 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
       <p>Steps that need timing show a <span class="g-em">⏰ timer pill</span>. Tap it and your phone's native clock app opens with the correct duration. <span class="g-em">Important:</span> native timers only work in the <span class="g-em">Android app</span>. On the website, the pills show as progress indicators but will not launch external timers.</p>
       </details>
 
+      <details>
+      <summary><h3>Baker's Percentages</h3></summary>
+      <p>Every ingredient in the calculator is expressed as a percentage of the flour weight. Flour is always 100%. If hydration is 63%, that means 63g of water for every 100g of flour. This system makes scaling effortless — change the ball size or count and every ingredient recalculates instantly. It also means you can compare recipes at a glance regardless of batch size. The yeast percentage looks tiny (often 0.1–0.3%) because it is — a little goes a long way, and the calculator works out exactly how much you need based on your time and temperature.</p>
+      </details>
+
+      <details>
+      <summary><h3>The Windowpane Test</h3></summary>
+      <p>After kneading, pinch off a small piece of dough — about the size of a large marble. Slowly stretch it between your fingers into a thin sheet. If the gluten is properly developed you can stretch it thin enough to see light through it without it tearing. That is the windowpane. If it tears immediately, knead more. If it stretches but tears before going translucent, give it one more round and test again. By round 4 of the knead-and-rest cycle it should pass cleanly.</p>
+      </details>
+
+      <details>
+      <summary><h3>Timeline</h3></summary>
+      <p>Once you hit <span class="g-em">▶ Begin</span>, tap <span class="g-em">Timeline</span> on the method card to see every step mapped to a real clock time. If you want to eat at a specific time, use this to work out when to start mixing. The timeline updates live as your bake progresses.</p>
+      </details>
+
+      <details>
+      <summary><h3>Saving & Loading Recipes</h3></summary>
+      <p>Tap the <span class="g-em">bookmark icon</span> in the header to open saved recipes. Save any calculator setup — style, hydration, ball count, ferment type, times — with a name and optional notes. Load it later to restore those exact settings instantly. Recipes are stored on your device and will not transfer between devices.</p>
+      </details>
+
+      <details>
+      <summary><h3>Sharing a Recipe</h3></summary>
+      <p>Tap the <span class="g-em">share icon</span> in the header to share your current recipe as a plain text summary — style, ball weight, hydration, ferment type, yeast quantity — via any app on your phone.</p>
+      </details>
+
     </div>
   </div>
 </div>
@@ -852,6 +891,7 @@ body.dark .m-timer-pill.active{background:#1a3d22;border-color:#4a8e5a;color:#8d
 
 <script>
 function showGuide(){document.getElementById('guide-overlay').classList.add('show');}
+function showGuideSection(id){showGuide();setTimeout(()=>{const el=document.getElementById(id);if(el){el.open=true;el.scrollIntoView({behavior:'smooth',block:'start'});}},100);}
 function hideGuide(){document.getElementById('guide-overlay').classList.remove('show');}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){hideGuide();hideSaved();hideShop();}});
 function showShop(){document.getElementById('shop-overlay').classList.add('show');}
@@ -1208,6 +1248,20 @@ function resetBakeState(){
   btn.classList.remove('active');
 }
 
+const PIZZA_SIZE_NEAP = [
+  [365, '16"'], [325, '15"'], [295, '14"'], [275, '13"'],
+  [255, '12"'], [235, '11"'], [215, '10½"'], [195, '10"'], [0, '9"']
+];
+const PIZZA_SIZE_NY = [
+  [385, '16"'], [355, '15"'], [325, '14"'], [295, '13"'],
+  [265, '12"'], [235, '11"'], [215, '10"'], [0, '9"']
+];
+function getPizzaInches(grams, type) {
+  const table = type === 'ny' ? PIZZA_SIZE_NY : PIZZA_SIZE_NEAP;
+  for (const [min, label] of table) { if (grams >= min) return label; }
+  return table[table.length - 1][1];
+}
+
 function setPizzaType(type) {
   S.pizzaType = type;
   const d = PIZZA_DEFAULTS[type];
@@ -1216,6 +1270,16 @@ function setPizzaType(type) {
   S.oilPc = d.oilPc;
   document.getElementById('btn-neap').classList.toggle('active', type === 'neap');
   document.getElementById('btn-ny').classList.toggle('active', type === 'ny');
+  /* First-tap tooltips */
+  const tipKey = 'pf_tip_' + type;
+  if (!localStorage.getItem(tipKey)) {
+    localStorage.setItem(tipKey, '1');
+    const tip = document.getElementById('tip-' + type);
+    if (tip) {
+      tip.classList.add('show');
+      setTimeout(() => tip.classList.remove('show'), 2800);
+    }
+  }
   renderDoughBalls();
   update();
   savePrefs();
@@ -1238,7 +1302,8 @@ function stepVal(field, delta) {
 function renderDoughBalls() {
   const imp = S.units === 'imperial';
   document.getElementById('db-count').textContent = S.ballCount;
-  document.getElementById('db-size').textContent = imp ? (S.ballSize / 28.35).toFixed(1) + 'oz' : S.ballSize + 'g';
+  const inchLabel = getPizzaInches(S.ballSize, S.pizzaType);
+  document.getElementById('db-size').textContent = imp ? (S.ballSize / 28.35).toFixed(1) + 'oz (' + inchLabel + ')' : S.ballSize + 'g (' + inchLabel + ')';
   document.getElementById('db-salt').textContent = S.saltPc.toFixed(1) + '%';
   document.getElementById('db-oil').textContent = S.oilPc.toFixed(1) + '%';
   const flourPerBall = calcDoughBallFlour(S.ballSize, S.hyd, S.saltPc, S.oilPc);
@@ -1277,9 +1342,12 @@ function update(){
   const total=Math.round(ing.flour+ing.water+ing.salt+ing.yeast+ing.oil);
 
   document.getElementById('hours-lbl').textContent=`${hours} hours · Eat at ${getEatTime(hours)}`;
+  document.getElementById('hours-slider').setAttribute('aria-valuetext',hours+' hours');
   updateTimeLabels(hours);
   document.getElementById('hyd-lbl').textContent=`Hydration: ${hyd}%`;
+  document.getElementById('hyd-slider').setAttribute('aria-valuetext',hyd+' percent hydration');
   document.getElementById('temp-lbl').textContent=`Room / Control Temp: ${dt(rTemp)}`;
+  document.getElementById('temp-slider').setAttribute('aria-valuetext',dt(rTemp));
   if(S.tempScale==='F'){
     document.getElementById('temp-cool').textContent='59°F';
     document.getElementById('temp-warm').textContent='82°F';
@@ -1352,20 +1420,20 @@ function buildSteps(ing,hyd,fid,hours){
     {title:'Mix All Ingredients',icon:'💧',timer:null,video:null,
      body:`Weigh out ${dw(ing.flour)} ${flourDesc} and ${dw(ing.water)} warm water (${dt(25)}) into your bowl.\n\nAdd directly: ${dw(ing.salt)} fine sea salt, ${dw(ing.yeast)} instant dry yeast (or ${dw(Math.round(ing.yeast*3*10)/10)} fresh yeast)${oilStep}. Mix until no dry flour remains.`,
      tip:'Add salt and yeast on opposite sides of the bowl before mixing — they are fine once in water, but avoid letting them sit in direct contact dry.'},
-    {title:'Knead & Rest x4',subtitle:'25 min apart · 1.5 hours',icon:'🤲',coilFold:true,timer:null,video:'Y_BBqa05IxY',
+    {title:'Knead & Rest x4',subtitle:'25 min apart · 1.5 hours',icon:'🤲',coilFold:true,timer:null,video:'BJiucv88flM',
      body:`Knead for 5 minutes — push, fold, slap, and punch. Cover the dough and rest 25 minutes. Repeat four times total. Kneading is hard work — this method develops the gluten structure without killing you. By round 4 the dough should feel smooth and elastic. Use the windowpane test to check — stretch a small piece thin enough to see light through it without tearing.`,
      tip:'No flour on the surface. Stickiness is friction — friction builds gluten. Wet hands if it is sticking badly, not flour.'},
     ...(fid==='room'?[{title:'Bulk Ferment',icon:'⏱',video:null,
       timer: Math.round(Math.max(30, (hours*60) - 230)),
       body:`Lightly oil a bowl, place the dough in, and cover with clingfilm or a damp cloth. Leave at your desired room temperature until roughly doubled in size.\n\nApproximately ${(()=>{const m=Math.max(30,(hours*60-230));const h=Math.floor(m/60);const min=m%60;return h>0&&min>0?h+'h '+min+'m':h>0?h+'h':min+'m';})() } at ${dt(S.rTemp)}.`,
       tip:'A warm spot speeds things up, a cool spot slows them down. The oven light trick works — close the door, leave the light on.'}]:[]),
-    ...(fid==='room'?[{title:'Divide & Ball',icon:'⚖️',timer:null,video:'AmCRtCHPfyI',
+    ...(fid==='room'?[{title:'Divide & Ball',icon:'⚖️',timer:null,video:'Vo5OW8Xkah4',
      body:`Tip the dough onto a lightly floured surface and divide into ${S.ballCount} ${S.ballCount===1?'piece':'pieces'} of approximately ${dw(S.ballSize)} each. Shape each piece into a tight ball: fold the edges underneath, then cup your hands around the dough and drag it toward you on an unfloured surface. The friction pulls the surface taut. You want a smooth, tight skin with no seams on top. Place on a lightly floured tray, cover with clingfilm, and leave to final proof.`,
      tip:'The ball-up matters more than most people think. A tight ball with good surface tension opens into an even disc. A slack, ragged ball tears and has thin spots.'}]:[]),
     ...(fid==='room'?[{title:'Final Proof',icon:'⏱',timer:120,video:null,
      body:`Leave the balled dough covered at room temperature for 2 hours. They should be noticeably puffed, soft to the touch, and jiggle when you shake the tray.\n\nWhile you wait, preheat your oven with the pizza stone or steel inside. As hot as it goes. At least 45 minutes.`,
      tip:'The test: press gently with a floured finger — if the indent springs back slowly and partially, it is ready. If it springs back immediately, give it more time.'}]:[]),
-    ...(fid==='cold'?[{title:'Divide & Ball',icon:'⚖️',timer:null,video:'AmCRtCHPfyI',
+    ...(fid==='cold'?[{title:'Divide & Ball',icon:'⚖️',timer:null,video:'Vo5OW8Xkah4',
      body:`Tip the dough onto a lightly floured surface and divide into ${S.ballCount} ${S.ballCount===1?'piece':'pieces'} of approximately ${dw(S.ballSize)} each. Shape each piece into a tight ball: fold the edges underneath, then cup your hands around the dough and drag it toward you on an unfloured surface. The friction pulls the surface taut. You want a smooth, tight skin with no seams on top. Place in a lightly oiled container, cover tightly, and put in the fridge.`,
      tip:'The ball-up matters more than most people think. A tight ball with good surface tension opens into an even disc. A slack, ragged ball tears and has thin spots.'}]:[]),
     ...(fid==='cold'?[{title:'Cold Ferment',icon:'❄️',video:null,
@@ -1375,7 +1443,7 @@ function buildSteps(ing,hyd,fid,hours){
     ...(fid==='cold'?[{title:'Final Proof',icon:'⏱',timer:150,video:null,
       body:`Remove the dough balls from the fridge and leave covered at room temperature for 2.5 hours. Cold dough is tight — it needs time to relax and warm through before it will open properly.\n\nWhile you wait, preheat your oven with the pizza stone or steel inside. As hot as it goes. At least 45 minutes.`,
       tip:'The test: press gently with a floured finger — if the indent springs back slowly and partially, it is ready. If it springs back immediately, give it more time.'}]:[]),
-    {title:'Open & Top',icon:'🍕',timer:null,video:isNeap?'4xa_iItp8GA':'1qiEJ96GKuI',
+    {title:'Open & Top',icon:'🍕',timer:null,video:isNeap?'Entzcl8q7H4':'NQXtz-1KEvY',
      body:isNeap
       ?'Generously flour the ball and your surface. Press from the centre outward with your fingertips, leaving a 2cm rim untouched — that becomes the cornicione. Lift and drape over your knuckles, letting gravity stretch it. Rotate as you go. Aim for a thin, translucent centre with a thick puffy edge.\n\nTop lightly. San Marzano tomatoes, fior di latte or mozzarella, fresh basil, olive oil. Neapolitan pizza is not a platform for everything in the fridge.'
       :'Flour the ball and stretch by hand or rolling pin — NY style does not need a puffy cornicione, so go thinner and more even. Aim for a uniform disc about 35cm (14") across.\n\nTop with a thin layer of cooked tomato sauce, low-moisture mozzarella, and whatever you like. Do not overload it or the base will not crisp.',
