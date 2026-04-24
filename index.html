@@ -22,7 +22,7 @@
 <style>
 /* ===== DARK ARTISANAL FOOD MAGAZINE ===== */
 :root{
-  --bg:#ffffff;--bg2:#f4f4ec;--bg3:#eaeade;--bg4:#dcdcc8;
+  --bg:#fdfdf6;--bg2:#eeeed8;--bg3:#e2e2cc;--bg4:#d4d4b8;
   --border:#b0b098;--border2:#c4c4b0;
   --text:#222218;--text2:#3a3a28;--text3:#6a6a48;--text4:#1a1a10;
   --accent:#4a4a28;--accent2:#f4f4e8;
@@ -100,7 +100,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-body);background:va
 
 /* ===== CARDS ===== */
 .section{display:flex;flex-direction:column;justify-content:center;padding:10px 18px;background:var(--bg2);border:1px solid var(--border);border-left:4px solid #1a8a3a;border-right:4px solid #cc2e24;border-radius:var(--card-radius);box-shadow:var(--card-shadow);transition:all .3s ease;min-height:0;overflow:hidden}
-.section:hover{box-shadow:var(--card-shadow-hover);border-color:var(--border2)}
+.section:hover{box-shadow:var(--card-shadow-hover);border-top-color:var(--border2);border-bottom-color:var(--border2)}
 .db-section{justify-content:flex-start;overflow:visible}
 
 /* ===== CARD & SECTION TITLES ===== */
@@ -1301,7 +1301,7 @@ function resetBakeState(){
 
 const PIZZA_SIZE_NEAP = [
   [365, '16in'], [325, '15in'], [295, '14in'], [275, '13in'],
-  [255, '12in'], [235, '11in'], [215, '10½in'], [195, '10in'], [0, '9in']
+  [255, '12in'], [235, '11in'], [195, '10in'], [0, '9in']
 ];
 const PIZZA_SIZE_NY = [
   [385, '16in'], [355, '15in'], [325, '14in'], [295, '13in'],
