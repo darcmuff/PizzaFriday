@@ -697,16 +697,16 @@ body.dark .m-timer-pill.nudge{animation:timer-nudge-dark 1.5s ease-in-out infini
   <!-- ROW 1 LEFT: SLIDERS -->
   <div class="section" id="slider-card" style="padding:10px 18px">
     <div class="sec-label" id="hours-lbl">Total Time: 8 hours</div>
-    <div class="slider-track slider-hours"><input type="range" min="0" max="100" step="1" value="14" id="hours-slider" aria-label="Total fermentation time" oninput="update()"></div>
+    <div class="slider-track slider-hours"><input type="range" min="0" max="100" step="1" value="44" id="hours-slider" aria-label="Total fermentation time" oninput="update()"></div>
     <div class="slider-labels"><span id="start-time-lbl">4h</span><span>48h</span></div>
     <div style="margin-top:20px">
       <div class="sec-label" id="hyd-lbl">Hydration: 63%</div>
-      <div class="slider-track slider-hyd"><input type="range" min="55" max="75" step="1" value="63" id="hyd-slider" aria-label="Hydration percentage" oninput="update()"></div>
+      <div class="slider-track slider-hyd"><input type="range" min="55" max="75" step="1" value="60" id="hyd-slider" aria-label="Hydration percentage" oninput="update()"></div>
       <div class="slider-labels"><span>55%</span><span>75%</span></div>
     </div>
     <div style="margin-top:20px">
       <div class="sec-label" id="temp-lbl">Room / Control Temp: 20°C</div>
-      <div class="slider-track slider-temp"><input type="range" min="15" max="28" step="1" value="20" id="temp-slider" aria-label="Room temperature" oninput="update()"></div>
+      <div class="slider-track slider-temp"><input type="range" min="15" max="28" step="1" value="18" id="temp-slider" aria-label="Room temperature" oninput="update()"></div>
       <div class="slider-labels"><span id="temp-cool">15°C</span><span id="temp-warm">28°C</span></div>
     </div>
   </div>
@@ -1097,7 +1097,7 @@ function deleteRecipe(i){
   renderSavedList();
 }
 
-const PIZZA_DEFAULTS={neap:{ballSize:250,saltPc:2.8,oilPc:0},ny:{ballSize:280,saltPc:2.5,oilPc:2}};
+const PIZZA_DEFAULTS={neap:{ballSize:240,saltPc:3.0,oilPc:0},ny:{ballSize:280,saltPc:2.5,oilPc:2}};
 
 function calcDoughBallFlour(ballSize, hyd, saltPc, oilPc) {
   const totalPc = 100 + hyd + saltPc + oilPc;
@@ -1156,7 +1156,7 @@ function calcYeast(fid, rt, hrs, hyd) {
 const FERMENTS={room:{color:'#b85c00'},cold:{color:'#2a6898'}};
 function minsToLabel(m){if(m<60)return m+'m';const h=Math.floor(m/60),r=m%60;return r?h+'h '+r+'m':h+'h';}
 
-let S={units:'metric',tempScale:'C',hours:8,fid:'room',hyd:63,rTemp:20,step:0,pizzaType:'neap',ballCount:4,ballSize:250,saltPc:2.8,oilPc:0};
+let S={units:'metric',tempScale:'C',hours:12,fid:'room',hyd:60,rTemp:18,step:0,pizzaType:'neap',ballCount:4,ballSize:240,saltPc:3.0,oilPc:0};
 let startTime=Date.now();
 let bakeStarted=false;
 let steps=[];
@@ -1726,14 +1726,14 @@ function toggleDark(){
   savePrefs();
 }
 function resetDefaults(){
-  S={units:'metric',tempScale:'C',hours:8,fid:'room',hyd:63,rTemp:20,step:0,pizzaType:'neap',ballCount:4,ballSize:250,saltPc:2.8,oilPc:0};
+  S={units:'metric',tempScale:'C',hours:12,fid:'room',hyd:60,rTemp:18,step:0,pizzaType:'neap',ballCount:4,ballSize:240,saltPc:3.0,oilPc:0};
   coilFoldCount=0;
   activeTimerStep=-1;
   resetBakeState();
   if(tlVisible) showMethodView();
-  document.getElementById('hours-slider').value=hoursToSlider(8);
-  document.getElementById('hyd-slider').value=63;
-  document.getElementById('temp-slider').value=20;
+  document.getElementById('hours-slider').value=hoursToSlider(12);
+  document.getElementById('hyd-slider').value=60;
+  document.getElementById('temp-slider').value=18;
   setUnits('metric');
   setTempScale('C');
   setPizzaType('neap');
