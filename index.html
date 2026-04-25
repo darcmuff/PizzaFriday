@@ -115,16 +115,17 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-body);background:va
 .db-pill-row{position:relative}
 
 /* ===== SLIDERS ===== */
-.slider-track{position:relative;height:8px;border-radius:4px;margin:4px 0 3px}
+.slider-track{position:relative;height:8px;border-radius:4px;margin:8px 0 3px}
+#slider-card.bake-locked{opacity:0.4;pointer-events:none;transition:opacity .25s ease}
 .slider-hours{background:linear-gradient(to right,#b87070 0%,#8aaa78 28%,#8aaa78 72%,#b87070 100%)}
 .slider-hyd{background:linear-gradient(to right,#b87070 0%,#8aaa78 15%,#8aaa78 75%,#b87070 100%)}
 .slider-temp{background:linear-gradient(to right,#b87070 0%,#8aaa78 22%,#8aaa78 62%,#b87070 100%)}
 .slider-track input[type=range]{-webkit-appearance:none;appearance:none;width:100%;cursor:pointer;display:block;position:absolute;top:0;left:0;height:100%;margin:0;background:transparent;outline:none}
 .slider-track input[type=range]::-webkit-slider-runnable-track{background:transparent;height:100%}
-.slider-track input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:28px;height:16px;border-radius:8px;background:var(--bg);border:2px solid var(--accent);box-shadow:0 2px 6px rgba(0,0,0,0.25);cursor:pointer;transition:all .2s ease;margin-top:-4px}
+.slider-track input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:16px;height:28px;border-radius:8px;background:var(--bg);border:2px solid var(--accent);box-shadow:0 2px 6px rgba(0,0,0,0.25);cursor:pointer;transition:all .2s ease;margin-top:-10px}
 .slider-track input[type=range]::-webkit-slider-thumb:hover{box-shadow:0 0 0 4px var(--gold-glow),0 2px 8px rgba(0,0,0,0.3);transform:scale(1.05)}
 .slider-track input[type=range]::-moz-range-track{background:transparent;height:100%;border:none}
-.slider-track input[type=range]::-moz-range-thumb{width:28px;height:16px;border-radius:8px;background:var(--bg);border:2px solid var(--accent);box-shadow:0 2px 6px rgba(0,0,0,0.25);cursor:pointer}
+.slider-track input[type=range]::-moz-range-thumb{width:16px;height:28px;border-radius:8px;background:var(--bg);border:2px solid var(--accent);box-shadow:0 2px 6px rgba(0,0,0,0.25);cursor:pointer}
 .slider-labels{display:flex;justify-content:space-between;font-size:0.8rem;color:var(--text3);font-weight:600;letter-spacing:.03em}
 .slider-labels .green{color:var(--green);font-weight:700}
 .slider-labels .red{color:var(--red);font-weight:700}
@@ -360,14 +361,21 @@ body.dark .m-timer-pill.nudge{animation:timer-nudge-dark 1.5s ease-in-out infini
   /* Prevent body scroll while in focus mode */
   body.focus-locked{overflow:hidden!important;position:fixed;width:100%;height:100%}
 
-  /* ===== RESUME BAKE FLOATING BUTTON (shown when bake is live but focus mode is exited) ===== */
-  #resume-fab{
+  /* ===== RESUME/RESET FLOATING BUTTONS (shown when bake is live but focus mode is exited) ===== */
+  #resume-fab-row{
     display:none;
     position:fixed;
     left:50%;transform:translateX(-50%);
     bottom:calc(20px + env(safe-area-inset-bottom,0px));
     z-index:800;
+    gap:10px;
+    align-items:center;
+  }
+  body.bake-live-exited #resume-fab-row{display:flex}
+  #resume-fab,#reset-fab{
     padding:10px 22px;
+    min-width:140px;
+    justify-content:center;
     border-radius:10px;
     border:2px solid var(--border);
     background:var(--bg);
@@ -382,27 +390,17 @@ body.dark .m-timer-pill.nudge{animation:timer-nudge-dark 1.5s ease-in-out infini
     animation:fab-pop .3s cubic-bezier(.4,0,.2,1);
     -webkit-tap-highlight-color:transparent;
     transition:background .2s ease, border-color .2s ease;
+    display:inline-flex;align-items:center;gap:8px;
   }
-  #resume-fab:active{
-    transform:translateX(-50%) scale(0.96);
-    background:var(--bg4);
-    box-shadow:0 2px 8px rgba(40,28,16,0.16);
-  }
-  body.dark #resume-fab{
-    background:var(--bg2);
-    box-shadow:0 4px 14px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.25);
-  }
-  body.dark #resume-fab:active{background:var(--bg3)}
+  #resume-fab:active,#reset-fab:active{transform:scale(0.96);background:var(--bg4);box-shadow:0 2px 8px rgba(40,28,16,0.16)}
+  body.dark #resume-fab,body.dark #reset-fab{background:var(--bg2);box-shadow:0 4px 14px rgba(0,0,0,0.4),0 1px 3px rgba(0,0,0,0.25)}
+  body.dark #resume-fab:active,body.dark #reset-fab:active{background:var(--bg3)}
   @keyframes fab-pop{
-    from{transform:translate(-50%, 12px);opacity:0}
-    to{transform:translate(-50%, 0);opacity:1}
+    from{transform:translateY(12px);opacity:0}
+    to{transform:translateY(0);opacity:1}
   }
-  body.bake-live-exited #resume-fab{display:inline-flex;align-items:center;gap:8px}
-  #resume-fab .fab-icon{
-    font-size:0.72rem;
-    line-height:1;
-    color:var(--accent);
-  }
+  #resume-fab .fab-icon{font-size:0.72rem;line-height:1;color:var(--accent)}
+  #reset-fab .fab-icon{font-size:0.95rem;line-height:1;color:var(--accent)}
 
 
   .fdesc{white-space:normal}
@@ -410,8 +408,8 @@ body.dark .m-timer-pill.nudge{animation:timer-nudge-dark 1.5s ease-in-out infini
   .flabel{font-size:1rem}
   .db-steppers{grid-template-columns:1fr 1fr;gap:8px 12px}
   .db-stepper button{width:38px;height:38px;font-size:18px}
-  .slider-track input[type=range]::-webkit-slider-thumb{width:32px;height:18px;margin-top:-5px}
-  .slider-track{height:8px;margin:6px 0 4px}
+  .slider-track input[type=range]::-webkit-slider-thumb{width:18px;height:32px;margin-top:-12px}
+  .slider-track{height:8px;margin:10px 0 4px}
   .m-title{font-size:1.25rem}
   .m-body-text{font-size:1rem}
   .card-title,.sec-label{font-size:1rem}
@@ -425,7 +423,7 @@ body.dark .m-timer-pill.nudge{animation:timer-nudge-dark 1.5s ease-in-out infini
 
 /* Desktop: hide mobile-only focus elements */
 @media (min-width:769px){
-  #resume-fab{display:none!important}
+  #resume-fab-row{display:none!important}
 }
 
 /* ===== GUIDE MODAL ===== */
@@ -814,7 +812,10 @@ body.dark .m-timer-pill.nudge{animation:timer-nudge-dark 1.5s ease-in-out infini
 
 
 <!-- Mobile: floating Resume button shown when bake is live but focus mode is exited -->
-<button id="resume-fab" onclick="enterFocusMode()"><span class="fab-icon">▶</span><span>Resume</span></button>
+<div id="resume-fab-row">
+  <button id="reset-fab" onclick="resetBakeState()"><span class="fab-icon">↺</span><span>Reset</span></button>
+  <button id="resume-fab" onclick="enterFocusMode()"><span class="fab-icon">▶</span><span>Resume</span></button>
+</div>
 
 <div class="guide-overlay" id="guide-overlay" onclick="if(event.target===this)hideGuide()">
   <div class="guide-box">
@@ -1269,6 +1270,7 @@ function startBake(){
   bakeStarted=true;
   nudgeDismissed=false;
   startTime=Date.now();
+  document.getElementById('slider-card').classList.add('bake-locked');
   S.step=0;
   coilFoldCount=0;
   activeTimerStep=-1;
@@ -1290,7 +1292,7 @@ function resetBakeState(){
   document.body.classList.remove('bake-live-exited');
   bakeStarted=false;
   startTime=Date.now();
-  releaseWakeLock();
+  document.getElementById('slider-card').classList.remove('bake-locked');
   if(window.BakePlugin) window.BakePlugin.stop().catch(function(){});
   if(window.BakeNotificationPlugin) window.BakeNotificationPlugin.dismiss().catch(function(){});
   try{localStorage.removeItem('pd_session');}catch(e){}
@@ -1780,6 +1782,7 @@ function loadSession(){
     if(ss.bakeStarted&&ss.bakeStartTime){
       bakeStarted=true;
       startTime=ss.bakeStartTime;
+      document.getElementById('slider-card').classList.add('bake-locked');
       const btn=document.getElementById('start-bake-btn');
       btn.innerHTML='<span class="btn-icon">▶</span><span class="btn-label">'+fmtClock(new Date(startTime))+'</span>';
       btn.classList.add('active');
