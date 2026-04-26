@@ -262,13 +262,14 @@ body.dark .m-timer-pill.nudge{animation:timer-nudge-dark 1.5s ease-in-out infini
 .video-label svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
 /* ===== NAV BUTTONS ===== */
-.nav-row{display:flex;gap:10px;margin-top:12px;flex-shrink:0}
-.nav-prev,.nav-next{padding:13px;border-radius:8px;font-size:0.92rem;cursor:pointer;font-family:var(--font-body);flex:1;text-align:center;transition:all .25s ease;font-weight:700;letter-spacing:.04em}
-.nav-prev{border:1px solid var(--border);background:var(--bg3);color:var(--text2);box-shadow:0 1px 3px rgba(0,0,0,0.1)}
-.nav-prev:hover{border-color:var(--text3);color:var(--text);box-shadow:0 2px 5px rgba(0,0,0,0.14)}
-.nav-next{border:1px solid var(--border);background:var(--bg);color:var(--text2);box-shadow:0 1px 3px rgba(0,0,0,0.1);font-weight:700}
-.nav-next:hover{border-color:var(--text3);color:var(--text);box-shadow:0 2px 5px rgba(0,0,0,0.14)}
-.nav-next:disabled,.nav-prev:disabled{opacity:0.3;cursor:not-allowed;transform:none;box-shadow:none}
+.nav-row{display:flex;gap:10px;margin-top:12px;flex-shrink:0;align-items:center}
+.nav-arrow{width:110px;height:48px;border-radius:8px;font-size:1.2rem;cursor:pointer;font-family:var(--font-body);text-align:center;transition:all .25s ease;font-weight:700;border:1px solid var(--border);background:var(--bg3);color:var(--text2);box-shadow:0 1px 3px rgba(0,0,0,0.1);flex-shrink:0;padding:0;display:flex;align-items:center;justify-content:center}
+.nav-arrow:hover{border-color:var(--text3);color:var(--text);box-shadow:0 2px 5px rgba(0,0,0,0.14)}
+.nav-arrow:disabled{opacity:0.3;cursor:not-allowed;transform:none;box-shadow:none}
+.nav-done{flex:1;padding:13px;border-radius:8px;font-size:0.88rem;cursor:pointer;font-family:var(--font-body);text-align:center;transition:all .25s ease;font-weight:700;letter-spacing:.04em;border:1px solid var(--border);background:var(--bg);color:var(--text2);box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+.nav-done:hover{border-color:var(--text3);color:var(--text);box-shadow:0 2px 5px rgba(0,0,0,0.14)}
+.nav-done:disabled{opacity:0.3;cursor:not-allowed;transform:none;box-shadow:none}
+.nav-done.completed{background:var(--green);border-color:var(--green);color:#fff}
 
 /* ===== TIMELINE ===== */
 .tl-item{display:flex;gap:10px;cursor:pointer;transition:all .2s ease;padding:3px 6px;border-radius:6px}
@@ -414,7 +415,7 @@ body.dark .m-timer-pill.nudge{animation:timer-nudge-dark 1.5s ease-in-out infini
   .m-body-text{font-size:1rem}
   .card-title,.sec-label{font-size:1rem}
   #method-label{display:none}
-  .nav-prev,.nav-next{padding:14px 10px;font-size:0.9rem}
+  .nav-done{padding:14px 10px;font-size:0.9rem}
   .tl-title{font-size:1.15rem}
   .tl-desc{font-size:0.9rem}
   .guide-overlay,.saved-overlay{padding:10px;align-items:flex-end;z-index:2100}
@@ -801,8 +802,9 @@ body.dark .m-timer-pill.nudge{animation:timer-nudge-dark 1.5s ease-in-out infini
           <div id="video-area"></div>
         </div>
         <div class="nav-row">
-          <button class="nav-prev" id="prev-btn" onclick="prevStep()">← Previous</button>
-          <button class="nav-next" id="next-btn" onclick="nextStep()">Next Step →</button>
+          <button class="nav-arrow" id="prev-btn" onclick="prevStep()" aria-label="Previous step">←</button>
+          <button class="nav-done" id="done-btn" onclick="completeStep()">Step Complete ✓</button>
+          <button class="nav-arrow" id="next-btn" onclick="nextStep()" aria-label="Next step">→</button>
         </div>
       </div>
     </div>
@@ -1163,6 +1165,8 @@ let bakeStarted=false;
 let steps=[];
 let coilFoldCount=0;       /* 0–4: how many coil folds done this session */
 let activeTimerStep=-1;    /* which step index has an active (green) timer pill */
+let activeStep=0;          /* highest step the user has actually completed up to */
+let stepCompletionTimes=[]; /* Date.now() stamp when each step was completed */
 let nudgeDismissed=false;  /* true after user taps the first timed step's timer pill */
 
 function fmtClock(date){
@@ -1194,15 +1198,25 @@ const ACTIVE_MINS=5;
 function calcStepTimes(){
   if(!bakeStarted||!steps.length) return null;
   const times=[];
-  let elapsed=0;
   for(let i=0;i<steps.length;i++){
-    const t=new Date(startTime+elapsed*60000);
-    times.push(t);
-    const s=steps[i];
-    if(s.concurrent) continue;
-    if(s.coilFold) elapsed+=90;
-    else if(s.timer) elapsed+=s.timer;
-    else elapsed+=ACTIVE_MINS;
+    if(i<=activeStep && stepCompletionTimes[i]){
+      times.push(new Date(stepCompletionTimes[i]));
+    } else if(i>0 && stepCompletionTimes[i-1]){
+      const anchor=stepCompletionTimes[i-1];
+      times.push(new Date(anchor));
+    } else if(i===0){
+      times.push(new Date(startTime));
+    } else {
+      const prev=times[i-1]?times[i-1].getTime():startTime;
+      const s=steps[i-1];
+      let dur=ACTIVE_MINS;
+      if(s&&!s.concurrent){
+        if(s.coilFold) dur=110;
+        else if(s.timer) dur=s.timer+(s.activeMins||0);
+        else if(s.activeMins) dur=s.activeMins;
+      } else { dur=0; }
+      times.push(new Date(prev+dur*60000));
+    }
   }
   return times;
 }
@@ -1222,8 +1236,7 @@ function getCurrentScheduledStep(){
 }
 function goToCurrentStep(){
   if(!bakeStarted) return;
-  const target=(typeof activeTimerStep!=='undefined'&&activeTimerStep>=0) ? activeTimerStep : getCurrentScheduledStep();
-  if(target>=0){ S.step=target; renderMethod(); }
+  S.step=activeStep; renderMethod();
 }
 let _wakeLock=null;
 async function acquireWakeLock(){
@@ -1244,8 +1257,7 @@ window.onNotificationTap=function(){
 };
 function notifyBakeService(){
   if(!bakeStarted) return;
-  const scheduled=(typeof activeTimerStep!=='undefined'&&activeTimerStep>=0) ? activeTimerStep : getCurrentScheduledStep();
-  const ni=scheduled>=0 ? scheduled : S.step;
+  const ni=activeStep;
   const nstep=steps[ni];
   if(!nstep) return;
   const stepTimes=calcStepTimes();
@@ -1272,6 +1284,8 @@ function startBake(){
   startTime=Date.now();
   document.getElementById('slider-card').classList.add('bake-locked');
   S.step=0;
+  activeStep=0;
+  stepCompletionTimes=[];
   coilFoldCount=0;
   activeTimerStep=-1;
   const btn=document.getElementById('start-bake-btn');
@@ -1292,6 +1306,8 @@ function resetBakeState(){
   document.body.classList.remove('bake-live-exited');
   bakeStarted=false;
   startTime=Date.now();
+  activeStep=0;
+  stepCompletionTimes=[];
   document.getElementById('slider-card').classList.remove('bake-locked');
   if(window.BakePlugin) window.BakePlugin.stop().catch(function(){});
   if(window.BakeNotificationPlugin) window.BakeNotificationPlugin.dismiss().catch(function(){});
@@ -1528,7 +1544,7 @@ function renderMethod(){
       pillTitle=`Tap to do knead ${done+1} and set 25m rest timer`;
     } else {
       pillLabel='⏰ Knead 4 of 4';
-      pillTitle='All 4 kneads done — hit Next Step';
+      pillTitle='All 4 kneads done — tap Step Complete';
     }
     const activeClass=(isActive||allDone)?' active':'';
     const clickHandler=allDone?'':(`doCoilFold(${i})`);
@@ -1575,9 +1591,30 @@ function renderMethod(){
     document.getElementById('s-body').after(hintP);
   }
   document.getElementById('prev-btn').disabled=i===0;
-  const nb=document.getElementById('next-btn');
-  nb.disabled=i===total-1;
-  nb.textContent=i===total-1?'Complete ✓':'Next Step →';
+  document.getElementById('next-btn').disabled=i===total-1;
+  const db=document.getElementById('done-btn');
+  if(bakeStarted){
+    const isActiveStep=i===activeStep;
+    const isFinalStep=activeStep>=total-1;
+    db.disabled=!isActiveStep||isFinalStep;
+    if(isFinalStep&&isActiveStep){
+      db.textContent='Bake Complete ✓';
+      db.classList.add('completed');
+    } else if(isActiveStep){
+      db.textContent='Step Complete ✓';
+      db.classList.remove('completed');
+    } else if(i<activeStep){
+      db.textContent='Completed ✓';
+      db.classList.add('completed');
+    } else {
+      db.textContent='Step Complete ✓';
+      db.classList.remove('completed');
+    }
+  } else {
+    db.disabled=true;
+    db.textContent='Step Complete ✓';
+    db.classList.remove('completed');
+  }
 }
 
 function pressTimer(stepIdx, secs, msg){
@@ -1624,6 +1661,22 @@ function doCoilFold(stepIdx){
 }
 function prevStep(){if(S.step>0){S.step--;renderMethod();}}
 function nextStep(){if(S.step<steps.length-1){S.step++;renderMethod();}}
+function completeStep(){
+  if(!bakeStarted) return;
+  if(S.step!==activeStep) return;
+  if(activeStep>=steps.length-1){
+    resetBakeState();
+    return;
+  }
+  stepCompletionTimes[activeStep]=Date.now();
+  activeStep++;
+  S.step=activeStep;
+  update();
+  renderMethod();
+  notifyBakeService();
+  if(tlVisible) renderTimeline();
+  saveSession();
+}
 function setStep(i){S.step=i;renderMethod();showMethodView();}
 
 let tlVisible=false;
@@ -1657,15 +1710,17 @@ function renderTimeline(){
   if(!steps.length)return;
   const el=document.getElementById('timeline-view');
   const stepTimes=calcStepTimes();
-  const COIL_STEM=80;   /* fixed px for coil fold — always 90min */
+  const COIL_STEM=80;
   const MIN_H=4;
   const MAX_H=160;
-  /* Only variable steps (bulk ferment / fridge) should scale */
   const variableMax=Math.max(...steps.map(s=>(!s.coilFold&&s.timer)||0));
   el.innerHTML=steps.map((s,i)=>{
-    const isCurrent=i===S.step;
+    const isActive=bakeStarted&&i===activeStep;
+    const isViewed=i===S.step;
+    const isCompleted=bakeStarted&&i<activeStep;
     const isLast=i===steps.length-1;
     let stemH=MIN_H;
+    const totalMins=s.coilFold?110:s.timer?(s.timer+(s.activeMins||0)):(s.activeMins||ACTIVE_MINS);
     if(s.coilFold) stemH=COIL_STEM;
     else if(s.timer) stemH=Math.max(12,Math.round((s.timer/variableMax)*MAX_H));
     let stemCol='#b8a070';
@@ -1678,24 +1733,25 @@ function renderTimeline(){
     else if(s.timer) stemCol='#a89060';
     const dotCol=(s.timer||s.coilFold)?stemCol:'#a89060';
     const isTimerActive=i===activeTimerStep;
-    const dotClass=isCurrent?'tl-dot active':isTimerActive?'tl-dot timer-active':'tl-dot';
-    const dotStyle=(isCurrent||isTimerActive)?'':`background:${dotCol};border-color:${dotCol}`;
-    const dur=s.coilFold?'1.5h':s.timer?minsToLabel(s.timer):'';
+    const dotClass=isActive?'tl-dot active':isTimerActive?'tl-dot timer-active':isCompleted?'tl-dot completed':'tl-dot';
+    const dotStyle=(isActive||isTimerActive)?'':`background:${isCompleted?'var(--green)':dotCol};border-color:${isCompleted?'var(--green)':dotCol}`;
+    const dur=s.coilFold?'1h 50m':totalMins>=60?minsToLabel(totalMins):minsToLabel(totalMins);
     const clockStr=stepTimes?fmtClock(stepTimes[i]):'';
     const durDisplay=stepTimes?(clockStr+(dur?' · '+dur:'')):(dur||'');
     const desc=s.body;
     const displayTitle=s.coilFold?'Knead ×4':s.title;
     const coilLabel=s.coilFold&&coilFoldCount>0?` <span style="font-size:0.78rem;font-weight:700;color:var(--green);margin-left:4px">×${coilFoldCount}</span>`:'';
     const timerDot=isTimerActive?` <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-left:6px;vertical-align:middle;flex-shrink:0"></span>`:'';
-    return `<div class="tl-item">
+    const completedTick=isCompleted?' <span style="color:var(--green);font-weight:700;margin-left:4px">✓</span>':'';
+    return `<div class="tl-item" style="${isActive?'background:var(--bg3)':''}" >
       <div class="tl-line">
         <div class="${dotClass}" ${dotStyle?`style="${dotStyle}"`:''} ></div>
-        ${!isLast?`<div class="tl-stem" style="height:${stemH}px;background:${stemCol}"></div>`:''}
+        ${!isLast?`<div class="tl-stem" style="height:${stemH}px;background:${isCompleted?'var(--green)':stemCol}"></div>`:''}
       </div>
       <div class="tl-content" onclick="setStep(${i})">
         <div class="tl-head">
           <span class="tl-icon">${s.icon}</span>
-          <span class="tl-title">${displayTitle}${coilLabel}</span>
+          <span class="tl-title">${displayTitle}${coilLabel}${completedTick}</span>
           ${durDisplay?`<span class="tl-dur">${durDisplay}${timerDot}</span>`:''}
         </div>
         <div class="tl-desc">${desc}</div>
@@ -1771,7 +1827,11 @@ function saveSession(){
   try{localStorage.setItem('pd_session',JSON.stringify({
     step:S.step,
     bakeStarted:bakeStarted,
-    bakeStartTime:startTime
+    bakeStartTime:startTime,
+    coilFoldCount:coilFoldCount,
+    activeTimerStep:activeTimerStep,
+    activeStep:activeStep,
+    stepCompletionTimes:stepCompletionTimes
   }));}catch(e){}
 }
 function loadSession(){
@@ -1783,6 +1843,10 @@ function loadSession(){
       bakeStarted=true;
       startTime=ss.bakeStartTime;
       document.getElementById('slider-card').classList.add('bake-locked');
+      if(ss.coilFoldCount!=null) coilFoldCount=ss.coilFoldCount;
+      if(ss.activeTimerStep!=null) activeTimerStep=ss.activeTimerStep;
+      if(ss.activeStep!=null) activeStep=ss.activeStep;
+      if(ss.stepCompletionTimes) stepCompletionTimes=ss.stepCompletionTimes;
       const btn=document.getElementById('start-bake-btn');
       btn.innerHTML='<span class="btn-icon">▶</span><span class="btn-label">'+fmtClock(new Date(startTime))+'</span>';
       btn.classList.add('active');
