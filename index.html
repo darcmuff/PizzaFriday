@@ -263,13 +263,13 @@ body.dark .m-timer-pill.nudge{animation:timer-nudge-dark 1.5s ease-in-out infini
 
 /* ===== NAV BUTTONS ===== */
 .nav-row{display:flex;gap:10px;margin-top:12px;flex-shrink:0;align-items:center}
-.nav-arrow{width:110px;height:48px;border-radius:8px;font-size:1.2rem;cursor:pointer;font-family:var(--font-body);text-align:center;transition:all .25s ease;font-weight:700;border:1px solid var(--border);background:var(--bg3);color:var(--text2);box-shadow:0 1px 3px rgba(0,0,0,0.1);flex-shrink:0;padding:0;display:flex;align-items:center;justify-content:center}
+.nav-arrow{width:110px;height:48px;border-radius:8px;font-size:1.8rem;cursor:pointer;font-family:sans-serif;transition:all .25s ease;font-weight:700;border:1px solid var(--border);background:var(--bg3);color:var(--text2);box-shadow:0 1px 3px rgba(0,0,0,0.1);flex-shrink:0;padding:0;display:flex;align-items:center;justify-content:center;line-height:1}
 .nav-arrow:hover{border-color:var(--text3);color:var(--text);box-shadow:0 2px 5px rgba(0,0,0,0.14)}
 .nav-arrow:disabled{opacity:0.3;cursor:not-allowed;transform:none;box-shadow:none}
 .nav-done{flex:1;padding:13px;border-radius:8px;font-size:0.88rem;cursor:pointer;font-family:var(--font-body);text-align:center;transition:all .25s ease;font-weight:700;letter-spacing:.04em;border:1px solid var(--border);background:var(--bg);color:var(--text2);box-shadow:0 1px 3px rgba(0,0,0,0.1)}
 .nav-done:hover{border-color:var(--text3);color:var(--text);box-shadow:0 2px 5px rgba(0,0,0,0.14)}
 .nav-done:disabled{opacity:0.3;cursor:not-allowed;transform:none;box-shadow:none}
-.nav-done.completed{background:var(--green);border-color:var(--green);color:#fff}
+.nav-done.completed{background:#00b341;border-color:#00b341;color:#000}
 
 /* ===== TIMELINE ===== */
 .tl-item{display:flex;gap:10px;cursor:pointer;transition:all .2s ease;padding:3px 6px;border-radius:6px}
@@ -802,9 +802,9 @@ body.dark .m-timer-pill.nudge{animation:timer-nudge-dark 1.5s ease-in-out infini
           <div id="video-area"></div>
         </div>
         <div class="nav-row">
-          <button class="nav-arrow" id="prev-btn" onclick="prevStep()" aria-label="Previous step">←</button>
-          <button class="nav-done" id="done-btn" onclick="completeStep()">Step Complete ✓</button>
-          <button class="nav-arrow" id="next-btn" onclick="nextStep()" aria-label="Next step">→</button>
+          <button class="nav-arrow" id="prev-btn" onclick="prevStep()" aria-label="Previous step"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+          <button class="nav-done" id="done-btn" onclick="completeStep()"><span id="done-label">Complete</span><span id="done-tick" style="display:none"> ✓</span></button>
+          <button class="nav-arrow" id="next-btn" onclick="nextStep()" aria-label="Next step"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
         </div>
       </div>
     </div>
@@ -1176,8 +1176,10 @@ function fmtClock(date){
   return h+':'+String(m).padStart(2,'0')+ampm;
 }
 function getEatTime(hours){
-  const eat=new Date(startTime+hours*3600000);
-  const now=new Date(startTime);
+  const base=bakeStarted?startTime:Date.now();
+  const eat=new Date(base);
+  eat.setHours(eat.getHours()+hours);
+  const now=new Date(base);
   const dayDiff=Math.floor((eat-new Date(now.getFullYear(),now.getMonth(),now.getDate()))/(86400000));
   let suffix='';
   if(dayDiff===1) suffix=' tomorrow';
@@ -1396,7 +1398,9 @@ function selectFerment(id){
   savePrefs();
 }
 
+let _updateTimer=null;
 function update(){
+  if(!bakeStarted) startTime=Date.now();
   S.hours=sliderToHours(+document.getElementById('hours-slider').value);
   S.hyd=+document.getElementById('hyd-slider').value;
   S.rTemp=+document.getElementById('temp-slider').value;
@@ -1432,18 +1436,21 @@ function update(){
     :'High-gluten bread flour <span style="margin-left:6px;">(13–15% protein)</span>';
   const oilMuted=ing.oil<=0;
   const oilStyle=oilMuted?'opacity:0.35':'';
-  document.getElementById('rec-tbody').innerHTML=[
-    [flourLabel,dw(ing.flour),'100%',''],
-    ['Water',dw(ing.water),hyd+'%',''],
-    [saltLabel,dw(ing.salt),saltPc+'%',''],
-    [`Instant dry yeast <span style="margin-left:4px;font-size:0.78rem;color:var(--text3);">(${dw(Math.round(ing.yeast*3*10)/10)} fresh)</span>`,dw(ing.yeast),yp+'%',''],
-    ['Extra virgin olive oil',oilMuted?'—':dw(ing.oil),oilPc+'%',oilStyle],
-  ].map(([n,w,p,s])=>`<tr${s?' style="'+s+'"':''}><td>${n}</td><td class="wt">${w}</td><td class="pc">${p}</td></tr>`).join('')
-  +`<tr class="total-row"><td>Total dough</td><td class="wt">~${dw(total)}</td><td></td></tr>`;
 
   buildSteps(ing,hyd,fid,hours);
-  renderMethod();
-  if (tlVisible) renderTimeline();
+  clearTimeout(_updateTimer);
+  _updateTimer=setTimeout(()=>{
+    document.getElementById('rec-tbody').innerHTML=[
+      [flourLabel,dw(ing.flour),'100%',''],
+      ['Water',dw(ing.water),hyd+'%',''],
+      [saltLabel,dw(ing.salt),saltPc+'%',''],
+      [`Instant dry yeast <span style="margin-left:4px;font-size:0.78rem;color:var(--text3);">(${dw(Math.round(ing.yeast*3*10)/10)} fresh)</span>`,dw(ing.yeast),yp+'%',''],
+      ['Extra virgin olive oil',oilMuted?'—':dw(ing.oil),oilPc+'%',oilStyle],
+    ].map(([n,w,p,s])=>`<tr${s?' style="'+s+'"':''}><td>${n}</td><td class="wt">${w}</td><td class="pc">${p}</td></tr>`).join('')
+    +`<tr class="total-row"><td>Total dough</td><td class="wt">~${dw(total)}</td><td></td></tr>`;
+    renderMethod();
+    if(tlVisible) renderTimeline();
+  },16);
 }
 
 function setUnits(u){
@@ -1593,26 +1600,21 @@ function renderMethod(){
   document.getElementById('prev-btn').disabled=i===0;
   document.getElementById('next-btn').disabled=i===total-1;
   const db=document.getElementById('done-btn');
+  const dt=document.getElementById('done-tick');
   if(bakeStarted){
     const isActiveStep=i===activeStep;
     const isFinalStep=activeStep>=total-1;
     db.disabled=!isActiveStep||isFinalStep;
-    if(isFinalStep&&isActiveStep){
-      db.textContent='Bake Complete ✓';
-      db.classList.add('completed');
-    } else if(isActiveStep){
-      db.textContent='Step Complete ✓';
-      db.classList.remove('completed');
-    } else if(i<activeStep){
-      db.textContent='Completed ✓';
+    if(i<activeStep){
+      dt.style.display='inline';
       db.classList.add('completed');
     } else {
-      db.textContent='Step Complete ✓';
+      dt.style.display='none';
       db.classList.remove('completed');
     }
   } else {
     db.disabled=true;
-    db.textContent='Step Complete ✓';
+    dt.style.display='none';
     db.classList.remove('completed');
   }
 }
@@ -1668,14 +1670,24 @@ function completeStep(){
     resetBakeState();
     return;
   }
-  stepCompletionTimes[activeStep]=Date.now();
-  activeStep++;
-  S.step=activeStep;
-  update();
-  renderMethod();
-  notifyBakeService();
-  if(tlVisible) renderTimeline();
-  saveSession();
+  const db=document.getElementById('done-btn');
+  if(db.dataset.completing) return;
+  db.dataset.completing='1';
+  document.getElementById('done-tick').style.display='inline';
+  db.classList.add('completed');
+  setTimeout(function(){
+    delete db.dataset.completing;
+    document.getElementById('done-tick').style.display='none';
+    db.classList.remove('completed');
+    stepCompletionTimes[activeStep]=Date.now();
+    activeStep++;
+    S.step=activeStep;
+    update();
+    renderMethod();
+    notifyBakeService();
+    if(tlVisible) renderTimeline();
+    saveSession();
+  },500);
 }
 function setStep(i){S.step=i;renderMethod();showMethodView();}
 
@@ -1808,18 +1820,50 @@ function shareRecipe(){
   const typeLabel=pizzaType==='neap'?'Neapolitan':'New York';
   const ballDesc=`${ballCount}× ${units==='imperial'?(ballSize/28.35).toFixed(1)+'oz':ballSize+'g'} balls`;
   const oilLine=ing.oil>0?`\nOlive oil: ${dw(ing.oil)}`:'';
-  const text=`🍕 Pizza Dough Recipe\n\n${typeLabel} · ${fid==='cold'?'Cold':'Room temp'} ferment · ${hours}h · ${hyd}% hydration · ${dt(rTemp)}\n${ballDesc}\n\nFlour: ${dw(ing.flour)}\nWater: ${dw(ing.water)}\nSalt: ${dw(ing.salt)}\nYeast: ${dw(ing.yeast)} (${yp}%)${oilLine}`;
-  const btn=document.getElementById('share-btn');
-  const showTick=()=>{if(btn){const orig=btn.innerHTML;btn.innerHTML='✓';setTimeout(()=>btn.innerHTML=orig,1500);}};
-  if(navigator.share){navigator.share({title:'Pizza Dough Recipe',text}).catch(()=>{});}
-  else if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(showTick).catch(()=>{});}
-  else{const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;left:-9999px';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showTick();}
+  const params=new URLSearchParams({hours,hyd,fid,temp:rTemp,type:pizzaType,balls:ballCount,size:ballSize,units,scale:tempScale,salt:saltPc,oil:oilPc});
+  const url=`https://darcmuff.github.io/PizzaFriday/?${params.toString()}`;
+  const text=`🍕 PizzaFriday Recipe\n\n${typeLabel} · ${fid==='cold'?'Cold':'Room temp'} ferment · ${hours}h · ${hyd}% hydration · ${dt(rTemp)}\n${ballDesc}\n\nFlour: ${dw(ing.flour)}\nWater: ${dw(ing.water)}\nSalt: ${dw(ing.salt)}\nYeast: ${dw(ing.yeast)} (${yp}%)${oilLine}\n\n${url}`;
+  const copyFallback=()=>{navigator.clipboard.writeText(text).then(()=>{const b=document.getElementById('share-btn');const orig=b.innerHTML;b.innerHTML='✓';setTimeout(()=>b.innerHTML=orig,1500);}).catch(()=>{});};
+  if(navigator.share){navigator.share({title:'PizzaFriday Recipe',text}).catch(()=>copyFallback());}
+  else{copyFallback();}
 }
 
 setPizzaType('neap');
 selectFerment('room');
 loadPrefs();
 update(); /* ensure temp labels match saved scale on first load */
+
+/* === Load shared recipe from URL params === */
+(function loadFromURL(){
+  const p=new URLSearchParams(window.location.search);
+  if(!p.has('hours')) return;
+  const hours=parseFloat(p.get('hours'));
+  const hyd=parseFloat(p.get('hyd'));
+  const fid=p.get('fid')||'room';
+  const rTemp=parseFloat(p.get('temp'))||20;
+  const pizzaType=p.get('type')||'neap';
+  const ballCount=parseInt(p.get('balls'))||4;
+  const ballSize=parseInt(p.get('size'))||250;
+  const units=p.get('units')||'metric';
+  const tempScale=p.get('scale')||'C';
+  const saltPc=parseFloat(p.get('salt'))||2.5;
+  const oilPc=parseFloat(p.get('oil'))||0;
+  if(isNaN(hours)||isNaN(hyd)) return;
+  S.hours=hours; S.hyd=hyd; S.rTemp=rTemp; S.units=units; S.tempScale=tempScale;
+  S.pizzaType=pizzaType; S.ballCount=ballCount; S.ballSize=ballSize;
+  S.saltPc=saltPc; S.oilPc=oilPc;
+  document.getElementById('hours-slider').value=hoursToSlider(hours);
+  document.getElementById('hyd-slider').value=hyd;
+  document.getElementById('temp-slider').value=rTemp;
+  document.getElementById('btn-metric').classList.toggle('active',units==='metric');
+  document.getElementById('btn-imperial').classList.toggle('active',units==='imperial');
+  document.getElementById('btn-c').classList.toggle('active',tempScale==='C');
+  document.getElementById('btn-f').classList.toggle('active',tempScale==='F');
+  setPizzaType(pizzaType);
+  selectFerment(fid);
+  update();
+  window.history.replaceState({},'',window.location.pathname);
+})();
 
 
 /* === Session state — survives tab closure === */
@@ -1854,7 +1898,14 @@ function loadSession(){
     renderMethod();
   }catch(e){}
 }
-loadSession();
+if(window.Capacitor){
+  try{
+    const ss=JSON.parse(localStorage.getItem('pd_session'));
+    if(ss&&ss.bakeStarted) loadSession();
+  }catch(e){}
+} else {
+  loadSession();
+}
 
 /* Save session on step changes */
 const _origSetStep=setStep;
@@ -1931,6 +1982,11 @@ document.addEventListener('keydown', (e)=>{
     if(card && card.classList.contains('focus-mode')) exitFocusMode();
   }
 });
+
+setInterval(()=>{
+  const h=S.hours;
+  if(h) document.getElementById('hours-lbl').textContent=h+' hours \u00b7 Eat at '+getEatTime(h);
+},30000);
 
 </script>
 </html>
