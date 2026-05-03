@@ -1255,7 +1255,7 @@ document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='visible'&&bakeStarted) acquireWakeLock();
 });
 window.onNotificationTap=function(){
-  if(bakeStarted) goToCurrentStep();
+  if(bakeStarted){ enterFocusMode(); goToCurrentStep(); }
 };
 function notifyBakeService(){
   if(!bakeStarted) return;
@@ -1896,6 +1896,10 @@ function loadSession(){
       btn.classList.add('active');
     }
     renderMethod();
+    if(bakeStarted){
+      enterFocusMode();
+      goToCurrentStep();
+    }
   }catch(e){}
 }
 if(window.Capacitor){
