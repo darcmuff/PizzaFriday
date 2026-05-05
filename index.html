@@ -1497,7 +1497,7 @@ function buildSteps(ing,hyd,fid,hours){
      body:`Weigh out ${dw(ing.flour)} ${flourDesc} and ${dw(ing.water)} warm water (${dt(25)}) into your bowl. Add directly: ${dw(ing.salt)} fine sea salt, ${dw(ing.yeast)} instant dry yeast (or ${dw(Math.round(ing.yeast*3*10)/10)} fresh yeast)${oilStep}. Mix until no dry flour remains.\n\nCover and rest for 30 minutes. This lets the flour fully hydrate before you start kneading.`,
      tip:'Add salt and yeast on opposite sides of the bowl before mixing — they are fine once in water, but avoid letting them sit in direct contact dry.'},
     {title:'Knead & Rest x4',subtitle:'25 min apart · 1.5 hours',icon:'🤲',coilFold:true,timer:null,video:'BJiucv88flM',
-     body:`Knead for 5 minutes — push, fold, slap, and punch. Cover the dough and rest 25 minutes. Repeat four times total. Kneading is hard work — this method develops the gluten structure without killing you. By round 4 the dough should feel smooth and elastic. Use the windowpane test to check — stretch a small piece thin enough to see light through it without tearing.`,
+     body:`Knead for 5 minutes — push, fold, slap, and punch. Cover the dough and rest 25 minutes. Repeat four times total. Kneading is hard work — this method develops the gluten structure without killing you. By round 4 the dough should feel smooth and elastic. Use the windowpane test to check — stretch a small piece thin enough to see light through it without tearing. No rest after knead 4 — move straight on.`,
      tip:'No flour on the surface. Stickiness is friction — friction builds gluten. Wet hands if it is sticking badly, not flour.'},
     ...(fid==='room'?[{title:'Bulk Ferment',icon:'⏱',video:null,
       timer: Math.round(Math.max(30, (hours*60) - 230)),
