@@ -1875,7 +1875,10 @@ function saveSession(){
     coilFoldCount:coilFoldCount,
     activeTimerStep:activeTimerStep,
     activeStep:activeStep,
-    stepCompletionTimes:stepCompletionTimes
+    stepCompletionTimes:stepCompletionTimes,
+    hours:S.hours,
+    hyd:S.hyd,
+    rTemp:S.rTemp
   }));}catch(e){}
 }
 function loadSession(){
@@ -1895,6 +1898,15 @@ function loadSession(){
       btn.innerHTML='<span class="btn-icon">▶</span><span class="btn-label">'+fmtClock(new Date(startTime))+'</span>';
       btn.classList.add('active');
     }
+    if(ss.hours!=null){
+      S.hours=ss.hours;
+      S.hyd=ss.hyd;
+      S.rTemp=ss.rTemp;
+      document.getElementById('hours-slider').value=hoursToSlider(ss.hours);
+      document.getElementById('hyd-slider').value=ss.hyd;
+      document.getElementById('temp-slider').value=ss.rTemp;
+    }
+    update();
     renderMethod();
     if(bakeStarted){
       enterFocusMode();
