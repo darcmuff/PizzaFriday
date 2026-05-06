@@ -1604,7 +1604,7 @@ function renderMethod(){
   if(bakeStarted){
     const isActiveStep=i===activeStep;
     const isFinalStep=activeStep>=total-1;
-    db.disabled=!isActiveStep||isFinalStep;
+    db.disabled=!isActiveStep||isFinalStep||(step.coilFold&&coilFoldCount<4);
     if(i<activeStep){
       dt.style.display='inline';
       db.classList.add('completed');
