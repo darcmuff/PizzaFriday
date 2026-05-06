@@ -1544,14 +1544,14 @@ function renderMethod(){
     const isActive=activeTimerStep===i;
     let pillLabel, pillTitle;
     if(done===0){
-      pillLabel='⏰ Knead 1 of 4';
-      pillTitle='Tap to start knead 1 and set 25m rest timer';
+      pillLabel='⏰ Start kneads';
+      pillTitle='Tap after each knead to set 25m timer';
     } else if(done<4){
-      pillLabel=`⏰ Knead ${done+1} of 4`;
-      pillTitle=`Tap to do knead ${done+1} and set 25m rest timer`;
+      pillLabel=`⏰ ${done} of 4`;
+      pillTitle=`Knead ${done} done — tap after knead ${done+1}`;
     } else {
-      pillLabel='⏰ Knead 4 of 4';
-      pillTitle='All 4 kneads done — tap Step Complete';
+      pillLabel='✓ 4 of 4';
+      pillTitle='All 4 kneads done — tap Complete';
     }
     const activeClass=(isActive||allDone)?' active':'';
     const clickHandler=allDone?'':(`doCoilFold(${i})`);
