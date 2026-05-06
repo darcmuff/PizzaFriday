@@ -1175,10 +1175,22 @@ function fmtClock(date){
   h=h%12||12;
   return h+':'+String(m).padStart(2,'0')+ampm;
 }
-function getEatTime(hours){
+function getTotalStepMins(){
+  let total=0;
+  for(let i=0;i<steps.length;i++){
+    const s=steps[i];
+    if(s.concurrent) continue;
+    if(s.coilFold) total+=110;
+    else if(s.timer) total+=s.timer+(s.activeMins||0);
+    else if(s.activeMins) total+=s.activeMins;
+    else total+=ACTIVE_MINS;
+  }
+  return total;
+}
+function getEatTime(){
   const base=bakeStarted?startTime:Date.now();
-  const eat=new Date(base);
-  eat.setHours(eat.getHours()+hours);
+  const totalMs=getTotalStepMins()*60000;
+  const eat=new Date(base+totalMs);
   const now=new Date(base);
   const dayDiff=Math.floor((eat-new Date(now.getFullYear(),now.getMonth(),now.getDate()))/(86400000));
   let suffix='';
@@ -1414,7 +1426,7 @@ function update(){
   const ing={flour,water:Math.round(flour*hyd/100),salt:r(flour*saltPc/100),yeast:r(flour*yp/100),oil:r(flour*oilPc/100)};
   const total=Math.round(ing.flour+ing.water+ing.salt+ing.yeast+ing.oil);
 
-  document.getElementById('hours-lbl').textContent=`${hours} hours · Eat at ${getEatTime(hours)}`;
+  document.getElementById('hours-lbl').textContent=`${hours} hours · Eat at ${getEatTime()}`;
   document.getElementById('hours-slider').setAttribute('aria-valuetext',hours+' hours');
   updateTimeLabels(hours);
   document.getElementById('hyd-lbl').textContent=`Hydration: ${hyd}%`;
@@ -2001,7 +2013,7 @@ document.addEventListener('keydown', (e)=>{
 
 setInterval(()=>{
   const h=S.hours;
-  if(h) document.getElementById('hours-lbl').textContent=h+' hours \u00b7 Eat at '+getEatTime(h);
+  if(h) document.getElementById('hours-lbl').textContent=h+' hours \u00b7 Eat at '+getEatTime();
 },30000);
 
 </script>
