@@ -1127,7 +1127,7 @@ function calcYeast(fid, rt, hrs, hyd) {
   const KNEAD_MINS = 15;               /* knead / fold */
   const BALL_AND_PROOF_MINS = 125;     /* divide & ball (5) + 2h final proof (120) */
   const ROOM_STATIC_MINS = 230;        /* PRE_YEAST_MINS(105) + BALL_AND_PROOF_MINS(125) */
-  const COLD_STATIC_MINS = 260;        /* gather(5) + mix(10) + knead(90) + divide(5) + final proof(150) */
+  const COLD_STATIC_MINS = 305;        /* gather(5) + mix(30) + knead(110) + divide(5) + final proof(150) + open&top(5) */
 
   const k = 2.8;
   const tempMultiplier = Math.pow(2, (rt - 22) / 10);
@@ -1137,7 +1137,7 @@ function calcYeast(fid, rt, hrs, hyd) {
   let coldLagMultiplier = 1.0;
 
   if (fid === 'room') {
-    effectiveTime = Math.max(1.5, hrs - deadTimeHrs);
+    effectiveTime = Math.max(1.5, hrs - (15/60));
   } else {
     /* Warm bulk before fridge: knead + initial rise ~2h */
     const warmBeforeHrs = 2;
@@ -1426,7 +1426,7 @@ function update(){
   const ing={flour,water:Math.round(flour*hyd/100),salt:r(flour*saltPc/100),yeast:r(flour*yp/100),oil:r(flour*oilPc/100)};
   const total=Math.round(ing.flour+ing.water+ing.salt+ing.yeast+ing.oil);
 
-  document.getElementById('hours-lbl').textContent=`${hours} hours · Eat at ${getEatTime()}`;
+  document.getElementById('hours-lbl').textContent=`${hours} hours · Bake at ${getEatTime()}`;
   document.getElementById('hours-slider').setAttribute('aria-valuetext',hours+' hours');
   updateTimeLabels(hours);
   document.getElementById('hyd-lbl').textContent=`Hydration: ${hyd}%`;
@@ -1512,7 +1512,7 @@ function buildSteps(ing,hyd,fid,hours){
      body:`Knead for 5 minutes — push, fold, slap, and punch. Cover the dough and rest 25 minutes. Repeat four times total. Kneading is hard work — this method develops the gluten structure without killing you. By round 4 the dough should feel smooth and elastic. Use the windowpane test to check — stretch a small piece thin enough to see light through it without tearing. No rest after knead 4 — move straight on.`,
      tip:'No flour on the surface. Stickiness is friction — friction builds gluten. Wet hands if it is sticking badly, not flour.'},
     ...(fid==='room'?[{title:'Bulk Ferment',icon:'⏱',video:null,
-      timer: Math.round(Math.max(30, (hours*60) - 230)),
+      timer: Math.round(Math.max(30, (hours*60) - 275)),
       body:`Lightly oil a bowl, place the dough in, and cover with clingfilm or a damp cloth. Leave at your desired room temperature until roughly doubled in size.\n\nApproximately ${(()=>{const m=Math.max(30,(hours*60-230));const h=Math.floor(m/60);const min=m%60;return h>0&&min>0?h+'h '+min+'m':h>0?h+'h':min+'m';})() } at ${dt(S.rTemp)}.`,
       tip:'A warm spot speeds things up, a cool spot slows them down. The oven light trick works — close the door, leave the light on.'}]:[]),
     ...(fid==='room'?[{title:'Divide & Ball',icon:'⚖️',timer:null,video:'Vo5OW8Xkah4',
@@ -1525,7 +1525,7 @@ function buildSteps(ing,hyd,fid,hours){
      body:`Tip the dough onto a lightly floured surface and divide into ${S.ballCount} ${S.ballCount===1?'piece':'pieces'} of approximately ${dw(S.ballSize)} each. Shape each piece into a tight ball: fold the edges underneath, then cup your hands around the dough and drag it toward you on an unfloured surface. The friction pulls the surface taut. You want a smooth, tight skin with no seams on top. Place in a lightly oiled container, cover tightly, and put in the fridge.`,
      tip:'The ball-up matters more than most people think. A tight ball with good surface tension opens into an even disc. A slack, ragged ball tears and has thin spots.'}]:[]),
     ...(fid==='cold'?[{title:'Cold Ferment',icon:'❄️',video:null,
-      timer: Math.round(Math.max(240, (hours*60) - 260)),
+      timer: Math.round(Math.max(240, (hours*60) - 305)),
       body:`Refrigerate at ${dt(3)}–${dt(5)}.\n\nApproximately ${(()=>{const m=Math.max(240,(hours*60-260));const h=Math.floor(m/60);const min=m%60;return h>0&&min>0?h+'h '+min+'m':h>0?h+'h':min+'m';})() }. The yeast slows to a crawl while enzymes keep working — breaking down starches into sugars and proteins into amino acids. That stockpile drives the Maillard reaction in the oven: deep browning, heavy blistering, complex flavour.`,
       tip:'The fridge is doing the hard work. 24 hours produces noticeably better results than 8 hours at room temp. 48–72 hours is where it gets exceptional.'}]:[]),
     ...(fid==='cold'?[{title:'Final Proof',icon:'⏱',timer:150,video:null,
@@ -2013,7 +2013,7 @@ document.addEventListener('keydown', (e)=>{
 
 setInterval(()=>{
   const h=S.hours;
-  if(h) document.getElementById('hours-lbl').textContent=h+' hours \u00b7 Eat at '+getEatTime();
+  if(h) document.getElementById('hours-lbl').textContent=h+' hours \u00b7 Bake at '+getEatTime();
 },30000);
 
 </script>
