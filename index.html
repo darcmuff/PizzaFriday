@@ -423,6 +423,12 @@ body.dark .m-timer-pill.nudge{animation:timer-nudge-dark 1.5s ease-in-out infini
   .guide-box,.saved-box{max-height:90vh;border-radius:16px 16px 0 0}
 }
 
+/* Landscape on short screens — allow scroll */
+@media (max-height:500px) and (orientation:landscape){
+  html,body{overflow:auto;height:auto}
+  #page{height:auto;overflow:visible}
+}
+
 /* Desktop: hide mobile-only focus elements */
 @media (min-width:769px){
   #resume-fab-row{display:none!important}
