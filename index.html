@@ -211,6 +211,11 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-body);background:va
 .db-sep{height:1px;background:var(--border);margin:2px 0 8px;opacity:0.5}
 .db-result{font-size:1rem;color:var(--text2);line-height:1.4}
 .db-result strong{color:var(--accent);font-size:1.1rem;font-weight:700}
+.blend-inline{display:none;font-size:0.9rem;color:var(--text3)}
+.blend-inline strong{font-size:0.95rem;color:var(--text2)}
+.blend-sub{display:block;font-size:0.85rem;color:var(--text3);margin-top:4px}
+.blend-sub strong{color:var(--text2)}
+@media(min-width:769px){.blend-inline{display:inline}.blend-sub{display:none}}
 .warning{margin-top:8px;font-size:0.95rem;padding:8px 12px;border-radius:8px;background:var(--warn-bg);color:var(--warn-text);border:1px solid var(--warn-border)}
 
 /* ===== INGREDIENTS TABLE ===== */
@@ -702,6 +707,14 @@ body.dark .m-timer-pill.nudge{animation:timer-nudge-dark 1.5s ease-in-out infini
             <button class="toggle-btn" id="mob-btn-dark" onclick="if(!document.body.classList.contains('dark'))toggleDark()">Dark</button>
           </div>
         </div>
+        <div>
+          <div class="settings-dropdown-label">Flour Blend</div>
+          <div class="db-stepper" style="height:36px">
+            <button aria-label="Decrease blend" onmousedown="startRepeat('blendPc',-1)" onmouseup="stopRepeat()" onmouseleave="stopRepeat()" ontouchstart="startRepeat('blendPc',-1,event)" ontouchend="stopRepeat(event)">−</button>
+            <div class="db-val" id="db-blend" style="height:36px">0%</div>
+            <button aria-label="Increase blend" onmousedown="startRepeat('blendPc',1)" onmouseup="stopRepeat()" onmouseleave="stopRepeat()" ontouchstart="startRepeat('blendPc',1,event)" ontouchend="stopRepeat(event)">+</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -897,6 +910,11 @@ body.dark .m-timer-pill.nudge{animation:timer-nudge-dark 1.5s ease-in-out infini
       </details>
 
       <details>
+      <summary><h3>Flour Blend</h3></summary>
+      <p>Found in the settings menu (⚙), the blend control lets you split your flour into a main flour and a secondary blend flour. Set a percentage (1–30%) and the recipe, ingredient table, and method steps will automatically show you how much of each to weigh. At 0% the feature is invisible — just a single flour line as normal. A 10–15% wholemeal or semola blend adds colour, flavour, and nutrition without changing the dough's handling.</p>
+      </details>
+
+      <details>
       <summary><h3>Room Temp or Cold Ferment?</h3></summary>
       <p><span class="g-warm">Room temp</span> — all fermentation at ambient temperature. Simpler, faster, and good results. The time slider will not go past 30 hours in room temp mode — beyond that, the dough will overproof and collapse.</p>
       <p><span class="g-cold">Cold ferment</span> — mix, knead, divide into balls, then straight into the fridge. At fridge temperature (4°C), yeast drops to about 15% activity, but the flour's amylase and protease enzymes only slow by about 50%. So while the yeast sleeps, the enzymes keep breaking down starches into sugars and proteins into amino acids. This is the secret to superior browning, blistering, and complex flavour. The time slider will not go below 14 hours in cold mode.</p>
@@ -998,7 +1016,9 @@ function renderSavedList(){
         <div class="save-metric-row"><span class="save-metric-key">Date</span><span class="save-metric-val">${dateStr}</span></div>
         <div class="save-metric-row"><span class="save-metric-key">Style</span><span class="save-metric-val">${typeLabel}</span></div>
         <div class="save-metric-row"><span class="save-metric-key">Hydration</span><span class="save-metric-val">${S.hyd}%</span></div>
-        <div class="save-metric-row"><span class="save-metric-key">Flour</span><span class="save-metric-val">${flour}g</span></div>
+        ${S.blendPc>0?`<div class="save-metric-row"><span class="save-metric-key">Main flour</span><span class="save-metric-val">${Math.round(flour*(100-S.blendPc)/100)}g</span></div>
+        <div class="save-metric-row"><span class="save-metric-key">Blend flour</span><span class="save-metric-val">${flour-Math.round(flour*(100-S.blendPc)/100)}g</span></div>`
+        :`<div class="save-metric-row"><span class="save-metric-key">Flour</span><span class="save-metric-val">${flour}g</span></div>`}
         <div class="save-metric-row"><span class="save-metric-key">Water</span><span class="save-metric-val">${water}g</span></div>
         <div class="save-metric-row"><span class="save-metric-key">Salt</span><span class="save-metric-val">${salt}g</span></div>
         ${S.oilPc>0?`<div class="save-metric-row"><span class="save-metric-key">Olive oil</span><span class="save-metric-val">${oil}g</span></div>`:''}
@@ -1081,6 +1101,7 @@ function confirmSave(){
     ballSize:S.ballSize,
     saltPc:S.saltPc,
     oilPc:S.oilPc,
+    blendPc:S.blendPc,
     snapshot:{flour,water,salt,oil}
   });
   setSavedRecipes(recipes);
@@ -1102,6 +1123,7 @@ function loadRecipe(i){
   S.ballSize=r.ballSize||250;
   if(r.saltPc!=null)S.saltPc=r.saltPc;
   if(r.oilPc!=null)S.oilPc=r.oilPc;
+  S.blendPc=r.blendPc||0;
   selectFerment(r.fid);
   renderDoughBalls();
   update();
@@ -1178,7 +1200,7 @@ function calcYeast(fid, rt, hrs, hyd) {
 const FERMENTS={room:{color:'#b85c00'},cold:{color:'#2a6898'}};
 function minsToLabel(m){if(m<60)return m+'m';const h=Math.floor(m/60),r=m%60;return r?h+'h '+r+'m':h+'h';}
 
-let S={units:'metric',tempScale:'C',hours:12,fid:'room',hyd:60,rTemp:18,step:0,pizzaType:'neap',ballCount:4,ballSize:240,saltPc:3.0,oilPc:0};
+let S={units:'metric',tempScale:'C',hours:12,fid:'room',hyd:60,rTemp:18,step:0,pizzaType:'neap',ballCount:4,ballSize:240,saltPc:3.0,oilPc:0,blendPc:0};
 let startTime=Date.now();
 let bakeStarted=false;
 let steps=[];
@@ -1396,9 +1418,12 @@ function stepVal(field, delta) {
     S.saltPc = Math.max(0, Math.min(5, Math.round((S.saltPc + delta) * 10) / 10));
   } else if (field === 'oilPc') {
     S.oilPc = Math.max(0, Math.min(10, Math.round((S.oilPc + delta) * 10) / 10));
+  } else if (field === 'blendPc') {
+    S.blendPc = Math.max(0, Math.min(30, S.blendPc + delta));
   }
   renderDoughBalls();
   update();
+  savePrefs();
 }
 
 function renderDoughBalls() {
@@ -1408,10 +1433,20 @@ function renderDoughBalls() {
   document.getElementById('db-size').textContent = imp ? (S.ballSize / 28.35).toFixed(1) + 'oz (' + inchLabel + ')' : S.ballSize + 'g (' + inchLabel + ')';
   document.getElementById('db-salt').textContent = S.saltPc.toFixed(1) + '%';
   document.getElementById('db-oil').textContent = S.oilPc.toFixed(1) + '%';
+  document.getElementById('db-blend').textContent = S.blendPc + '%';
   const flourPerBall = calcDoughBallFlour(S.ballSize, S.hyd, S.saltPc, S.oilPc);
   const totalFlour = flourPerBall * S.ballCount;
   const totalDough = Math.round(S.ballSize * S.ballCount * WASTE);
-  document.getElementById('db-result').innerHTML = `Flour: <strong>${dw(totalFlour)}</strong> · Total dough: <strong>${dw(totalDough)}</strong>`;
+  let html;
+  if (S.blendPc > 0) {
+    const mainFlour = Math.round(totalFlour * (100 - S.blendPc) / 100);
+    const blendFlour = totalFlour - mainFlour;
+    html = `Flour: <strong>${dw(totalFlour)}</strong> <span class="blend-inline">(${dw(mainFlour)} + ${dw(blendFlour)} blend)</span> · Total dough: <strong>${dw(totalDough)}</strong>`
+      + `<div class="blend-sub">Main: <strong>${dw(mainFlour)}</strong> · Blend: <strong>${dw(blendFlour)}</strong></div>`;
+  } else {
+    html = `Flour: <strong>${dw(totalFlour)}</strong> · Total dough: <strong>${dw(totalDough)}</strong>`;
+  }
+  document.getElementById('db-result').innerHTML = html;
 }
 
 function selectFerment(id){
@@ -1462,17 +1497,27 @@ function update(){
 
   renderDoughBalls();
   const saltLabel=S.pizzaType==='neap'?'Fine sea salt':'Fine sea salt';
-  const flourLabel=S.pizzaType==='neap'
-    ?'Tipo 00 or strong bread flour <span style="margin-left:6px;">(12–14% protein)</span>'
-    :'High-gluten bread flour <span style="margin-left:6px;">(13–15% protein)</span>';
+  const proteinSpan=S.pizzaType==='neap'
+    ?' <span style="margin-left:6px;">(12–14% protein)</span>'
+    :' <span style="margin-left:6px;">(13–15% protein)</span>';
+  const flourName=S.pizzaType==='neap'?'Tipo 00 or strong bread flour':'High-gluten bread flour';
+  const flourLabel=flourName+proteinSpan;
   const oilMuted=ing.oil<=0;
   const oilStyle=oilMuted?'opacity:0.35':'';
 
   buildSteps(ing,hyd,fid,hours);
   clearTimeout(_updateTimer);
   _updateTimer=setTimeout(()=>{
+    const mainFlour = Math.round(ing.flour * (100 - S.blendPc) / 100);
+    const blendFlour = ing.flour - mainFlour;
+    const flourRows = S.blendPc > 0
+      ? [
+          ['Main flour'+proteinSpan, dw(mainFlour), (100-S.blendPc)+'%', ''],
+          ['Blend flour', dw(blendFlour), S.blendPc+'%', '']
+        ]
+      : [[flourLabel, dw(ing.flour), '100%', '']];
     document.getElementById('rec-tbody').innerHTML=[
-      [flourLabel,dw(ing.flour),'100%',''],
+      ...flourRows,
       ['Water',dw(ing.water),hyd+'%',''],
       [saltLabel,dw(ing.salt),saltPc+'%',''],
       [`Instant dry yeast <span style="margin-left:4px;font-size:0.78rem;color:var(--text3);">(${dw(Math.round(ing.yeast*3*10)/10)} fresh)</span>`,dw(ing.yeast),yp+'%',''],
@@ -1520,12 +1565,20 @@ function buildSteps(ing,hyd,fid,hours){
   const isNeap=S.pizzaType==='neap';
   const flourDesc=isNeap?'Tipo 00 or strong bread flour':'high-gluten bread flour';
   const oilStep=ing.oil>0?`, ${dw(ing.oil)} extra virgin olive oil`:'';
+  let flourLine;
+  if (S.blendPc > 0) {
+    const mf = Math.round(ing.flour * (100 - S.blendPc) / 100);
+    const bf = ing.flour - mf;
+    flourLine = `${dw(mf)} ${flourDesc} and ${dw(bf)} blend flour (${dw(ing.flour)} total)`;
+  } else {
+    flourLine = `${dw(ing.flour)} ${flourDesc}`;
+  }
 
   steps=[
     {title:'Gather Equipment',icon:'🛠',timer:null,tip:null,video:null,
      body:`• Large bowl\n• Digital scales\n• Bench scraper or sharp knife\n• Spatula\n• Wooden spoon\n• Proofing tray`},
     {title:'Mix All Ingredients',icon:'💧',timer:30,video:null,
-     body:`Weigh out ${dw(ing.flour)} ${flourDesc} and ${dw(ing.water)} warm water (${dt(25)}) into your bowl. Add directly: ${dw(ing.salt)} fine sea salt, ${dw(ing.yeast)} instant dry yeast (or ${dw(Math.round(ing.yeast*3*10)/10)} fresh yeast)${oilStep}. Mix until no dry flour remains.\n\nCover and rest for 30 minutes. This lets the flour fully hydrate before you start kneading.`,
+     body:`Weigh out ${flourLine} and ${dw(ing.water)} warm water (${dt(25)}) into your bowl. Add directly: ${dw(ing.salt)} fine sea salt, ${dw(ing.yeast)} instant dry yeast (or ${dw(Math.round(ing.yeast*3*10)/10)} fresh yeast)${oilStep}. Mix until no dry flour remains.\n\nCover and rest for 30 minutes. This lets the flour fully hydrate before you start kneading.`,
      tip:'Add salt and yeast on opposite sides of the bowl before mixing — they are fine once in water, but avoid letting them sit in direct contact dry.'},
     {title:'Knead & Rest x4',subtitle:'25 min apart · 1.5 hours',icon:'🤲',coilFold:true,timer:null,video:'BJiucv88flM',
      body:`Knead for 5 minutes — push, fold, slap, and punch. Cover the dough and rest 25 minutes. Repeat four times total. Kneading is hard work — this method develops the gluten structure without killing you. By round 4 the dough should feel smooth and elastic. Use the windowpane test to check — stretch a small piece thin enough to see light through it without tearing. No rest after knead 4 — move straight on.`,
@@ -1804,7 +1857,7 @@ function renderTimeline(){
 }
 
 function savePrefs(){
-  try{localStorage.setItem('pd_prefs',JSON.stringify({units:S.units,tempScale:S.tempScale,fid:S.fid,pizzaType:S.pizzaType,ballCount:S.ballCount,ballSize:S.ballSize,saltPc:S.saltPc,oilPc:S.oilPc,dark:document.body.classList.contains('dark')}));}catch(e){}
+  try{localStorage.setItem('pd_prefs',JSON.stringify({units:S.units,tempScale:S.tempScale,fid:S.fid,pizzaType:S.pizzaType,ballCount:S.ballCount,ballSize:S.ballSize,saltPc:S.saltPc,oilPc:S.oilPc,blendPc:S.blendPc,dark:document.body.classList.contains('dark')}));}catch(e){}
 }
 function loadPrefs(){
   try{
@@ -1815,6 +1868,7 @@ function loadPrefs(){
     if(p.pizzaType){S.pizzaType=p.pizzaType;S.ballCount=p.ballCount||4;S.ballSize=p.ballSize||250;setPizzaType(p.pizzaType);}
     if(p.saltPc!=null)S.saltPc=p.saltPc;
     if(p.oilPc!=null)S.oilPc=p.oilPc;
+    if(p.blendPc!=null)S.blendPc=p.blendPc;
     if(p.fid)selectFerment(p.fid);
     if(p.dark)toggleDark();
   }catch(e){}
@@ -1830,7 +1884,7 @@ function toggleDark(){
   savePrefs();
 }
 function resetDefaults(){
-  S={units:'metric',tempScale:'C',hours:12,fid:'room',hyd:60,rTemp:18,step:0,pizzaType:'neap',ballCount:4,ballSize:240,saltPc:3.0,oilPc:0};
+  S={units:'metric',tempScale:'C',hours:12,fid:'room',hyd:60,rTemp:18,step:0,pizzaType:'neap',ballCount:4,ballSize:240,saltPc:3.0,oilPc:0,blendPc:0};
   coilFoldCount=0;
   activeTimerStep=-1;
   resetBakeState();
@@ -1845,7 +1899,7 @@ function resetDefaults(){
   savePrefs();
 }
 function shareRecipe(){
-  const {hours,hyd,fid,rTemp,pizzaType,ballCount,ballSize,units,tempScale,saltPc,oilPc}=S;
+  const {hours,hyd,fid,rTemp,pizzaType,ballCount,ballSize,units,tempScale,saltPc,oilPc,blendPc}=S;
   const flourPerBall=calcDoughBallFlour(ballSize,hyd,saltPc,oilPc);
   const flour=flourPerBall*ballCount;
   const yp=calcYeast(fid,rTemp,hours,hyd);
@@ -1854,9 +1908,17 @@ function shareRecipe(){
   const typeLabel=pizzaType==='neap'?'Neapolitan':'New York';
   const ballDesc=`${ballCount}× ${units==='imperial'?(ballSize/28.35).toFixed(1)+'oz':ballSize+'g'} balls`;
   const oilLine=ing.oil>0?`\nOlive oil: ${dw(ing.oil)}`:'';
-  const params=new URLSearchParams({hours,hyd,fid,temp:rTemp,type:pizzaType,balls:ballCount,size:ballSize,units,scale:tempScale,salt:saltPc,oil:oilPc});
+  let flourLine;
+  if (blendPc > 0) {
+    const mf = Math.round(ing.flour * (100 - blendPc) / 100);
+    const bf = ing.flour - mf;
+    flourLine = `Main flour: ${dw(mf)}\nBlend flour: ${dw(bf)}`;
+  } else {
+    flourLine = `Flour: ${dw(ing.flour)}`;
+  }
+  const params=new URLSearchParams({hours,hyd,fid,temp:rTemp,type:pizzaType,balls:ballCount,size:ballSize,units,scale:tempScale,salt:saltPc,oil:oilPc,blend:blendPc});
   const url=`https://darcmuff.github.io/PizzaFriday/?${params.toString()}`;
-  const text=`🍕 PizzaFriday Recipe\n\n${typeLabel} · ${fid==='cold'?'Cold':'Room temp'} ferment · ${hours}h · ${hyd}% hydration · ${dt(rTemp)}\n${ballDesc}\n\nFlour: ${dw(ing.flour)}\nWater: ${dw(ing.water)}\nSalt: ${dw(ing.salt)}\nYeast: ${dw(ing.yeast)} (${yp}%)${oilLine}\n\n${url}`;
+  const text=`🍕 PizzaFriday Recipe\n\n${typeLabel} · ${fid==='cold'?'Cold':'Room temp'} ferment · ${hours}h · ${hyd}% hydration · ${dt(rTemp)}\n${ballDesc}\n\n${flourLine}\nWater: ${dw(ing.water)}\nSalt: ${dw(ing.salt)}\nYeast: ${dw(ing.yeast)} (${yp}%)${oilLine}\n\n${url}`;
   const copyFallback=()=>{navigator.clipboard.writeText(text).then(()=>{const b=document.getElementById('share-btn');const orig=b.innerHTML;b.innerHTML='✓';setTimeout(()=>b.innerHTML=orig,1500);}).catch(()=>{});};
   if(navigator.share){navigator.share({title:'PizzaFriday Recipe',text}).catch(()=>copyFallback());}
   else{copyFallback();}
@@ -1882,10 +1944,10 @@ update(); /* ensure temp labels match saved scale on first load */
   const tempScale=p.get('scale')||'C';
   const saltPc=parseFloat(p.get('salt'))||2.5;
   const oilPc=parseFloat(p.get('oil'))||0;
+  const blendPc=parseInt(p.get('blend'))||0;
   if(isNaN(hours)||isNaN(hyd)) return;
   S.hours=hours; S.hyd=hyd; S.rTemp=rTemp; S.units=units; S.tempScale=tempScale;
-  S.pizzaType=pizzaType; S.ballCount=ballCount; S.ballSize=ballSize;
-  S.saltPc=saltPc; S.oilPc=oilPc;
+  S.pizzaType=pizzaType; S.ballCount=ballCount;
   document.getElementById('hours-slider').value=hoursToSlider(hours);
   document.getElementById('hyd-slider').value=hyd;
   document.getElementById('temp-slider').value=rTemp;
@@ -1894,6 +1956,7 @@ update(); /* ensure temp labels match saved scale on first load */
   document.getElementById('btn-c').classList.toggle('active',tempScale==='C');
   document.getElementById('btn-f').classList.toggle('active',tempScale==='F');
   setPizzaType(pizzaType);
+  S.ballSize=ballSize; S.saltPc=saltPc; S.oilPc=oilPc; S.blendPc=blendPc;
   selectFerment(fid);
   update();
   window.history.replaceState({},'',window.location.pathname);
