@@ -1117,9 +1117,13 @@ function deleteRecipe(i){
 
 const PIZZA_DEFAULTS={neap:{ballSize:240,saltPc:3.0,oilPc:0},ny:{ballSize:280,saltPc:2.5,oilPc:2}};
 
+/* Wastage buffer: make 2% extra dough to cover scraps lost to bowl/bench.
+   Applied at the flour chokepoint so water/salt/oil/yeast all scale with it. */
+const WASTE = 1.02;
+
 function calcDoughBallFlour(ballSize, hyd, saltPc, oilPc) {
   const totalPc = 100 + hyd + saltPc + oilPc;
-  return Math.round(ballSize * 100 / totalPc);
+  return Math.round(ballSize * 100 / totalPc * WASTE);
 }
 
 function sliderToHours(pos){
@@ -1406,7 +1410,7 @@ function renderDoughBalls() {
   document.getElementById('db-oil').textContent = S.oilPc.toFixed(1) + '%';
   const flourPerBall = calcDoughBallFlour(S.ballSize, S.hyd, S.saltPc, S.oilPc);
   const totalFlour = flourPerBall * S.ballCount;
-  const totalDough = S.ballSize * S.ballCount;
+  const totalDough = Math.round(S.ballSize * S.ballCount * WASTE);
   document.getElementById('db-result').innerHTML = `Flour: <strong>${dw(totalFlour)}</strong> · Total dough: <strong>${dw(totalDough)}</strong>`;
 }
 
