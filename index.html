@@ -1168,7 +1168,7 @@ function calcYeast(fid, rt, hrs, hyd) {
   const KNEAD_MINS = 15;               /* knead / fold */
   const BALL_AND_PROOF_MINS = 125;     /* divide & ball (5) + 2h final proof (120) */
   const ROOM_STATIC_MINS = 230;        /* PRE_YEAST_MINS(105) + BALL_AND_PROOF_MINS(125) */
-  const COLD_STATIC_MINS = 305;        /* gather(5) + mix(30) + knead(110) + divide(5) + final proof(150) + open&top(5) */
+  const COLD_STATIC_MINS = 395;        /* gather(5) + mix(30) + knead(110) + divide(5) + final proof(240) + open&top(5) */
 
   const k = 2.8;
   const tempMultiplier = Math.pow(2, (rt - 22) / 10);
@@ -1600,7 +1600,7 @@ function buildSteps(ing,hyd,fid,hours){
       timer: Math.round(Math.max(240, (hours*60) - 305)),
       body:`Refrigerate at ${dt(3)}–${dt(5)}.\n\nApproximately ${(()=>{const m=Math.max(240,(hours*60-260));const h=Math.floor(m/60);const min=m%60;return h>0&&min>0?h+'h '+min+'m':h>0?h+'h':min+'m';})() }. The yeast slows to a crawl while enzymes keep working — breaking down starches into sugars and proteins into amino acids. That stockpile drives the Maillard reaction in the oven: deep browning, heavy blistering, complex flavour.`,
       tip:'The fridge is doing the hard work. 24 hours produces noticeably better results than 8 hours at room temp. 48–72 hours is where it gets exceptional.'}]:[]),
-    ...(fid==='cold'?[{title:'Final Proof',icon:'⏱',timer:150,video:null,
+    ...(fid==='cold'?[{title:'Final Proof',icon:'⏱',timer:240,video:null,
       body:`Remove the dough balls from the fridge and leave covered at room temperature for 2.5 hours. Cold dough is tight — it needs time to relax and warm through before it will open properly.\n\nWhile you wait, preheat your oven with the pizza stone or steel inside. As hot as it goes. At least 45 minutes.`,
       tip:'The test: press gently with a floured finger — if the indent springs back slowly and partially, it is ready. If it springs back immediately, give it more time.'}]:[]),
     {title:'Open & Top',icon:'🍕',timer:null,video:isNeap?'Entzcl8q7H4':'NQXtz-1KEvY',
