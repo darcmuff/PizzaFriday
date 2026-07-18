@@ -917,7 +917,7 @@ body.dark .m-timer-pill.nudge{animation:timer-nudge-dark 1.5s ease-in-out infini
       <details>
       <summary><h3>Room Temp or Cold Ferment?</h3></summary>
       <p><span class="g-warm">Room temp</span> — all fermentation at ambient temperature. Simpler, faster, and good results. The time slider will not go past 30 hours in room temp mode — beyond that, the dough will overproof and collapse.</p>
-      <p><span class="g-cold">Cold ferment</span> — mix, knead, divide into balls, then straight into the fridge. At fridge temperature (4°C), yeast drops to about 15% activity, but the flour's amylase and protease enzymes only slow by about 50%. So while the yeast sleeps, the enzymes keep breaking down starches into sugars and proteins into amino acids. This is the secret to superior browning, blistering, and complex flavour. The time slider will not go below 14 hours in cold mode.</p>
+      <p><span class="g-cold">Cold ferment</span> — mix, knead, divide into balls, then straight into the fridge. In the fridge, yeast drops to roughly 20% activity, but the flour's amylase and protease enzymes only slow by about 50%. So while the yeast sleeps, the enzymes keep breaking down starches into sugars and proteins into amino acids. This is the secret to superior browning, blistering, and complex flavour. The time slider will not go below 14 hours in cold mode.</p>
       </details>
 
       <details>
@@ -1156,20 +1156,31 @@ function hoursToSlider(h){
   return Math.round(Math.log(h / 4) / Math.log(12) * 100);
 }
 
+/*
+ * ---- DOUGH TIMELINE CONSTANTS (single source of truth) ----
+ * Every schedule, timer, method step and the yeast model read from these.
+ * Change a value here and the whole app follows. Do not hardcode these
+ * numbers anywhere else — that is what caused the 2h/4h proof mismatch.
+ */
+const FINAL_PROOF_MINS = 180;        /* post-fridge warm-up for dough BALLS (3h).
+                                        Balls have far less thermal mass than a focaccia
+                                        slab, so they come to temperature much faster. */
+const COLD_FRIDGE_TEMP_C = 6.5;      /* realistic domestic fridge, not the textbook 4°C */
+const PRE_YEAST_MINS = 105;          /* gather(5) + mix(10) + knead×4 with rests(90) */
+const KNEAD_MINS = 15;               /* knead / fold */
+const BALL_AND_PROOF_MINS = 125;     /* divide & ball (5) + 2h final proof (120) — ROOM path */
+const ROOM_STATIC_MINS = 230;        /* PRE_YEAST_MINS(105) + BALL_AND_PROOF_MINS(125) */
+const COLD_STATIC_MINS = 5 + 30 + 110 + 5 + FINAL_PROOF_MINS + 5;
+                                     /* gather(5) + mix(30) + knead(110) + divide(5) + final proof + open&top(5) */
+
 function calcYeast(fid, rt, hrs, hyd) {
   /*
    * Pizza dough yeast model — calibrated from Q10 biological temperature coefficient.
    * Yeast rate roughly doubles per 10°C (Q10 ≈ 2.0–2.5).
-   * At 4°C fridge temps, yeast runs at ~15% of room-temp rate.
+   * At typical domestic fridge temps (~6.5°C), yeast runs at roughly 20% of room-temp rate.
    * Salt at 2.5–3% induces osmotic stress, slowing fermentation.
    * Model uses inverse exponential decay: less yeast for longer ferments.
    */
-  const PRE_YEAST_MINS = 105;          /* gather(5) + mix(10) + knead×4 with rests(90) */
-  const KNEAD_MINS = 15;               /* knead / fold */
-  const BALL_AND_PROOF_MINS = 125;     /* divide & ball (5) + 2h final proof (120) */
-  const ROOM_STATIC_MINS = 230;        /* PRE_YEAST_MINS(105) + BALL_AND_PROOF_MINS(125) */
-  const COLD_STATIC_MINS = 395;        /* gather(5) + mix(30) + knead(110) + divide(5) + final proof(240) + open&top(5) */
-
   const k = 2.8;
   const tempMultiplier = Math.pow(2, (rt - 22) / 10);
   const hydrationMultiplier = 1 + 0.004 * Math.max(0, hyd - 58);
@@ -1185,10 +1196,10 @@ function calcYeast(fid, rt, hrs, hyd) {
     /* Fridge time = total - all static steps */
     const fridgeMins = Math.max(240, (hrs * 60) - COLD_STATIC_MINS);
     const fridgeHrs = fridgeMins / 60;
-    /* Final warm-up proof after fridge: 2h */
-    const finalProofHrs = 2;
-    /* Fridge fermentation at ~15% rate (Q10 model: 4°C vs ~22°C) */
-    const fridgeMultiplier = Math.pow(2, (4 - 22) / 10);
+    /* Final warm-up proof after fridge — from shared constant */
+    const finalProofHrs = FINAL_PROOF_MINS / 60;
+    /* Fridge fermentation rate (Q10 model: COLD_FRIDGE_TEMP_C vs ~22°C) */
+    const fridgeMultiplier = Math.pow(2, (COLD_FRIDGE_TEMP_C - 22) / 10);
     const fridgeEffectiveHours = fridgeHrs * (fridgeMultiplier / tempMultiplier);
     effectiveTime = Math.max(1.5, warmBeforeHrs + fridgeEffectiveHours + finalProofHrs);
     coldLagMultiplier = 0.85;
@@ -1597,11 +1608,11 @@ function buildSteps(ing,hyd,fid,hours){
      body:`Tip the dough onto a lightly floured surface and divide into ${S.ballCount} ${S.ballCount===1?'piece':'pieces'} of approximately ${dw(S.ballSize)} each. Shape each piece into a tight ball: fold the edges underneath, then cup your hands around the dough and drag it toward you on an unfloured surface. The friction pulls the surface taut. You want a smooth, tight skin with no seams on top. Place in a lightly oiled container, cover tightly, and put in the fridge.`,
      tip:'The ball-up matters more than most people think. A tight ball with good surface tension opens into an even disc. A slack, ragged ball tears and has thin spots.'}]:[]),
     ...(fid==='cold'?[{title:'Cold Ferment',icon:'❄️',video:null,
-      timer: Math.round(Math.max(240, (hours*60) - 305)),
-      body:`Refrigerate at ${dt(3)}–${dt(5)}.\n\nApproximately ${(()=>{const m=Math.max(240,(hours*60-260));const h=Math.floor(m/60);const min=m%60;return h>0&&min>0?h+'h '+min+'m':h>0?h+'h':min+'m';})() }. The yeast slows to a crawl while enzymes keep working — breaking down starches into sugars and proteins into amino acids. That stockpile drives the Maillard reaction in the oven: deep browning, heavy blistering, complex flavour.`,
+      timer: Math.round(Math.max(240, (hours*60) - COLD_STATIC_MINS)),
+      body:`Into the fridge.\n\nApproximately ${(()=>{const m=Math.max(240,(hours*60)-COLD_STATIC_MINS);const h=Math.floor(m/60);const min=m%60;return h>0&&min>0?h+'h '+min+'m':h>0?h+'h':min+'m';})() }. The yeast slows to a crawl while enzymes keep working — breaking down starches into sugars and proteins into amino acids. That stockpile drives the Maillard reaction in the oven: deep browning, heavy blistering, complex flavour.`,
       tip:'The fridge is doing the hard work. 24 hours produces noticeably better results than 8 hours at room temp. 48–72 hours is where it gets exceptional.'}]:[]),
-    ...(fid==='cold'?[{title:'Final Proof',icon:'⏱',timer:240,video:null,
-      body:`Remove the dough balls from the fridge and leave covered at room temperature for 4 hours. Cold dough is tight — it needs time to warm through fully and relax before it will open properly.`,
+    ...(fid==='cold'?[{title:'Final Proof',icon:'⏱',timer:FINAL_PROOF_MINS,video:null,
+      body:`Remove the dough balls from the fridge and leave covered at room temperature for ${FINAL_PROOF_MINS/60} hours. Cold dough is tight — it needs time to warm through fully and relax before it will open properly.\n\nIn a warm kitchen (25°C+) check them early — they may be ready sooner.`,
       tip:'The test: press gently with a floured finger — if the indent springs back slowly and partially, it is ready. If it springs back immediately, give it more time.'}]:[]),
     {title:'Open & Top',icon:'🍕',timer:null,video:isNeap?'Entzcl8q7H4':'NQXtz-1KEvY',
      body:isNeap
