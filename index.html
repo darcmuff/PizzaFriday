@@ -631,6 +631,9 @@ body.dark .m-timer-pill.nudge{animation:timer-nudge-dark 1.5s ease-in-out infini
   window.BakeNotificationPlugin = (window.Capacitor && window.Capacitor.registerPlugin)
     ? window.Capacitor.registerPlugin('BakeNotification')
     : null;
+  window.PrefsPlugin = (window.Capacitor && window.Capacitor.registerPlugin)
+    ? window.Capacitor.registerPlugin('Preferences')
+    : null;
   if(window.TimerPlugin) document.body.classList.add('native');
 </script>
 </head>
@@ -1377,10 +1380,16 @@ function resetBakeState(){
   document.getElementById('slider-card').classList.remove('bake-locked');
   if(window.BakePlugin) window.BakePlugin.stop().catch(function(){});
   if(window.BakeNotificationPlugin) window.BakeNotificationPlugin.dismiss().catch(function(){});
+  if(window.PrefsPlugin) window.PrefsPlugin.remove({key:'pd_session'}).catch(function(){});
   try{localStorage.removeItem('pd_session');}catch(e){}
   const btn=document.getElementById('start-bake-btn');
   btn.innerHTML='<span class="btn-icon">▶</span><span class="btn-label">Begin</span>';
   btn.classList.remove('active');
+  S.step=0;
+  coilFoldCount=0;
+  activeTimerStep=-1;
+  update();
+  renderMethod();
 }
 
 const PIZZA_SIZE_NEAP = [
@@ -1699,7 +1708,8 @@ function renderMethod(){
   if(bakeStarted){
     const isActiveStep=i===activeStep;
     const isFinalStep=activeStep>=total-1;
-    db.disabled=!isActiveStep||isFinalStep||(step.coilFold&&coilFoldCount<4);
+    db.disabled=!isActiveStep||(step.coilFold&&coilFoldCount<4);
+    document.getElementById('done-label').textContent=(isActiveStep&&isFinalStep)?'Finish Bake':'Complete';
     if(i<activeStep){
       dt.style.display='inline';
       db.classList.add('completed');
@@ -1711,6 +1721,7 @@ function renderMethod(){
     db.disabled=true;
     dt.style.display='none';
     db.classList.remove('completed');
+    document.getElementById('done-label').textContent='Complete';
   }
 }
 
@@ -1942,13 +1953,14 @@ update(); /* ensure temp labels match saved scale on first load */
 
 /* === Load shared recipe from URL params === */
 (function loadFromURL(){
+  try{
   const p=new URLSearchParams(window.location.search);
   if(!p.has('hours')) return;
   const hours=parseFloat(p.get('hours'));
   const hyd=parseFloat(p.get('hyd'));
-  const fid=p.get('fid')||'room';
+  const fid=(p.get('fid')==='cold')?'cold':'room';
   const rTemp=parseFloat(p.get('temp'))||20;
-  const pizzaType=p.get('type')||'neap';
+  const pizzaType=PIZZA_DEFAULTS[p.get('type')]?p.get('type'):'neap';
   const ballCount=parseInt(p.get('balls'))||4;
   const ballSize=parseInt(p.get('size'))||250;
   const units=p.get('units')||'metric';
@@ -1971,28 +1983,49 @@ update(); /* ensure temp labels match saved scale on first load */
   selectFerment(fid);
   update();
   window.history.replaceState({},'',window.location.pathname);
+  }catch(e){}
 })();
 
 
 /* === Session state — survives tab closure === */
 function saveSession(){
-  try{localStorage.setItem('pd_session',JSON.stringify({
-    step:S.step,
-    bakeStarted:bakeStarted,
-    bakeStartTime:startTime,
-    coilFoldCount:coilFoldCount,
-    activeTimerStep:activeTimerStep,
-    activeStep:activeStep,
-    stepCompletionTimes:stepCompletionTimes,
-    hours:S.hours,
-    hyd:S.hyd,
-    rTemp:S.rTemp
-  }));}catch(e){}
-}
-function loadSession(){
   try{
-    const ss=JSON.parse(localStorage.getItem('pd_session'));
+    const payload=JSON.stringify({
+      step:S.step,
+      bakeStarted:bakeStarted,
+      bakeStartTime:startTime,
+      coilFoldCount:coilFoldCount,
+      activeTimerStep:activeTimerStep,
+      activeStep:activeStep,
+      stepCompletionTimes:stepCompletionTimes,
+      hours:S.hours,
+      hyd:S.hyd,
+      rTemp:S.rTemp
+    });
+    /* Native: Capacitor Preferences -> Android SharedPreferences. Survives WebView
+       data purges (storage pressure / OEM battery sweepers) that wipe localStorage.
+       Fire-and-forget — never await on the bridge from a UI path. */
+    if(window.PrefsPlugin) window.PrefsPlugin.set({key:'pd_session',value:payload}).catch(function(){});
+    else localStorage.setItem('pd_session',payload);
+  }catch(e){}
+}
+async function readSessionRaw(){
+  if(window.PrefsPlugin){
+    try{
+      const r=await window.PrefsPlugin.get({key:'pd_session'});
+      if(r&&r.value) return r.value;
+    }catch(e){}
+    /* fall through: migrate any legacy localStorage session */
+  }
+  try{return localStorage.getItem('pd_session');}catch(e){return null;}
+}
+async function loadSession(requireBake){
+  try{
+    const raw=await readSessionRaw();
+    if(!raw)return;
+    const ss=JSON.parse(raw);
     if(!ss||ss.step==null)return;
+    if(requireBake&&!ss.bakeStarted)return;
     S.step=ss.step;
     if(ss.bakeStarted&&ss.bakeStartTime){
       bakeStarted=true;
@@ -2020,16 +2053,14 @@ function loadSession(){
       enterFocusMode();
       goToCurrentStep();
     }
+    if(window.PrefsPlugin) saveSession(); /* re-write into Preferences (migrates legacy localStorage) */
   }catch(e){}
 }
 if(window.Capacitor){
   document.documentElement.style.setProperty('--cap-inset','28px');
-  try{
-    const ss=JSON.parse(localStorage.getItem('pd_session'));
-    if(ss&&ss.bakeStarted) loadSession();
-  }catch(e){}
+  loadSession(true);
 } else {
-  loadSession();
+  loadSession(false);
 }
 
 /* Save session on step changes */
