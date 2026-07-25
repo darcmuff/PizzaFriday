@@ -1170,12 +1170,13 @@ const FINAL_PROOF_MINS = 180;        /* post-fridge warm-up for dough BALLS (3h)
 const COLD_FRIDGE_TEMP_C = 6.5;      /* realistic domestic fridge, not the textbook 4°C */
 const PRE_YEAST_MINS = 105;          /* gather(5) + mix(10) + knead×4 with rests(90) */
 const KNEAD_MINS = 15;               /* knead / fold */
+const KNEAD_BLOCK_MINS = 4*5 + 3*25; /* 4 kneads x 5min + 3 rests x 25min = 95 — no rest after knead 4 */
 const BALL_AND_PROOF_MINS = 125;     /* divide & ball (5) + 2h final proof (120) — ROOM path */
-const ROOM_STATIC_MINS = 5 + 30 + 110 + 5 + 120 + 5;
-                                     /* gather(5) + mix(30) + knead(110) + divide(5) + final proof(120) + open&top(5)
+const ROOM_STATIC_MINS = 5 + 30 + KNEAD_BLOCK_MINS + 5 + 120 + 5;
+                                     /* gather(5) + mix(30) + knead block(95) + divide(5) + final proof(120) + open&top(5)
                                         = every ROOM-path step except bulk ferment */
-const COLD_STATIC_MINS = 5 + 30 + 110 + 5 + FINAL_PROOF_MINS + 5;
-                                     /* gather(5) + mix(30) + knead(110) + divide(5) + final proof + open&top(5) */
+const COLD_STATIC_MINS = 5 + 30 + KNEAD_BLOCK_MINS + 5 + FINAL_PROOF_MINS + 5;
+                                     /* gather(5) + mix(30) + knead block(95) + divide(5) + final proof + open&top(5) */
 
 function calcYeast(fid, rt, hrs, hyd) {
   /*
@@ -1239,7 +1240,7 @@ function getTotalStepMins(){
   for(let i=0;i<steps.length;i++){
     const s=steps[i];
     if(s.concurrent) continue;
-    if(s.coilFold) total+=110;
+    if(s.coilFold) total+=KNEAD_BLOCK_MINS;
     else if(s.timer) total+=s.timer+(s.activeMins||0);
     else if(s.activeMins) total+=s.activeMins;
     else total+=ACTIVE_MINS;
@@ -1284,7 +1285,7 @@ function calcStepTimes(){
       const s=steps[i-1];
       let dur=ACTIVE_MINS;
       if(s&&!s.concurrent){
-        if(s.coilFold) dur=110;
+        if(s.coilFold) dur=KNEAD_BLOCK_MINS;
         else if(s.timer) dur=s.timer+(s.activeMins||0);
         else if(s.activeMins) dur=s.activeMins;
       } else { dur=0; }
@@ -1607,7 +1608,7 @@ function buildSteps(ing,hyd,fid,hours){
     {title:'Mix All Ingredients',icon:'💧',timer:30,video:null,
      body:`Weigh out ${flourLine} and ${dw(ing.water)} warm water (${dt(25)}) into your bowl. Add directly: ${dw(ing.salt)} fine sea salt, ${dw(ing.yeast)} instant dry yeast (or ${dw(Math.round(ing.yeast*3*10)/10)} fresh yeast)${oilStep}. Mix until no dry flour remains.\n\nCover and rest for 30 minutes. This lets the flour fully hydrate before you start kneading.`,
      tip:'Add salt and yeast on opposite sides of the bowl before mixing — they are fine once in water, but avoid letting them sit in direct contact dry.'},
-    {title:'Knead & Rest x4',subtitle:'25 min apart · 1.5 hours',icon:'🤲',coilFold:true,timer:null,video:'BJiucv88flM',
+    {title:'Knead & Rest x4',subtitle:'5 min each · 25 min rests · ≈1h 35m',icon:'🤲',coilFold:true,timer:null,video:'BJiucv88flM',
      body:`Knead for 5 minutes — push, fold, slap, and punch. Cover the dough and rest 25 minutes. Repeat four times total. Kneading is hard work — this method develops the gluten structure without killing you. By round 4 the dough should feel smooth and elastic. Use the windowpane test to check — stretch a small piece thin enough to see light through it without tearing. No rest after knead 4 — move straight on.`,
      tip:'No flour on the surface. Stickiness is friction — friction builds gluten. Wet hands if it is sticking badly, not flour.'},
     ...(fid==='room'?[{title:'Bulk Ferment',icon:'⏱',video:null,
@@ -1649,28 +1650,33 @@ function renderMethod(){
   const iconEl=document.getElementById('s-icon');
 
   if(step.coilFold){
-    /* Coil fold special: counter pill */
+    /* State-driven knead pill: says what to do next, not the score.
+       resting -> "Resting — knead N at H:MM" (locked); expired/idle -> "Knead N — tap when done" */
     const done=coilFoldCount;
     const allDone=done>=4;
-    const isActive=activeTimerStep===i;
     const isErr=i===timerErrorStep;
-    let pillLabel, pillTitle;
+    const resting=activeTimerStep===i&&activeTimerEnd&&Date.now()<activeTimerEnd;
+    let pillLabel, pillTitle, tappable;
     if(isErr){
-      pillLabel='⚠ Timer failed';
-      pillTitle='Could not reach the Clock app — time this 25m rest manually';
-    } else if(done===0){
-      pillLabel='⏰ Start kneads';
-      pillTitle='Tap after each knead to set 25m timer';
-    } else if(done<4){
-      pillLabel=`⏰ ${done} of 4`;
-      pillTitle=`Knead ${done} done — tap after knead ${done+1}`;
+      pillLabel='\u26a0 Timer failed';
+      pillTitle='Could not reach the Clock app \u2014 time this 25m rest manually';
+      tappable=false;
+    } else if(allDone){
+      pillLabel='\u2713 4 of 4';
+      pillTitle='All 4 kneads done';
+      tappable=false;
+    } else if(resting){
+      pillLabel='Resting \u2014 knead '+(done+1)+' at '+fmtClock(new Date(activeTimerEnd));
+      pillTitle='Rest in progress \u2014 the alarm will call you back for knead '+(done+1);
+      tappable=false;
     } else {
-      pillLabel='✓ 4 of 4';
-      pillTitle='All 4 kneads done — tap Complete';
+      pillLabel='\u23f0 Knead '+(done+1)+' \u2014 tap when done';
+      pillTitle=done===0?'Do the first 5-minute knead, then tap':'Do knead '+(done+1)+' (5 min), then tap';
+      tappable=true;
     }
-    const activeClass=((isActive||allDone)?' active':'')+(isErr?' timer-error':'');
-    const clickHandler=(allDone||isErr)?'':(`doCoilFold(${i})`);
-    iconEl.innerHTML=`<span class="m-timer-pill${activeClass}" ${clickHandler?`onclick="event.stopPropagation();${clickHandler}"`:''} title="${pillTitle}" style="${allDone?'cursor:default':''}">${pillLabel}</span>`;
+    const pillClass=(resting||allDone?' active':'')+(isErr?' timer-error':'');
+    const clickHandler=tappable?(`doCoilFold(${i})`):'';
+    iconEl.innerHTML=`<span class="m-timer-pill${pillClass}" ${clickHandler?`onclick="event.stopPropagation();${clickHandler}"`:''} title="${pillTitle}" style="${tappable?'':'cursor:default'}">${pillLabel}</span>`;
   } else if(step.timer){
     const secs=step.timer*60;
     const durStr=minsToLabel(step.timer);
@@ -1780,21 +1786,27 @@ function exitFocusMode(){
 function doCoilFold(stepIdx){
   if(coilFoldCount>=4) return;
   coilFoldCount++;
+  if(coilFoldCount>=4){
+    /* No rest after knead 4 — the block is done, complete the step outright */
+    activeTimerStep=-1; activeTimerEnd=0;
+    saveSession();
+    completeStep();
+    return;
+  }
   const secs=25*60;
-  const label=`Pizza Dough - Knead ${coilFoldCount} of 4`;
+  /* The alarm is named for the knead it summons, not the one just done */
+  const label='Pizza Dough - Knead '+(coilFoldCount+1);
+  activeTimerStep=stepIdx;
+  activeTimerEnd=Date.now()+secs*1000;  /* set on web too — drives the Resting pill */
   if(window.TimerPlugin){
-    activeTimerStep=stepIdx;
-    if(coilFoldCount<4){
-      activeTimerEnd=Date.now()+secs*1000;
-      setTimerNative(secs, label, 25).then(function(ok){
-        if(ok) return;
-        /* Knead is recorded either way — only the rest timer failed */
-        activeTimerStep=-1; activeTimerEnd=0;
-        timerErrorStep=stepIdx;
-        renderMethod();
-        setTimeout(function(){ if(timerErrorStep===stepIdx){ timerErrorStep=-1; renderMethod(); } },4000);
-      });
-    }
+    setTimerNative(secs, label, 25).then(function(ok){
+      if(ok) return;
+      /* Knead is recorded either way — only the rest timer failed */
+      activeTimerStep=-1; activeTimerEnd=0;
+      timerErrorStep=stepIdx;
+      renderMethod();
+      setTimeout(function(){ if(timerErrorStep===stepIdx){ timerErrorStep=-1; renderMethod(); } },4000);
+    });
   }
   renderMethod();
   saveSession();
@@ -1870,7 +1882,7 @@ function renderTimeline(){
     const isCompleted=bakeStarted&&i<activeStep;
     const isLast=i===steps.length-1;
     let stemH=MIN_H;
-    const totalMins=s.coilFold?110:s.timer?(s.timer+(s.activeMins||0)):(s.activeMins||ACTIVE_MINS);
+    const totalMins=s.coilFold?KNEAD_BLOCK_MINS:s.timer?(s.timer+(s.activeMins||0)):(s.activeMins||ACTIVE_MINS);
     if(s.coilFold) stemH=COIL_STEM;
     else if(s.timer) stemH=Math.max(12,Math.round((s.timer/variableMax)*MAX_H));
     let stemCol='#b8a070';
@@ -1885,7 +1897,7 @@ function renderTimeline(){
     const isTimerActive=i===activeTimerStep;
     const dotClass=isActive?'tl-dot active':isTimerActive?'tl-dot timer-active':isCompleted?'tl-dot completed':'tl-dot';
     const dotStyle=(isActive||isTimerActive)?'':`background:${isCompleted?'var(--green)':dotCol};border-color:${isCompleted?'var(--green)':dotCol}`;
-    const dur=s.coilFold?'1h 50m':totalMins>=60?minsToLabel(totalMins):minsToLabel(totalMins);
+    const dur=minsToLabel(totalMins);
     const clockStr=stepTimes?fmtClock(stepTimes[i]):'';
     const durDisplay=stepTimes?(clockStr+(dur?' · '+dur:'')):(dur||'');
     const desc=s.body;
