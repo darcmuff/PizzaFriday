@@ -886,7 +886,7 @@ body.dark .m-timer-pill.nudge{animation:timer-nudge-dark 1.5s ease-in-out infini
 
       <details id="guide-doughballs">
       <summary><h3>Dough Balls</h3></summary>
-      <p>Set the count and size using the steppers. The calculator uses baker's percentages to work backwards from your ball weight to the exact flour, water, salt, and yeast quantities.</p>
+      <p>Set the count and size using the steppers. Total dough is the ball weight times the count, plus 2% for scraps left on the bowl and bench. Flour, water, salt, oil, and yeast are worked back from that total with baker's percentages, yeast included, so the ingredients add up to it.</p>
       </details>
 
       <details>
@@ -998,13 +998,12 @@ function renderSavedList(){
   if(savingNew){
     const now=new Date();
     const dateStr=now.toLocaleDateString('en-GB',{day:'2-digit',month:'2-digit',year:'2-digit'});
-    const flourPerBall=calcDoughBallFlour(S.ballSize,S.hyd,S.saltPc,S.oilPc);
-    const flour=flourPerBall*S.ballCount;
-    const water=Math.round(flour*S.hyd/100);
-    const salt=(flour*S.saltPc/100).toFixed(1);
-    const oil=(flour*S.oilPc/100).toFixed(1);
-    const yeastPc=calcYeast(S.fid,S.rTemp,S.hours,S.hyd);
-    const yeast=yeastPc?(flour*yeastPc/100).toFixed(1):'';
+    const ing=recipeFromState();
+    const flour=ing.flour;
+    const water=ing.water;
+    const salt=ing.salt;
+    const oil=ing.oil;
+    const yeast=ing.yeast;
     const fermentLabel=S.fid==='cold'?'Cold':'Room';
     const typeLabel=S.pizzaType==='ny'?'New York':'Neapolitan';
     const ballDesc=S.ballCount+'× '+S.ballSize+'g';
@@ -1017,13 +1016,13 @@ function renderSavedList(){
         <div class="save-metric-row"><span class="save-metric-key">Date</span><span class="save-metric-val">${dateStr}</span></div>
         <div class="save-metric-row"><span class="save-metric-key">Style</span><span class="save-metric-val">${typeLabel}</span></div>
         <div class="save-metric-row"><span class="save-metric-key">Hydration</span><span class="save-metric-val">${S.hyd}%</span></div>
-        ${S.blendPc>0?`<div class="save-metric-row"><span class="save-metric-key">Main flour</span><span class="save-metric-val">${Math.round(flour*(100-S.blendPc)/100)}g</span></div>
-        <div class="save-metric-row"><span class="save-metric-key">Blend flour</span><span class="save-metric-val">${flour-Math.round(flour*(100-S.blendPc)/100)}g</span></div>`
-        :`<div class="save-metric-row"><span class="save-metric-key">Flour</span><span class="save-metric-val">${flour}g</span></div>`}
-        <div class="save-metric-row"><span class="save-metric-key">Water</span><span class="save-metric-val">${water}g</span></div>
-        <div class="save-metric-row"><span class="save-metric-key">Salt</span><span class="save-metric-val">${salt}g</span></div>
-        ${S.oilPc>0?`<div class="save-metric-row"><span class="save-metric-key">Olive oil</span><span class="save-metric-val">${oil}g</span></div>`:''}
-        ${yeast?`<div class="save-metric-row"><span class="save-metric-key">Yeast</span><span class="save-metric-val">${yeast}g</span></div>`:''}
+        ${S.blendPc>0?`<div class="save-metric-row"><span class="save-metric-key">Main flour</span><span class="save-metric-val">${formatGrams(ing.mainFlour)}</span></div>
+        <div class="save-metric-row"><span class="save-metric-key">Blend flour</span><span class="save-metric-val">${formatGrams(ing.blendFlour)}</span></div>`
+        :`<div class="save-metric-row"><span class="save-metric-key">Flour</span><span class="save-metric-val">${formatGrams(flour)}</span></div>`}
+        <div class="save-metric-row"><span class="save-metric-key">Water</span><span class="save-metric-val">${formatGrams(water)}</span></div>
+        <div class="save-metric-row"><span class="save-metric-key">Salt</span><span class="save-metric-val">${formatGrams(salt)}</span></div>
+        ${S.oilPc>0?`<div class="save-metric-row"><span class="save-metric-key">Olive oil</span><span class="save-metric-val">${formatGrams(oil)}</span></div>`:''}
+        ${yeast?`<div class="save-metric-row"><span class="save-metric-key">Yeast</span><span class="save-metric-val">${formatGrams(yeast)}</span></div>`:''}
         <div class="save-metric-row"><span class="save-metric-key">Ferment</span><span class="save-metric-val">${fermentLabel}</span></div>
         <div class="save-metric-row"><span class="save-metric-key">Total time</span><span class="save-metric-val">${S.hours}h</span></div>
         <div class="save-metric-row"><span class="save-metric-key">Balls</span><span class="save-metric-val">${ballDesc}</span></div>
@@ -1084,11 +1083,7 @@ function confirmSave(){
   const recipes=getSavedRecipes();
   const now=new Date();
   const dateStr=now.toLocaleDateString('en-GB',{day:'2-digit',month:'2-digit',year:'2-digit'});
-  const flourPerBall=calcDoughBallFlour(S.ballSize,S.hyd,S.saltPc,S.oilPc);
-  const flour=flourPerBall*S.ballCount;
-  const water=Math.round(flour*S.hyd/100);
-  const salt=parseFloat((flour*S.saltPc/100).toFixed(1));
-  const oil=parseFloat((flour*S.oilPc/100).toFixed(1));
+  const ing=recipeFromState();
   recipes.push({
     name,
     notes,
@@ -1103,7 +1098,7 @@ function confirmSave(){
     saltPc:S.saltPc,
     oilPc:S.oilPc,
     blendPc:S.blendPc,
-    snapshot:{flour,water,salt,oil}
+    snapshot:{flour:ing.flour,water:ing.water,salt:ing.salt,oil:ing.oil,yeast:ing.yeast,total:ing.total}
   });
   setSavedRecipes(recipes);
   savingNew=false;
@@ -1141,13 +1136,48 @@ function deleteRecipe(i){
 
 const PIZZA_DEFAULTS={neap:{ballSize:240,saltPc:3.0,oilPc:0},ny:{ballSize:280,saltPc:2.5,oilPc:2}};
 
-/* Wastage buffer: make 2% extra dough to cover scraps lost to bowl/bench.
-   Applied at the flour chokepoint so water/salt/oil/yeast all scale with it. */
+/* Total dough is ball weight × count, plus 2% for scraps left on the bowl
+   and bench. Every ingredient is a share of that one total: baker's percentages
+   with yeast in the denominator. Weights are in 0.1g steps and flour takes the
+   rounding remainder, so the displayed ingredients add up to the displayed total. */
 const WASTE = 1.02;
 
-function calcDoughBallFlour(ballSize, hyd, saltPc, oilPc) {
-  const totalPc = 100 + hyd + saltPc + oilPc;
-  return Math.round(ballSize * 100 / totalPc * WASTE);
+function calcTotalDoughTenths(ballSize, ballCount) {
+  return Math.round(ballSize * ballCount * WASTE * 10);
+}
+
+function calcRecipeWeights(ballSize, ballCount, hyd, saltPc, oilPc, yp) {
+  const totalTenths = calcTotalDoughTenths(ballSize, ballCount);
+  const totalPc = 100 + hyd + saltPc + oilPc + yp;
+  const share = (pc) => Math.round(totalTenths * pc / totalPc);
+  const water = share(hyd);
+  const salt = share(saltPc);
+  const yeast = share(yp);
+  const oil = share(oilPc);
+  const flour = totalTenths - water - salt - yeast - oil;
+  const grams = (tenths) => tenths / 10;
+  return {
+    total: grams(totalTenths),
+    flour: grams(flour),
+    water: grams(water),
+    salt: grams(salt),
+    yeast: grams(yeast),
+    oil: grams(oil)
+  };
+}
+
+function splitFlour(flourGrams, blendPc) {
+  const flourTenths = Math.round(flourGrams * 10);
+  if (!blendPc) return { main: flourTenths / 10, blend: 0 };
+  const mainTenths = Math.round(flourTenths * (100 - blendPc) / 100);
+  return { main: mainTenths / 10, blend: (flourTenths - mainTenths) / 10 };
+}
+
+function recipeFromState() {
+  const yp = calcYeast(S.fid, S.rTemp, S.hours, S.hyd);
+  const ing = calcRecipeWeights(S.ballSize, S.ballCount, S.hyd, S.saltPc, S.oilPc, yp);
+  const split = splitFlour(ing.flour, S.blendPc);
+  return Object.assign(ing, { yp, mainFlour: split.main, blendFlour: split.blend });
 }
 
 function sliderToHours(pos){
@@ -1461,17 +1491,13 @@ function renderDoughBalls() {
   document.getElementById('db-salt').textContent = S.saltPc.toFixed(1) + '%';
   document.getElementById('db-oil').textContent = S.oilPc.toFixed(1) + '%';
   document.getElementById('db-blend').textContent = S.blendPc + '%';
-  const flourPerBall = calcDoughBallFlour(S.ballSize, S.hyd, S.saltPc, S.oilPc);
-  const totalFlour = flourPerBall * S.ballCount;
-  const totalDough = Math.round(S.ballSize * S.ballCount * WASTE);
+  const ing = recipeFromState();
   let html;
   if (S.blendPc > 0) {
-    const mainFlour = Math.round(totalFlour * (100 - S.blendPc) / 100);
-    const blendFlour = totalFlour - mainFlour;
-    html = `Flour: <strong>${dw(totalFlour)}</strong> <span class="blend-inline">(${dw(mainFlour)} + ${dw(blendFlour)} blend)</span> · Total dough: <strong>${dw(totalDough)}</strong>`
-      + `<div class="blend-sub">Main: <strong>${dw(mainFlour)}</strong> · Blend: <strong>${dw(blendFlour)}</strong></div>`;
+    html = `Flour: <strong>${dw(ing.flour)}</strong> <span class="blend-inline">(${dw(ing.mainFlour)} + ${dw(ing.blendFlour)} blend)</span> · Total dough: <strong>${dw(ing.total)}</strong>`
+      + `<div class="blend-sub">Main: <strong>${dw(ing.mainFlour)}</strong> · Blend: <strong>${dw(ing.blendFlour)}</strong></div>`;
   } else {
-    html = `Flour: <strong>${dw(totalFlour)}</strong> · Total dough: <strong>${dw(totalDough)}</strong>`;
+    html = `Flour: <strong>${dw(ing.flour)}</strong> · Total dough: <strong>${dw(ing.total)}</strong>`;
   }
   document.getElementById('db-result').innerHTML = html;
 }
@@ -1500,13 +1526,9 @@ function update(){
   S.rTemp=+document.getElementById('temp-slider').value;
   if(S.fid==='room' && S.hours>30){S.hours=30;document.getElementById('hours-slider').value=hoursToSlider(30);}
   if(S.fid==='cold' && S.hours<14){S.hours=14;document.getElementById('hours-slider').value=hoursToSlider(14);}
-  const {hours,hyd,fid,rTemp,ballCount,ballSize,saltPc,oilPc}=S;
-  const flourPerBall=calcDoughBallFlour(ballSize,hyd,saltPc,oilPc);
-  const flour=flourPerBall*ballCount;
-  const yp=calcYeast(fid,rTemp,hours,hyd);
-  const r=v=>Math.round(v*10)/10;
-  const ing={flour,water:Math.round(flour*hyd/100),salt:r(flour*saltPc/100),yeast:r(flour*yp/100),oil:r(flour*oilPc/100)};
-  const total=Math.round(ing.flour+ing.water+ing.salt+ing.yeast+ing.oil);
+  const {hours,hyd,fid,rTemp,saltPc,oilPc}=S;
+  const ing=recipeFromState();
+  const yp=ing.yp;
 
   document.getElementById('hours-lbl').textContent=`${hours} hrs · Bake at ${getEatTime()}`;
   document.getElementById('hours-slider').setAttribute('aria-valuetext',hours+' hrs');
@@ -1536,12 +1558,10 @@ function update(){
   buildSteps(ing,hyd,fid,hours);
   clearTimeout(_updateTimer);
   _updateTimer=setTimeout(()=>{
-    const mainFlour = Math.round(ing.flour * (100 - S.blendPc) / 100);
-    const blendFlour = ing.flour - mainFlour;
     const flourRows = S.blendPc > 0
       ? [
-          ['Main flour'+proteinSpan, dw(mainFlour), (100-S.blendPc)+'%', ''],
-          ['Blend flour', dw(blendFlour), S.blendPc+'%', '']
+          ['Main flour'+proteinSpan, dw(ing.mainFlour), (100-S.blendPc)+'%', ''],
+          ['Blend flour', dw(ing.blendFlour), S.blendPc+'%', '']
         ]
       : [[flourLabel, dw(ing.flour), '100%', '']];
     document.getElementById('rec-tbody').innerHTML=[
@@ -1551,7 +1571,7 @@ function update(){
       [`Instant dry yeast <span style="margin-left:4px;font-size:0.78rem;color:var(--text3);">(${dw(Math.round(ing.yeast*3*10)/10)} fresh)</span>`,dw(ing.yeast),yp+'%',''],
       ['Extra virgin olive oil',oilMuted?'—':dw(ing.oil),oilPc+'%',oilStyle],
     ].map(([n,w,p,s])=>`<tr${s?' style="'+s+'"':''}><td>${n}</td><td class="wt">${w}</td><td class="pc">${p}</td></tr>`).join('')
-    +`<tr class="total-row"><td>Total dough</td><td class="wt">~${dw(total)}</td><td></td></tr>`;
+    +`<tr class="total-row"><td>Total dough</td><td class="wt">${dw(ing.total)}</td><td></td></tr>`;
     renderMethod();
     if(tlVisible) renderTimeline();
   },16);
@@ -1586,7 +1606,11 @@ document.addEventListener('click',e=>{
   const pill=document.querySelector('.settings-pill');
   if(pill && !pill.contains(e.target)) document.getElementById('settings-dropdown').classList.remove('open');
 });
-function dw(g){ return S.units==='imperial'?(g/28.35).toFixed(1)+'oz':g+'g'; }
+function formatGrams(g){
+  const t=Math.round(Number(g)*10)/10;
+  return (Math.abs(t-Math.round(t))<1e-6?String(Math.round(t)):t.toFixed(1))+'g';
+}
+function dw(g){ return S.units==='imperial'?(g/28.35).toFixed(1)+'oz':formatGrams(g); }
 function dt(c){ return S.tempScale==='F'?Math.round(c*9/5+32)+'°F':c+'°C'; }
 
 function buildSteps(ing,hyd,fid,hours){
@@ -1595,9 +1619,7 @@ function buildSteps(ing,hyd,fid,hours){
   const oilStep=ing.oil>0?`, ${dw(ing.oil)} extra virgin olive oil`:'';
   let flourLine;
   if (S.blendPc > 0) {
-    const mf = Math.round(ing.flour * (100 - S.blendPc) / 100);
-    const bf = ing.flour - mf;
-    flourLine = `${dw(mf)} ${flourDesc} and ${dw(bf)} blend flour (${dw(ing.flour)} total)`;
+    flourLine = `${dw(ing.mainFlour)} ${flourDesc} and ${dw(ing.blendFlour)} blend flour (${dw(ing.flour)} total)`;
   } else {
     flourLine = `${dw(ing.flour)} ${flourDesc}`;
   }
@@ -1967,19 +1989,14 @@ function resetDefaults(){
 }
 function shareRecipe(){
   const {hours,hyd,fid,rTemp,pizzaType,ballCount,ballSize,units,tempScale,saltPc,oilPc,blendPc}=S;
-  const flourPerBall=calcDoughBallFlour(ballSize,hyd,saltPc,oilPc);
-  const flour=flourPerBall*ballCount;
-  const yp=calcYeast(fid,rTemp,hours,hyd);
-  const r=v=>Math.round(v*10)/10;
-  const ing={flour,water:Math.round(flour*hyd/100),salt:r(flour*saltPc/100),yeast:r(flour*yp/100),oil:r(flour*oilPc/100)};
+  const ing=recipeFromState();
+  const yp=ing.yp;
   const typeLabel=pizzaType==='neap'?'Neapolitan':'New York';
   const ballDesc=`${ballCount}× ${units==='imperial'?(ballSize/28.35).toFixed(1)+'oz':ballSize+'g'} balls`;
   const oilLine=ing.oil>0?`\nOlive oil: ${dw(ing.oil)}`:'';
   let flourLine;
   if (blendPc > 0) {
-    const mf = Math.round(ing.flour * (100 - blendPc) / 100);
-    const bf = ing.flour - mf;
-    flourLine = `Main flour: ${dw(mf)}\nBlend flour: ${dw(bf)}`;
+    flourLine = `Main flour: ${dw(ing.mainFlour)}\nBlend flour: ${dw(ing.blendFlour)}`;
   } else {
     flourLine = `Flour: ${dw(ing.flour)}`;
   }

@@ -14,7 +14,8 @@ Privacy page (11 September 2026): developer DuffApps, Android package `com.duffa
 - The page registers Capacitor plugins when present: `Timer`, `BakeNotification`, `Preferences`. Preferences are described as Android SharedPreferences so session state survives the WebView.
 - Timer handoff is intentional. In-app guide: the timer pill opens the phone's native clock with the duration, and that works in the Android app only. On the website the pills are progress indicators and do not launch an external timer. A comment says `TimerPlugin.java` rejects if no clock app handles the intent.
 - Guide also documents two ferment modes (room temp, slider capped at 30 hours; cold ferment, slider not below 14 hours). Yeast scaling follows kitchen temperature.
-- Service worker cache name is `pizzafriday-v1`. Precache paths are under `/PizzaFriday/` (page, manifest, both icons). `privacy.html` is not in that list.
+- Service worker cache name is `pizzafriday-v2` (bumped from `pizzafriday-v1` so installed copies pick up the dough-total change). Precache paths are under `/PizzaFriday/` (page, manifest, both icons). `privacy.html` is not in that list.
+- Total dough is ball size × ball count × 1.02 (2% for scraps left on the bowl and bench). Flour, water, salt, oil, and yeast are shares of that total, with yeast in the baker's-percentage denominator. Weights are in 0.1g steps and flour absorbs the rounding remainder, so the ingredient rows add up to the same total shown under the dough-ball summary and on the ingredients table.
 - No `TODO` / `FIXME` markers in the html/js scanned.
 
 ## What's next

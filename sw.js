@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pizzafriday-v1';
+const CACHE_NAME = 'pizzafriday-v2';
 const ASSETS = [
   '/PizzaFriday/',
   '/PizzaFriday/index.html',
